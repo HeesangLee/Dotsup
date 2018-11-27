@@ -12,9 +12,11 @@
 ## Notes
 ### Input processor for each entities
 내장 Button 을 사용하지 않고 개별 개체에 대해서 Input event 처리하기
-* Implement touchableEntity
-    * setTouchArea()
-    * isInTouchArea()
+* GestureListener 를 상속하는 객체를 만들고 Screen 에서 GestureDetect 시 각 객체의 Gesture에 event 전달하는 식으로...
+
+### Button
+_일반 버튼_
+
 
 Effect
 1. Move x/y : GameObject 에 적용 완료
