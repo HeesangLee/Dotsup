@@ -18,6 +18,10 @@ public class Position2D {
     public void setY(float y) {
         this.y = y;
     }
+    public void setPosition2D(float x, float y){
+        setX(x);
+        setY(y);
+    }
 
     public float getX() {
         return x;

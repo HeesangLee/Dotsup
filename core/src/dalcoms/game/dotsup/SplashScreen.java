@@ -38,7 +38,6 @@ public class SplashScreen implements Screen {
 
     @Override
     public void render(float delta) {
-
         draw(delta);
     }
 
@@ -56,6 +55,7 @@ public class SplashScreen implements Screen {
         for (Renderable renderableObj : renderableObjectArray) {
             renderableObj.render(delta);
         }
+//        game.getSpriteBatch().draw(game.getResourcesManager().getText_dongle(),505f,134f);
 
         game.getSpriteBatch().end();
     }
