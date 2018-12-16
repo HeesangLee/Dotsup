@@ -7,7 +7,7 @@ public class GameObject implements Renderable {
     private int width, height;
     private float locationX, locationY;
     private Texture texture;
-    private boolean flag_show = false;
+    //    private boolean flag_show = false;
     public SpriteBatch batch;
 
     private boolean flag_moveX, flag_moveY = false;
@@ -65,13 +65,13 @@ public class GameObject implements Renderable {
     @Override
     public void render(float delta) {
         updateMovingLocation(delta);
-        if(isDrawTexture()){
+        if (isDrawTexture()) {
             drawTexture();
         }
     }
 
-    private void drawTexture(){
-        this.batch.draw(getTexture(),getLocationX(),getLocationY());
+    private void drawTexture() {
+        this.batch.draw(getTexture(), getLocationX(), getLocationY());
     }
 
     public boolean isDrawTexture() {
@@ -136,12 +136,16 @@ public class GameObject implements Renderable {
         return getLocationY() + (float) getHeight() / 2;
     }
 
-    public boolean isShow() {
-        return this.flag_show;
+    public Position2D getLocation() {
+        return new Position2D(getLocationX(), getLocationY());
+    }
+
+    public Position2D getCenterLocation() {
+        return new Position2D(getCenterX(), getCenterY());
     }
 
     public void setShow(boolean flag_show) {
-        this.flag_show = flag_show;
+        enableDrawTexture(flag_show);
     }
 
 

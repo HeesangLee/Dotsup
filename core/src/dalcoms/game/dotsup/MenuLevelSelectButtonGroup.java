@@ -54,7 +54,16 @@ public class MenuLevelSelectButtonGroup
     }
 
     private void initThis() {
-        levelNumberArray = new Array<SpriteNumber>() ;
+        levelNumberArray = new Array<SpriteNumber>() {
+            {
+                add(new SpriteNumber(textureArrayOfNumbers, 1, batch));
+                add(new SpriteNumber(textureArrayOfNumbers, 2, batch));
+                add(new SpriteNumber(textureArrayOfNumbers, 3, batch));
+                add(new SpriteNumber(textureArrayOfNumbers, 4, batch));
+                add(new SpriteNumber(textureArrayOfNumbers, 5, batch));
+
+            }
+        };
 
         levelButtonWidth = getWidth() / BUTTON_COUNT;
         screenHeight = Gdx.graphics.getHeight();
@@ -110,6 +119,7 @@ public class MenuLevelSelectButtonGroup
         Gdx.app.log(this.getClass().getSimpleName() + " LongPress",
                 "x = " + String.valueOf(x) +
                         "y = " + String.valueOf(y));
+        actionLongPress(getTouchAreaFlag((int) x, screenHeight - (int) y));
     }
 
     @Override
@@ -125,8 +135,13 @@ public class MenuLevelSelectButtonGroup
     }
 
     public void setFocusingButton(int focusingButton) {
-        if ((focusingButton > 0) & (focusingButton < GameLevel.getMaxLevel())) {
-            this.focusingButton = focusingButton;
+        boolean focusingChanged = false;
+        if ((focusingButton > 0) & (focusingButton < GameLevel.getMaxLevel() + 1)) {
+
+            if (this.focusingButton != focusingButton) {
+                this.focusingButton = focusingButton;
+                focusingChanged = true;
+            }
         }
 
         int levelRange[] = GameLevel.getLevelViewRange(this.focusingButton);
@@ -139,6 +154,25 @@ public class MenuLevelSelectButtonGroup
         }
 
         setSelectedBgCirclePosition();
+
+        if (focusingChanged) {
+            setLevelButtonColor();
+            isFocusingChanged();
+        }
+    }
+
+    /**
+     * @return true if it is locked
+     */
+    public boolean isLockedLevel() {
+        return getFocusingButton() > game.getGameConfiguration().getLastClearedLevel() + 1;
+    }
+
+    /**
+     * Using this method with override in other Class
+     */
+    public void isFocusingChanged() {
+
     }
 
     private int getFocusingButtonIndex(int focusingButton) {
@@ -160,24 +194,26 @@ public class MenuLevelSelectButtonGroup
     }
 
     private void setLevelNumberArray() {
-        levelNumberArray.clear();
 
         for (int i = 0; i < BUTTON_COUNT - 2; i++) {
-            levelNumberArray.add(new SpriteNumber(textureArrayOfNumbers, i + getLevelMin(), batch));
+            levelNumberArray.get(i).setNumber(i + getLevelMin());
 
-            if (levelNumberArray.get(i).getNumber() > game.getGameConfiguration().getLastClearedLevel()) {//Clear 안된 레벨이면
+            levelNumberArray.get(i).setOrigin(new Position2D(
+                    getLocationX() + levelButtonWidth
+                            * (i + 1) + (levelButtonWidth - levelNumberArray.get(i).getSpriteNumWidth()) / 2f,
+                    getLocationY() + (getHeight() - textureArrowRight.getHeight()) / 2f));
+        }
+
+    }
+
+    private void setLevelButtonColor() {
+        for (int i = 0; i < BUTTON_COUNT - 2; i++) {
+            if ((levelNumberArray.get(i).getNumber() == getFocusingButton())
+                    | (levelNumberArray.get(i).getNumber() > game.getGameConfiguration().getLastClearedLevel())) {
                 levelNumberArray.get(i).setColor(GameColor.WHITE);
             } else {
                 levelNumberArray.get(i).setColor(GameColor.MENU_LEVEL_SELECT_ACTIVE);
             }
-        }
-
-        for (int i = 0; i < BUTTON_COUNT - 2; i++) {
-            levelNumberArray.get(i).setOrigin(new Position2D(
-                            getLocationX() + levelButtonWidth
-                                    * (i + 1) + (levelButtonWidth - levelNumberArray.get(i).getSpriteNumWidth()) / 2f,
-                            getLocationY() + (getHeight() - textureArrowRight.getHeight()) / 2f),
-                    true);
         }
     }
 
@@ -305,18 +341,46 @@ public class MenuLevelSelectButtonGroup
                 rightButtonClick();
                 break;
             default:
-                setFocusingButton(touchFlag+getLevelMin()-1);
+                setFocusingButton(touchFlag + getLevelMin() - 1);
 
                 break;
         }
     }
 
+    private void actionLongPress(int touchFlag) {
+        Gdx.app.log("ActionLongPress", String.valueOf(touchFlag));
+        switch (touchFlag) {
+            case TOUCH_LEFT:
+                leftButtonLongKey();
+                break;
+            case TOUCH_RIGHT:
+                rightButtonLongKey();
+                break;
+        }
+    }
+
     private void rightButtonClick() {
-        setFocusingButton(getLevelMax() + 1);
+        if (isDisplayArrowRight()) {
+            setFocusingButton(getLevelMax() + 1);
+        }
     }
 
     private void leftButtonClick() {
-        setFocusingButton(getLevelMin() - 1);
+        if (isDisplayArrowLeft()) {
+            setFocusingButton(getLevelMin() - 1);
+        }
+    }
+
+    private void rightButtonLongKey() {
+        if (isDisplayArrowRight()) {
+            setFocusingButton(GameLevel.getMaxLevel());
+        }
+    }
+
+    private void leftButtonLongKey() {
+        if (isDisplayArrowLeft()) {
+            setFocusingButton(1);
+        }
     }
 
     private int getTouchAreaFlag(int touchX, int touchY) {

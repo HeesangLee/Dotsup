@@ -31,7 +31,7 @@ public class GameConfiguration {
 
 
     public int getLastClearedLevel() {
-        return preferences.getInteger(prefKey_LastClearedLevel, 0);
+        return preferences.getInteger(prefKey_LastClearedLevel, 4);
     }
 
     public void putLastClearedLevel(int level) {

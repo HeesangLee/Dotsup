@@ -29,6 +29,8 @@ public class ResourcesManager {
     private Texture texture_level_board_rect;
     private Texture texture_t35_x;
 
+    private Texture texture_level_lock;
+
     public static ResourcesManager getInstance() {
         return instance;
     }
@@ -99,6 +101,8 @@ public class ResourcesManager {
         };
         texture_level_board_rect = new Texture(Gdx.files.internal("level_board_rect.png"));
         texture_t35_x = new Texture(Gdx.files.internal("t35_x.png"));
+
+        texture_level_lock = new Texture(Gdx.files.internal("level_lock.png"));
 
     }
 
@@ -176,6 +180,10 @@ public class ResourcesManager {
 
     public Texture getTexture_t35_x() {
         return texture_t35_x;
+    }
+
+    public Texture getTexture_level_lock() {
+        return texture_level_lock;
     }
 
     public void disposeSplashScreenResources() {

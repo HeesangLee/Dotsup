@@ -15,9 +15,11 @@ public class MenuScreen implements Screen {
     private SpriteBatch batch;
     private Array<Renderable> renderableObjectArray;
     private Array<GestureDetectableButton> gestureDetectableButtonArray;
-    private GameObject levelBg;
+    private GameObject levelBg, levelLocked;
     private SpriteButton startButton;
     private MenuLevelSelectButtonGroup levelSelectButtonGroup;
+    private SimpleBoard levelBoardPreview;
+    private MenuMissionView menuMissionView;
 
 
     public MenuScreen(final Dotsup game) {
@@ -47,7 +49,32 @@ public class MenuScreen implements Screen {
                 .setSpriteBatch(batch)
                 .enableDrawTexture(true);
         levelBg.moveY(levelBg.getLocationY(), 0f, 0.5f);
+        levelBg.addActionListener(new ObjectActionListener() {
+            @Override
+            public boolean onMoveCompleted(boolean direction) {
+                renderableObjectArray.add(levelSelectButtonGroup);
+                renderableObjectArray.add(levelBoardPreview);
+                renderableObjectArray.add(levelLocked);
 
+                gestureDetectableButtonArray.add(levelSelectButtonGroup);
+                gestureDetectableButtonArray.add(startButton);
+
+                menuMissionView
+                        .setMission(GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getMission())
+                        .setShow(true);
+
+
+                return false;
+            }
+
+            @Override
+            public boolean onMoveStarted(boolean direction) {
+                return false;
+            }
+        });
+
+        levelLocked = new GameObject(game.getResourcesManager().getTexture_level_lock(), 0, 0)
+                .setSpriteBatch(batch);
 
         startButton = new SpriteButton(game.getResourcesManager().getTexture_roundRect_468x148(),
                 306, 1015, game.getSpriteBatch());
@@ -62,15 +89,59 @@ public class MenuScreen implements Screen {
                 game.getResourcesManager().getTexture_level_sel_arrow_left(),
                 game.getResourcesManager().getTexture_level_sel_arrow_right(),
                 game.getResourcesManager().getTexture_level_selected_circle(),
-                game.getGameConfiguration().getLastClearedLevel() + 1);
+                game.getGameConfiguration().getLastClearedLevel() + 1) {
+            @Override
+            public void isFocusingChanged() {
+                super.isFocusingChanged();
+                if (levelBoardPreview != null) {
+                    levelBoardPreview.calcBoardCenter(
+                            GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getBoard());
+                    levelBoardPreview.updateBoard(
+                            GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getBoard());
+                }
+                if (levelLocked != null) {
+//                    levelLocked.setShow(getFocusingButton() > game.getGameConfiguration().getLastClearedLevel() + 1);
+                    levelLocked.setShow(isLockedLevel());
+                }
+                if (menuMissionView != null) {
+                    menuMissionView
+                            .setMission(GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getMission());
+                }
 
+                if (isLockedLevel()) {
+
+                }
+                if (startButton != null) {
+                    startButton.setButtonState(isLockedLevel());
+                }
+
+            }
+        };
+
+        levelBoardPreview = new SimpleBoard(game.getResourcesManager().getTexture_level_board_rect(),
+                230f, 395f,
+                GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getBoard(),
+                batch,
+                true
+        );
+
+        levelLocked.setCenterLocation(levelBoardPreview.getCenterPosition().getX(),
+                levelBoardPreview.getCenterPosition().getY());
+
+        menuMissionView = new MenuMissionView(game.getResourcesManager().getTexture_menu_dotsArray()
+                , game.getResourcesManager().getTexture_t35NumArray()
+                , game.getResourcesManager().getTexture_t35_x()
+                , 444f, 324f
+                , false, batch);
 
         renderableObjectArray.add(levelBg);
         renderableObjectArray.add(startButton);
-        renderableObjectArray.add(levelSelectButtonGroup);
+        renderableObjectArray.add(menuMissionView);
 
-        gestureDetectableButtonArray.add(startButton);
-        gestureDetectableButtonArray.add(levelSelectButtonGroup);
+    }
+
+    private void updateMissonOfLevel() {
+
     }
 
     @Override

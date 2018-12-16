@@ -10,6 +10,11 @@ public class TexturePositon2D extends Position2D {
         this.texture = texture;
     }
 
+    public TexturePositon2D(Texture texture, Position2D position2D) {
+        super(position2D.getX(), position2D.getY());
+        this.texture = texture;
+    }
+
     public Texture getTexture() {
         return texture;
     }

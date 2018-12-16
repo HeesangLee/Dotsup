@@ -120,6 +120,8 @@ public class SpriteButton extends SpriteGameObject
 
     public void setButtonState(boolean buttonState) {
         this.buttonState = buttonState;
+        checkColorEffect(false);
+//        Gdx.input.isTouched() & isTouchInButtonArea(Gdx.input.getX()
     }
 
     public boolean isButtonState() {
