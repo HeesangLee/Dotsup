@@ -12,16 +12,30 @@ public class SimpleBoard implements Renderable {
     Position2D centerPosition;
     Texture textureCell;
     boolean show = false;
+    boolean showDisabledCell = false;
+    Texture textureCellDisabled;
+    SpriteBatch batch;
 
-    public SimpleBoard(Texture textureCell, float centerX, float centerY, boolean[][] board, SpriteBatch batch, boolean show) {
+    public SimpleBoard(Texture textureCell,
+                       float centerX, float centerY, boolean[][] board,
+                       SpriteBatch batch, boolean show) {
+        this.batch = batch;
         this.cells = new BoardCell[CELL_X][CELL_Y];
         this.textureCell = textureCell;
+
         centerPosition = new Position2D(centerX, centerY);
         this.show = show;
 
         calcCellLocation();
         calcBoardCenter(board);
         initCells(board, batch);
+    }
+
+    public SimpleBoard setDisabledCellTexture(Texture textureCellDisabled, boolean show) {
+        this.textureCellDisabled = textureCellDisabled;
+        this.showDisabledCell = show;
+
+        return this;
     }
 
 
@@ -107,7 +121,12 @@ public class SimpleBoard implements Renderable {
     private void draw(float delta) {
         for (int x = 0; x < CELL_X; x++) {
             for (int y = 0; y < CELL_Y; y++) {
-                cells[x][y].render(delta);
+                if (cells[x][y].isDrawTexture()) {
+                    cells[x][y].render(delta);
+                } else if (isShowDisabledCell()) {
+                    batch.draw(getTextureCellDisabled(), cells[x][y].getLocationX(), cells[x][y].getLocationY());
+                }
+
             }
         }
     }
@@ -122,6 +141,18 @@ public class SimpleBoard implements Renderable {
 
     public void setShow(boolean show) {
         this.show = show;
+    }
+
+    public boolean isShowDisabledCell() {
+        return showDisabledCell;
+    }
+
+    public void setShowDisabledCell(boolean showDisabledCell) {
+        this.showDisabledCell = showDisabledCell;
+    }
+
+    public Texture getTextureCellDisabled() {
+        return textureCellDisabled;
     }
 
     public Position2D getCenterPosition() {

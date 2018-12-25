@@ -27,9 +27,46 @@ public class ResourcesManager {
 
     private Array<Texture> texture_menu_dotsArray;
     private Texture texture_level_board_rect;
+    private Texture texture_level_board_rect_disabled;
     private Texture texture_t35_x;
 
     private Texture texture_level_lock;
+
+    private Texture texture_t35_s;
+    private Texture texture_t35_m;
+    private Texture texture_t35_h;
+
+    private Texture texture_t19_time;
+    private Texture texture_t19_moves;
+    private Texture texture_t52_cleared;
+    private Texture texture_t52_locked;
+    private Texture texture_t52_new;
+
+    private Texture texture_dialog_847x406;
+    private Texture texture_button_302x105;
+    private Texture texture_text_ask_exit;
+    private Texture texture_btn_text_exit;
+    private Texture texture_btn_text_stay;
+    private Texture texture_btn_text_home;
+
+
+    private Texture texture_t35_Loading;
+    private Texture texture_circle_100x100;
+    private Texture texture_circle_661x661;
+
+    private Texture texture_circle_200x200;
+    private Texture texture_game_home_btn;
+    private Array<Texture> texture_t152NumArray;
+    private Texture texture_t19_level;
+
+    private Texture texture_rec_10x10;
+    private Texture texture_game_bottom;
+
+    private Texture texture_game_mission_info_bg;
+    private Texture texture_rect_90x90;
+
+
+
 
     public static ResourcesManager getInstance() {
         return instance;
@@ -100,9 +137,57 @@ public class ResourcesManager {
             }
         };
         texture_level_board_rect = new Texture(Gdx.files.internal("level_board_rect.png"));
+        texture_level_board_rect_disabled = new Texture(Gdx.files.internal("level_board_rect_disabled.png"));
         texture_t35_x = new Texture(Gdx.files.internal("t35_x.png"));
 
         texture_level_lock = new Texture(Gdx.files.internal("level_lock.png"));
+
+        texture_t35_s = new Texture(Gdx.files.internal("t35_s.png"));
+        texture_t35_m = new Texture(Gdx.files.internal("t35_m.png"));
+        texture_t35_h = new Texture(Gdx.files.internal("t35_h.png"));
+        texture_t19_time = new Texture(Gdx.files.internal("t19_time.png"));
+        texture_t19_moves = new Texture(Gdx.files.internal("t19_moves.png"));
+        texture_t52_cleared = new Texture(Gdx.files.internal("t52_cleared.png"));
+        texture_t52_locked = new Texture(Gdx.files.internal("t52_locked.png"));
+        texture_t52_new = new Texture(Gdx.files.internal("t52_new.png"));
+
+        texture_dialog_847x406 = new Texture(Gdx.files.internal("dialog_847x406.png"));
+        texture_button_302x105 = new Texture(Gdx.files.internal("button_302x105.png"));
+        texture_text_ask_exit = new Texture(Gdx.files.internal("text_ask_exit.png"));
+        texture_btn_text_exit = new Texture(Gdx.files.internal("btn_text_exit.png"));
+        texture_btn_text_stay = new Texture(Gdx.files.internal("btn_text_stay.png"));
+        texture_btn_text_home = new Texture(Gdx.files.internal("btn_text_home.png"));
+
+
+        texture_t35_Loading = new Texture(Gdx.files.internal("t35_Loading.png"));
+        texture_circle_100x100 = new Texture(Gdx.files.internal("circle_100x100.png"));
+        texture_circle_661x661 = new Texture(Gdx.files.internal("circle_661x661.png"));
+
+        texture_t152NumArray = new Array<Texture>() {
+            {
+                add(new Texture(Gdx.files.internal("t152_0.png")));
+                add(new Texture(Gdx.files.internal("t152_1.png")));
+                add(new Texture(Gdx.files.internal("t152_2.png")));
+                add(new Texture(Gdx.files.internal("t152_3.png")));
+                add(new Texture(Gdx.files.internal("t152_4.png")));
+                add(new Texture(Gdx.files.internal("t152_5.png")));
+                add(new Texture(Gdx.files.internal("t152_6.png")));
+                add(new Texture(Gdx.files.internal("t152_7.png")));
+                add(new Texture(Gdx.files.internal("t152_8.png")));
+            }
+        };
+
+        texture_circle_200x200 = new Texture(Gdx.files.internal("circle_200x200.png"));
+        texture_game_home_btn = new Texture(Gdx.files.internal("game_home_btn.png"));
+        texture_t19_level = new Texture(Gdx.files.internal("t19_level.png"));
+        texture_rec_10x10 = new Texture(Gdx.files.internal("rec_10x10.png"));
+        texture_game_bottom = new Texture(Gdx.files.internal("game_bottom.png"));
+
+        texture_game_mission_info_bg = new Texture(Gdx.files.internal("game_mission_info_bg.png"));
+        texture_rect_90x90 = new Texture(Gdx.files.internal("rect_90x90.png"));
+
+
+
 
     }
 
@@ -186,6 +271,102 @@ public class ResourcesManager {
         return texture_level_lock;
     }
 
+    public Texture getTexture_t35_s() {
+        return texture_t35_s;
+    }
+
+    public Texture getTexture_t35_m() {
+        return texture_t35_m;
+    }
+
+    public Texture getTexture_t35_h() {
+        return texture_t35_h;
+    }
+
+    public Texture getTexture_t19_time() {
+        return texture_t19_time;
+    }
+
+    public Texture getTexture_t19_moves() {
+        return texture_t19_moves;
+    }
+
+    public Texture getTexture_t52_cleared() {
+        return texture_t52_cleared;
+    }
+
+    public Texture getTexture_t52_locked() {
+        return texture_t52_locked;
+    }
+
+    public Texture getTexture_t52_new() {
+        return texture_t52_new;
+    }
+
+    public Texture getTexture_dialog_847x406() {
+        return texture_dialog_847x406;
+    }
+
+    public Texture getTexture_button_302x105() {
+        return texture_button_302x105;
+    }
+
+    public Texture getTexture_text_ask_exit() {
+        return texture_text_ask_exit;
+    }
+
+    public Texture getTexture_btn_text_exit() {
+        return texture_btn_text_exit;
+    }
+
+    public Texture getTexture_btn_text_stay() {
+        return texture_btn_text_stay;
+    }
+
+    public Texture getTexture_btn_text_home() {
+        return texture_btn_text_home;
+    }
+
+    public Texture getTexture_t35_Loading() {
+        return texture_t35_Loading;
+    }
+
+    public Texture getTexture_circle_100x100() {
+        return texture_circle_100x100;
+    }
+
+    public Texture getTexture_circle_661x661() {
+        return texture_circle_661x661;
+    }
+
+    public Texture getTexture_circle_200x200() {
+        return texture_circle_200x200;
+    }
+
+    public Texture getTexture_game_home_btn() {
+        return texture_game_home_btn;
+    }
+
+    public Array<Texture> getTexture_t152NumArray() {
+        return texture_t152NumArray;
+    }
+
+    public Texture getTexture_t19_level() {
+        return texture_t19_level;
+    }
+
+    public Texture getTexture_rec_10x10() {
+        return texture_rec_10x10;
+    }
+
+    public Texture getTexture_game_mission_info_bg() {
+        return texture_game_mission_info_bg;
+    }
+
+    public Texture getTexture_rect_90x90() {
+        return texture_rect_90x90;
+    }
+
     public void disposeSplashScreenResources() {
         texture_title_splash.dispose();
         text_dalcoms.dispose();
@@ -196,6 +377,14 @@ public class ResourcesManager {
         texture_roundRect_468x148.dispose();
         texture_menu_background_circles.dispose();
         texture_text_start.dispose();
+    }
+
+    public Texture getTexture_game_bottom() {
+        return texture_game_bottom;
+    }
+
+    public Texture getTexture_level_board_rect_disabled() {
+        return texture_level_board_rect_disabled;
     }
 
     public void disposeGameScreenResources() {

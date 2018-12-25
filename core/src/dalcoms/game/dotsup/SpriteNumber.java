@@ -5,17 +5,17 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.utils.Array;
 
-public class SpriteNumber extends Renderable {
+public class SpriteNumber implements Renderable {
     private SpriteBatch batch;
     Array<Texture> textureArrayOfNumbers;
     Array<Sprite> spriteNumber;
 
-    private int number = 0;
+    private int number = -1;
     private float gap = 7.7f;
     private Position2D origin = new Position2D(0, 0);
+    private boolean show = false;
 
 
     public SpriteNumber(Array<Texture> textureArrayOfNumbers, int number, SpriteBatch batch) {
@@ -23,6 +23,15 @@ public class SpriteNumber extends Renderable {
         this.textureArrayOfNumbers = textureArrayOfNumbers;
         this.setSpriteBatch(batch);
         this.setNumber(number);
+        this.show = true;
+    }
+
+    public SpriteNumber(Array<Texture> textureArrayOfNumbers, int number, SpriteBatch batch, boolean show) {
+        spriteNumber = new Array<Sprite>();
+        this.textureArrayOfNumbers = textureArrayOfNumbers;
+        this.setSpriteBatch(batch);
+        this.setNumber(number);
+        this.show = show;
     }
 
     public SpriteNumber setSpriteBatch(SpriteBatch batch) {
@@ -74,9 +83,11 @@ public class SpriteNumber extends Renderable {
         }
     }
 
-
+    @Override
     public void render(float delta) {
-        draw(delta);
+        if (isShow()) {
+            draw(delta);
+        }
     }
 
     private void draw(float delta) {
@@ -95,6 +106,12 @@ public class SpriteNumber extends Renderable {
                 + getSpriteNumber().get(getSpriteNumber().size - 1).getWidth();
 
         return endX - startX;
+    }
+
+    public float getRightEdgeX() {
+        final float endX = getSpriteNumber().get(getSpriteNumber().size - 1).getX()
+                + getSpriteNumber().get(getSpriteNumber().size - 1).getWidth();
+        return endX;
     }
 
     public float getGap() {
@@ -124,5 +141,13 @@ public class SpriteNumber extends Renderable {
 
     public SpriteBatch getSpriteBatch() {
         return batch;
+    }
+
+    public boolean isShow() {
+        return show;
+    }
+
+    public void setShow(boolean show) {
+        this.show = show;
     }
 }

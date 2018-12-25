@@ -32,12 +32,12 @@ public class MenuLevelSelectButtonGroup
     private final int TOUCH_5 = 5;
     private final int TOUCH_RIGHT = 6;
     private int screenHeight = 1920;
-
+    private boolean show = false;
 
     public MenuLevelSelectButtonGroup(float locationX, float locationY, float width, float height,
                                       SpriteBatch batch, final Dotsup game, Array<Texture> textureArrayOfNumbers,
                                       Texture textureArrowLeft, Texture textureArrowRight, Texture textureSelBgCircle,
-                                      int focusingButton) {
+                                      int focusingButton, boolean show) {
         this.locationX = locationX;
         this.locationY = locationY;
         this.width = width;
@@ -48,9 +48,10 @@ public class MenuLevelSelectButtonGroup
         this.textureSelectedBgCircle = new TexturePositon2D(textureSelBgCircle, 0f, 0f);
         this.batch = batch;
         this.game = game;
+        this.show = show;
 
         initThis();
-        this.setFocusingButton(focusingButton);
+        this.setFocusingButton(focusingButton, false);
     }
 
     private void initThis() {
@@ -89,7 +90,10 @@ public class MenuLevelSelectButtonGroup
 
     @Override
     public void render(float delta) {
-        draw(delta);
+        if (isShow()) {
+            draw(delta);
+        }
+
     }
 
     @Override
@@ -134,7 +138,7 @@ public class MenuLevelSelectButtonGroup
         return focusingButton;
     }
 
-    public void setFocusingButton(int focusingButton) {
+    public void setFocusingButton(int focusingButton, boolean checkFocusingChanged) {
         boolean focusingChanged = false;
         if ((focusingButton > 0) & (focusingButton < GameLevel.getMaxLevel() + 1)) {
 
@@ -157,7 +161,10 @@ public class MenuLevelSelectButtonGroup
 
         if (focusingChanged) {
             setLevelButtonColor();
-            isFocusingChanged();
+            if (checkFocusingChanged) {
+                isFocusingChanged();
+            }
+
         }
     }
 
@@ -166,6 +173,24 @@ public class MenuLevelSelectButtonGroup
      */
     public boolean isLockedLevel() {
         return getFocusingButton() > game.getGameConfiguration().getLastClearedLevel() + 1;
+    }
+
+    public boolean isClearedLevel() {
+        return getFocusingButton() < game.getGameConfiguration().getLastClearedLevel() + 1;
+    }
+
+    public boolean isNewLevel() {
+        return getFocusingButton() == game.getGameConfiguration().getLastClearedLevel() + 1;
+    }
+
+    public int getLevelStatus() {
+        if (isNewLevel()) {
+            return MenuLevelInfo.LEVEL_NEW;
+        } else if (isClearedLevel()) {
+            return MenuLevelInfo.LEVEL_CLEARED;
+        } else {//locked
+            return MenuLevelInfo.LEVEL_LOCKED;
+        }
     }
 
     /**
@@ -341,7 +366,7 @@ public class MenuLevelSelectButtonGroup
                 rightButtonClick();
                 break;
             default:
-                setFocusingButton(touchFlag + getLevelMin() - 1);
+                setFocusingButton(touchFlag + getLevelMin() - 1, true);
 
                 break;
         }
@@ -361,25 +386,25 @@ public class MenuLevelSelectButtonGroup
 
     private void rightButtonClick() {
         if (isDisplayArrowRight()) {
-            setFocusingButton(getLevelMax() + 1);
+            setFocusingButton(getLevelMax() + 1, true);
         }
     }
 
     private void leftButtonClick() {
         if (isDisplayArrowLeft()) {
-            setFocusingButton(getLevelMin() - 1);
+            setFocusingButton(getLevelMin() - 1, true);
         }
     }
 
     private void rightButtonLongKey() {
         if (isDisplayArrowRight()) {
-            setFocusingButton(GameLevel.getMaxLevel());
+            setFocusingButton(GameLevel.getMaxLevel(), true);
         }
     }
 
     private void leftButtonLongKey() {
         if (isDisplayArrowLeft()) {
-            setFocusingButton(1);
+            setFocusingButton(1, true);
         }
     }
 
@@ -395,5 +420,13 @@ public class MenuLevelSelectButtonGroup
 
     public float getLevelButtonWidth() {
         return levelButtonWidth;
+    }
+
+    public boolean isShow() {
+        return show;
+    }
+
+    public void setShow(boolean show) {
+        this.show = show;
     }
 }

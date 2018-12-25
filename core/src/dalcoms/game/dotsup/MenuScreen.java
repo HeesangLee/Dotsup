@@ -1,13 +1,19 @@
 package dalcoms.game.dotsup;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+
+import java.util.HashMap;
 
 public class MenuScreen implements Screen {
     final Dotsup game;
@@ -20,6 +26,9 @@ public class MenuScreen implements Screen {
     private MenuLevelSelectButtonGroup levelSelectButtonGroup;
     private SimpleBoard levelBoardPreview;
     private MenuMissionView menuMissionView;
+    private MenuLevelInfo menuLevelInfo;
+    private boolean dialogShow = false;
+    private ReallySimpleDialog dialog;
 
 
     public MenuScreen(final Dotsup game) {
@@ -48,11 +57,10 @@ public class MenuScreen implements Screen {
         levelBg = new GameObject(game.getResourcesManager().getTexture_menu_level_bg(), 57.138f, -823f)
                 .setSpriteBatch(batch)
                 .enableDrawTexture(true);
-        levelBg.moveY(levelBg.getLocationY(), 0f, 0.5f);
+        levelBg.moveY(levelBg.getLocationY(), 0f, 0.3f);
         levelBg.addActionListener(new ObjectActionListener() {
             @Override
             public boolean onMoveCompleted(boolean direction) {
-                renderableObjectArray.add(levelSelectButtonGroup);
                 renderableObjectArray.add(levelBoardPreview);
                 renderableObjectArray.add(levelLocked);
 
@@ -62,6 +70,13 @@ public class MenuScreen implements Screen {
                 menuMissionView
                         .setMission(GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getMission())
                         .setShow(true);
+
+                levelSelectButtonGroup.setShow(true);
+
+                menuLevelInfo.setShow(true);
+                menuLevelInfo.setInfo(levelSelectButtonGroup.getLevelStatus()
+                        , game.getGameConfiguration().getLevelMoves(levelSelectButtonGroup.getFocusingButton())
+                        , game.getGameConfiguration().getLevelTimes(levelSelectButtonGroup.getFocusingButton()));
 
 
                 return false;
@@ -77,11 +92,33 @@ public class MenuScreen implements Screen {
                 .setSpriteBatch(batch);
 
         startButton = new SpriteButton(game.getResourcesManager().getTexture_roundRect_468x148(),
-                306, 1015, game.getSpriteBatch());
+                306, 1015, game.getSpriteBatch()) {
+
+            @Override
+            public void actionTap() {
+                if ((levelSelectButtonGroup != null) & (startButton.getButtonState() == SpriteButton.STATE_EN)) {
+
+                    startGame();
+                }
+            }
+
+            @Override
+            public void render(float delta) {
+                super.render(delta);
+            }
+
+            @Override
+            public void actionLongPress() {
+                if ((levelSelectButtonGroup != null) & (startButton.getButtonState() == SpriteButton.STATE_EN)) {
+                    startGame();
+                }
+            }
+        };
         startButton.setTopTexture(game.getResourcesManager().getTexture_text_start());
         startButton.setColorEffect(true,
                 GameColor.MEMU_START_BUTTON_EN_NORMAL, GameColor.MEMU_START_BUTTON_EN_TOUCHDOWN,
                 GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+
 
         levelSelectButtonGroup = new MenuLevelSelectButtonGroup(levelBg.getLocationX(), 548f,
                 (float) levelBg.getWidth(), (float) 220, this.batch, this.game,
@@ -89,7 +126,8 @@ public class MenuScreen implements Screen {
                 game.getResourcesManager().getTexture_level_sel_arrow_left(),
                 game.getResourcesManager().getTexture_level_sel_arrow_right(),
                 game.getResourcesManager().getTexture_level_selected_circle(),
-                game.getGameConfiguration().getLastClearedLevel() + 1) {
+                game.getGameConfiguration().getLastClearedLevel() + 1,
+                false) {
             @Override
             public void isFocusingChanged() {
                 super.isFocusingChanged();
@@ -100,7 +138,6 @@ public class MenuScreen implements Screen {
                             GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getBoard());
                 }
                 if (levelLocked != null) {
-//                    levelLocked.setShow(getFocusingButton() > game.getGameConfiguration().getLastClearedLevel() + 1);
                     levelLocked.setShow(isLockedLevel());
                 }
                 if (menuMissionView != null) {
@@ -108,11 +145,14 @@ public class MenuScreen implements Screen {
                             .setMission(GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getMission());
                 }
 
-                if (isLockedLevel()) {
-
-                }
                 if (startButton != null) {
                     startButton.setButtonState(isLockedLevel());
+                }
+
+                if (menuLevelInfo != null) {
+                    menuLevelInfo.setInfo(levelSelectButtonGroup.getLevelStatus()
+                            , game.getGameConfiguration().getLevelMoves(levelSelectButtonGroup.getFocusingButton())
+                            , game.getGameConfiguration().getLevelTimes(levelSelectButtonGroup.getFocusingButton()));
                 }
 
             }
@@ -123,7 +163,7 @@ public class MenuScreen implements Screen {
                 GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getBoard(),
                 batch,
                 true
-        );
+        );//.setDisabledCellTexture(game.getResourcesManager().getTexture_level_board_rect_disabled(), true);
 
         levelLocked.setCenterLocation(levelBoardPreview.getCenterPosition().getX(),
                 levelBoardPreview.getCenterPosition().getY());
@@ -134,15 +174,32 @@ public class MenuScreen implements Screen {
                 , 444f, 324f
                 , false, batch);
 
+        menuLevelInfo = new MenuLevelInfo(game.getResourcesManager().getTexture_t35NumArray()
+                , new HashMap<String, Texture>() {
+            {
+                put(MenuLevelInfo.KEY_S, game.getResourcesManager().getTexture_t35_s());
+                put(MenuLevelInfo.KEY_M, game.getResourcesManager().getTexture_t35_m());
+                put(MenuLevelInfo.KEY_TIME, game.getResourcesManager().getTexture_t19_time());
+                put(MenuLevelInfo.KEY_MOVES, game.getResourcesManager().getTexture_t19_moves());
+                put(MenuLevelInfo.KEY_CLEARED, game.getResourcesManager().getTexture_t52_cleared());
+                put(MenuLevelInfo.KEY_LOCKED, game.getResourcesManager().getTexture_t52_locked());
+                put(MenuLevelInfo.KEY_NEW, game.getResourcesManager().getTexture_t52_new());
+
+            }
+        }
+                , false, batch);
+
         renderableObjectArray.add(levelBg);
         renderableObjectArray.add(startButton);
+        renderableObjectArray.add(levelSelectButtonGroup);
         renderableObjectArray.add(menuMissionView);
-
+        renderableObjectArray.add(menuLevelInfo);
     }
 
-    private void updateMissonOfLevel() {
-
+    private void startGame() {
+        game.setScreen(new LoadingScreen(game, levelSelectButtonGroup.getFocusingButton()));
     }
+
 
     @Override
     public void render(float delta) {
@@ -162,6 +219,9 @@ public class MenuScreen implements Screen {
 
         for (Renderable renderableObj : renderableObjectArray) {
             renderableObj.render(delta);
+        }
+        if (isDialogShow() & getDialog() != null) {
+            getDialog().render(delta);
         }
 
         game.getSpriteBatch().end();
@@ -193,27 +253,44 @@ public class MenuScreen implements Screen {
     }
 
     private void setInputProcessor() {
-        Gdx.input.setInputProcessor(new GestureDetector(new GameGestureListener() {
+
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+
+        inputMultiplexer.addProcessor(new GestureDetector(new GameGestureListener() {
             @Override
             public boolean touchDown(float x, float y, int pointer, int button) {
-                for (GestureDetectableButton btn : gestureDetectableButtonArray) {
-                    btn.touchDown(x, y, pointer, button);
+                if (isDialogShow() & (getDialog() != null)) {
+                    getDialog().touchDown(x, y, pointer, button);
+                } else {
+                    for (GestureDetectableButton btn : gestureDetectableButtonArray) {
+                        btn.touchDown(x, y, pointer, button);
+                    }
                 }
+
                 return super.touchDown(x, y, pointer, button);
             }
 
             @Override
             public boolean tap(float x, float y, int count, int button) {
-                for (GestureDetectableButton btn : gestureDetectableButtonArray) {
-                    btn.tap(x, y, count, button);
+                if (isDialogShow() & (getDialog() != null)) {
+                    getDialog().tap(x, y, count, button);
+                } else {
+                    for (GestureDetectableButton btn : gestureDetectableButtonArray) {
+                        btn.tap(x, y, count, button);
+                    }
                 }
                 return super.tap(x, y, count, button);
             }
 
             @Override
             public boolean longPress(float x, float y) {
-                for (GestureDetectableButton btn : gestureDetectableButtonArray) {
-                    btn.longPress(x, y);
+
+                if (isDialogShow() & (getDialog() != null)) {
+                    getDialog().longPress(x, y);
+                } else {
+                    for (GestureDetectableButton btn : gestureDetectableButtonArray) {
+                        btn.longPress(x, y);
+                    }
                 }
                 return super.longPress(x, y);
             }
@@ -251,7 +328,145 @@ public class MenuScreen implements Screen {
                 super.pinchStop();
             }
         }));
+
+        inputMultiplexer.addProcessor(new InputProcessor() {
+            @Override
+            public boolean keyDown(int keycode) {
+                if (keycode == Input.Keys.BACK) {
+                    popUpBackKeyDialog();
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean keyUp(int keycode) {
+                return false;
+            }
+
+            @Override
+            public boolean keyTyped(char character) {
+                return false;
+            }
+
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                return false;
+            }
+
+            @Override
+            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+                return false;
+            }
+
+            @Override
+            public boolean touchDragged(int screenX, int screenY, int pointer) {
+                return false;
+            }
+
+            @Override
+            public boolean mouseMoved(int screenX, int screenY) {
+                return false;
+            }
+
+            @Override
+            public boolean scrolled(int amount) {
+                return false;
+            }
+        });
+
+        Gdx.input.setInputProcessor(inputMultiplexer);
+
     }
 
+    public boolean isDialogShow() {
+        return dialogShow;
+    }
 
+    public void setDialogShow(boolean dialogShow) {
+        this.dialogShow = dialogShow;
+    }
+
+    public ReallySimpleDialog getDialog() {
+        return dialog;
+    }
+
+    public void setDialog(ReallySimpleDialog dialog) {
+        this.dialog = dialog;
+    }
+
+    private void killDialog() {
+        setDialogShow(false);
+        this.dialog = null;
+    }
+
+    private void popUpBackKeyDialog() {
+
+        if (isDialogShow() & (getDialog() != null)) {
+            killDialog();
+        } else {
+            setDialogShow(true);
+            ReallySimpleDialog dialog = new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_847x406()
+                    , 0, 0, true, batch);
+            dialog.setCenterLocation(game.getGameConfiguration().getViewportWidth() / 2f
+                    , game.getGameConfiguration().getViewportHeight() / 2f);
+            dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_text_ask_exit()
+                    , 94f, 271f, true)
+                    .setSpriteBatch(batch));
+
+            final SpriteButton exitButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
+                    , 94f, 105f, batch) {
+                @Override
+                public void actionTap() {
+                    super.actionTap();
+                    Gdx.app.exit();
+                }
+            };
+            exitButton.setTopTexture(game.getResourcesManager().getTexture_btn_text_exit());
+            exitButton.enableDrawSprite(true);
+            exitButton.setColorEffect(true,
+                    GameColor.BUTTON_BLUE_NORMAL, GameColor.BUTTON_BLUE_TOUCHDOWN,
+                    GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+
+            final SpriteButton stayButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
+                    , 452f, 105f, batch) {
+                @Override
+                public void actionTap() {
+                    super.actionTap();
+                    killDialog();
+                }
+            };
+            stayButton.setTopTexture(game.getResourcesManager().getTexture_btn_text_stay());
+            stayButton.enableDrawSprite(true);
+            stayButton.setColorEffect(true,
+                    GameColor.BUTTON_PINK_NORMAL, GameColor.BUTTON_PINK_TOUCHDOWN,
+                    GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+
+
+            dialog.addSpriteButton(exitButton);
+            dialog.addSpriteButton(stayButton);
+
+
+            dialog.moveY(game.getGameConfiguration().getViewportHeight(),
+                    dialog.getLocationY(), 0.2f);
+
+            dialog.addActionListener(new ObjectActionListener() {
+                @Override
+                public boolean onMoveCompleted(boolean direction) {
+                    exitButton.updateTouchArea();
+                    stayButton.updateTouchArea();
+                    return false;
+                }
+
+                @Override
+                public boolean onMoveStarted(boolean direction) {
+                    return false;
+                }
+            });
+
+            setDialog(dialog);
+
+        }
+
+    }
 }

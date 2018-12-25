@@ -124,7 +124,8 @@ public class SpriteButton extends SpriteGameObject
 //        Gdx.input.isTouched() & isTouchInButtonArea(Gdx.input.getX()
     }
 
-    public boolean isButtonState() {
+
+    public boolean getButtonState() {
         return buttonState;
     }
 
@@ -182,7 +183,9 @@ public class SpriteButton extends SpriteGameObject
     }
 
     private void drawTopTexture(float delta) {
-        batch.draw(textureTop, getLocationX() + getTextureTopLocationX(), getLocationY() + getTextureTopLocationY());
+        batch.draw(textureTop,
+                getLocationFollowingLeaderX() + getTextureTopLocationX(),
+                getLocationFollowingLeaderY() + getTextureTopLocationY());
     }
 
 
@@ -194,6 +197,10 @@ public class SpriteButton extends SpriteGameObject
                         "pointer = " + String.valueOf(pointer) +
                         "button = " + String.valueOf(button));
         setTouched(isTouchInButtonArea((int) screenX, screenHeight - (int) screenY));
+
+        if (isTouchInButtonArea((int) screenX, screenHeight - (int) screenY)) {
+            actionTouchDown();
+        }
     }
 
     @Override
@@ -204,6 +211,10 @@ public class SpriteButton extends SpriteGameObject
                         "count = " + String.valueOf(count) +
                         "button = " + String.valueOf(button));
         setTouched(false);
+
+        if (isTouchInButtonArea((int) screenX, screenHeight - (int) screenY)) {
+            actionTap();
+        }
     }
 
     @Override
@@ -211,6 +222,9 @@ public class SpriteButton extends SpriteGameObject
         Gdx.app.log(this.getClass().getSimpleName() + " LongPress",
                 "x = " + String.valueOf(x) +
                         "y = " + String.valueOf(y));
+        if (isTouchInButtonArea((int) x, screenHeight - (int) y)) {
+            actionLongPress();
+        }
     }
 
     @Override
@@ -227,6 +241,18 @@ public class SpriteButton extends SpriteGameObject
         return ret;
     }
 
+    public void actionTouchDown() {
+
+    }
+
+    public void actionTap() {
+
+    }
+
+    public void actionLongPress() {
+
+    }
+
 
     private void checkTouchEffect(boolean isTouched) {
 
@@ -240,25 +266,29 @@ public class SpriteButton extends SpriteGameObject
 
     private void checkColorEffect(boolean isTouched) {
         if (isTouched) {
-            this.getSprite().setColor(getColorTouchDown(isButtonState()));
+            this.getSprite().setColor(getColorTouchDown(getButtonState()));
         } else {
-            this.getSprite().setColor(getColorNormal(isButtonState()));
+            this.getSprite().setColor(getColorNormal(getButtonState()));
         }
     }
 
     private void checkScaleEffect(boolean isTouched) {
         if (isTouched) {
-            this.getSprite().setScale(getScaleTouchDown(isButtonState()));
+            this.getSprite().setScale(getScaleTouchDown(getButtonState()));
         } else {
             this.getSprite().setScale(1f);
         }
     }
 
     private void setButtonVertices() {
-        this.buttonX1 = (int) getLocationX();
+        this.buttonX1 = (int) getLocationFollowingLeaderX();
         this.buttonX2 = buttonX1 + getWidth();
-        this.buttonY1 = (int) getLocationY();
+        this.buttonY1 = (int) getLocationFollowingLeaderY();
         this.buttonY2 = buttonY1 + getHeight();
+    }
+
+    public void updateTouchArea() {
+        setButtonVertices();
     }
 
     public boolean isTouched() {

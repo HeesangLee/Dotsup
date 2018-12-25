@@ -51,7 +51,8 @@ public class SpriteGameObject extends GameObject {
     }
 
     private void draw(float delta) {
-        sprite.setPosition(getLocationX(), getLocationY());
+        sprite.setPosition(getLocationFollowingLeaderX(), getLocationFollowingLeaderY());
+
         sprite.draw(batch);
     }
 

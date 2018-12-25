@@ -7,7 +7,6 @@ public class GameObject implements Renderable {
     private int width, height;
     private float locationX, locationY;
     private Texture texture;
-    //    private boolean flag_show = false;
     public SpriteBatch batch;
 
     private boolean flag_moveX, flag_moveY = false;
@@ -16,6 +15,8 @@ public class GameObject implements Renderable {
     private float toX, toY = 0f;
 
     private ObjectActionListener actionListener;
+    private GameObject positionLeadingObject;
+    private boolean followPositionLeadingObject;
 
 
     public GameObject(Texture texture, float locationX, float locationY) {
@@ -71,8 +72,16 @@ public class GameObject implements Renderable {
     }
 
     private void drawTexture() {
-        this.batch.draw(getTexture(), getLocationX(), getLocationY());
+        if (isFollowPositionLeadingObject() && getPositionLeadingObject() != null) {
+            this.batch.draw(getTexture(),
+                    getLocationX() + getPositionLeadingObject().getLocationX(),
+                    getLocationY() + getPositionLeadingObject().getLocationY());
+        } else {
+            this.batch.draw(getTexture(), getLocationX(), getLocationY());
+        }
+
     }
+
 
     public boolean isDrawTexture() {
         return flag_drawTexture;
@@ -144,6 +153,24 @@ public class GameObject implements Renderable {
         return new Position2D(getCenterX(), getCenterY());
     }
 
+    public float getLocationFollowingLeaderX() {
+
+        if (isFollowPositionLeadingObject() && getPositionLeadingObject() != null) {
+            return getLocationX() + getPositionLeadingObject().getLocationX();
+        } else {
+            return getLocationX();
+        }
+    }
+
+    public float getLocationFollowingLeaderY() {
+
+        if (isFollowPositionLeadingObject() && getPositionLeadingObject() != null) {
+            return getLocationY() + getPositionLeadingObject().getLocationY();
+        } else {
+            return getLocationY();
+        }
+    }
+
     public void setShow(boolean flag_show) {
         enableDrawTexture(flag_show);
     }
@@ -158,20 +185,18 @@ public class GameObject implements Renderable {
             if (toLocation >= getToX()) {
                 toLocation = getToX();
                 ret = false;
-                if (actionListener != null) {
-                    actionListener.onMoveCompleted(ObjectActionListener.DIR_X);
-                }
             }
         } else {
             if (toLocation <= getToX()) {
                 toLocation = getToX();
                 ret = false;
-                if (actionListener != null) {
-                    actionListener.onMoveCompleted(ObjectActionListener.DIR_X);
-                }
             }
         }
         setLocationX(toLocation);
+
+        if (!ret & actionListener != null) {
+            actionListener.onMoveCompleted(ObjectActionListener.DIR_X);
+        }
 
         return ret;
     }
@@ -185,20 +210,18 @@ public class GameObject implements Renderable {
             if (toLocation >= getToY()) {
                 toLocation = getToY();
                 ret = false;
-                if (actionListener != null) {
-                    actionListener.onMoveCompleted(ObjectActionListener.DIR_Y);
-                }
             }
         } else {
             if (toLocation <= getToY()) {
                 toLocation = getToY();
                 ret = false;
-                if (actionListener != null) {
-                    actionListener.onMoveCompleted(ObjectActionListener.DIR_Y);
-                }
             }
         }
         setLocationY(toLocation);
+        
+        if (!ret & actionListener != null) {
+            actionListener.onMoveCompleted(ObjectActionListener.DIR_Y);
+        }
 
         return ret;
     }
@@ -269,4 +292,24 @@ public class GameObject implements Renderable {
         actionListener = listener;
     }
 
+    public GameObject getPositionLeadingObject() {
+        return positionLeadingObject;
+    }
+
+    public void setPositionLeadingObject(GameObject positionLeadingObject) {
+        this.positionLeadingObject = positionLeadingObject;
+    }
+
+    public void setPositionLeadingObject(GameObject positionLeadingObject, boolean enable) {
+        this.positionLeadingObject = positionLeadingObject;
+        setFollowPositionLeadingObject(enable);
+    }
+
+    public boolean isFollowPositionLeadingObject() {
+        return followPositionLeadingObject;
+    }
+
+    public void setFollowPositionLeadingObject(boolean followPositionLeadingObject) {
+        this.followPositionLeadingObject = followPositionLeadingObject;
+    }
 }
