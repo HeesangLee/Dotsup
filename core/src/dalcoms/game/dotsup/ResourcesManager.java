@@ -65,7 +65,7 @@ public class ResourcesManager {
     private Texture texture_game_mission_info_bg;
     private Texture texture_rect_90x90;
 
-
+    private Texture texture_game_cell_134x134;
 
 
     public static ResourcesManager getInstance() {
@@ -186,9 +186,7 @@ public class ResourcesManager {
         texture_game_mission_info_bg = new Texture(Gdx.files.internal("game_mission_info_bg.png"));
         texture_rect_90x90 = new Texture(Gdx.files.internal("rect_90x90.png"));
 
-
-
-
+        texture_game_cell_134x134 = new Texture(Gdx.files.internal("game_cell_134x134.png"));
     }
 
     public Array<Texture> getTexture_dotsArray() {
@@ -365,6 +363,10 @@ public class ResourcesManager {
 
     public Texture getTexture_rect_90x90() {
         return texture_rect_90x90;
+    }
+
+    public Texture getTexture_game_cell_134x134() {
+        return texture_game_cell_134x134;
     }
 
     public void disposeSplashScreenResources() {

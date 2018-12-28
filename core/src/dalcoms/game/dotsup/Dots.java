@@ -13,7 +13,7 @@ public class Dots extends SpriteGameObject {
      *@param defaultDotsNum range 1~9
      */
     public Dots(Array<Texture> dots_texture, float locationX, float locationY, int defaultDotsNum) {
-        super(dots_texture.get(defaultDotsNum-1), locationX, locationY);
+        super(dots_texture.get(defaultDotsNum - 1), locationX, locationY);
 
         this.texture_dotsArray = dots_texture;
         this.enableDrawSprite(true); //enable to draw sprite as default.
@@ -42,6 +42,11 @@ public class Dots extends SpriteGameObject {
 
     public int getDotsNum() {
         return this.dotsNum;
+    }
+
+    public void applyEffectNew() {
+        actionScale(0.5f, 1.0f, 0.3f);
+        actionRotate(0, 360, 0.2f);
     }
 
 

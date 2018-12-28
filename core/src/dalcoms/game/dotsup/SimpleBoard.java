@@ -87,7 +87,7 @@ public class SimpleBoard implements Renderable {
     }
 
 
-    private void initCells(boolean[][] board, SpriteBatch batch) {
+    protected void initCells(boolean[][] board, SpriteBatch batch) {
         for (int x = 0; x < CELL_X; x++) {
             for (int y = 0; y < CELL_Y; y++) {
                 cells[x][y] = new BoardCell(textureCell
@@ -95,6 +95,7 @@ public class SimpleBoard implements Renderable {
                         , positionCellsRef[x][y].getY() + centerPosition.getY() - centerPositonRef.getY()
                         , board[x][y])
                         .setSpriteBatch(batch);
+                cells[x][y].setId(String.valueOf(x) + "," + String.valueOf(y));
             }
         }
     }
@@ -105,6 +106,7 @@ public class SimpleBoard implements Renderable {
                 cells[x][y].enableDrawTexture(board[x][y]);
                 cells[x][y].setLocationX(positionCellsRef[x][y].getX() + centerPosition.getX() - centerPositonRef.getX());
                 cells[x][y].setLocationY(positionCellsRef[x][y].getY() + centerPosition.getY() - centerPositonRef.getY());
+
             }
         }
     }
@@ -157,5 +159,13 @@ public class SimpleBoard implements Renderable {
 
     public Position2D getCenterPosition() {
         return centerPosition;
+    }
+
+    public BoardCell[][] getCells() {
+        return cells;
+    }
+
+    public BoardCell getCell(int x, int y) {
+        return getCells()[x][y];
     }
 }

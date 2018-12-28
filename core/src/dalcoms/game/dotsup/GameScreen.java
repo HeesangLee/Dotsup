@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 
 public class GameScreen implements Screen {
 
@@ -28,6 +29,7 @@ public class GameScreen implements Screen {
     private TopDisplayPanel topDisplayPanel;
     protected int gameLevel;
     private MissionPanel missionPanel;
+    private GameBoard gameBoard;
 
     public GameScreen(final Dotsup game, int gameLevel) {
         this.game = game;
@@ -46,6 +48,54 @@ public class GameScreen implements Screen {
         createHomeButton(-34f, 1744f);
         createDisplayPanel(183f, 1723f);
         createMissionPanel(1540f);
+        createGameBoard(game.getGameConfiguration().getViewportWidth() / 2f,
+                game.getGameConfiguration().getViewportHeight() / 2f);
+    }
+
+    private void checkMissionClear(int mergedDotsNum) {
+        if(missionPanel.checkMissionClear(mergedDotsNum)){
+            if(missionPanel.isMissionAllCleared()){
+                //Mission clear --> pop up dialog to ask whether go to next or replay
+            }
+        }
+    }
+
+    private void createGameBoard(float centerX, float centerY) {
+        gameBoard = new GameBoard(game.getResourcesManager().getTexture_game_cell_134x134(),
+                game.getResourcesManager().getTexture_dotsArray(),
+                centerX, centerY,
+                GameLevel.getLevel(getGameLevel()).getBoard(),
+                batch, true);
+
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                gameBoard.start();
+                topDisplayPanel.setTimerStart(true);
+            }
+        }, 0.1f);
+
+        gameBoard.addGameBoardListener(new GameBoardListener() {
+            @Override
+            public void dotsMerged(int mergedDotsNum, String id) {
+                super.dotsMerged(mergedDotsNum, id);
+                Gdx.app.log("merged", id + "is merged to" + String.valueOf(mergedDotsNum));
+
+                checkMissionClear(mergedDotsNum);
+            }
+
+            @Override
+            public void dotsMoved(int direction) {
+                super.dotsMoved(direction);
+            }
+
+            @Override
+            public void boardFull() {
+                super.boardFull();
+            }
+        });
+
+        renderableObjectArray.add(gameBoard);
     }
 
     private void createMissionPanel(float locationY) {
@@ -211,6 +261,9 @@ public class GameScreen implements Screen {
                 for (GestureDetectableButton btn : gestureDetectableButtonArray) {
                     btn.fling(velocityX, velocityY, button);
                 }
+                if (gameBoard != null) {
+                    gameBoard.fling(velocityX, velocityY, button);
+                }
                 return super.fling(velocityX, velocityY, button);
             }
 
@@ -371,6 +424,10 @@ public class GameScreen implements Screen {
 
     }
 
+    public int getGameLevel() {
+        return gameLevel;
+    }
+
     public class MissionPanel implements Renderable {
         private float locationY;
         private float locationX = 0f;
@@ -381,6 +438,7 @@ public class GameScreen implements Screen {
         public MissionPanel(float locationY) {
             this.locationY = locationY;
             dotsOfMissions = new Array<DotsOfMission>();
+
             initThis();
         }
 
@@ -444,6 +502,31 @@ public class GameScreen implements Screen {
 
         }
 
+
+        public boolean checkMissionClear(int mergedDotsNum) {
+            for (DotsOfMission mission : dotsOfMissions) {
+                if (!mission.isMissionCleared() & mission.getDotNum() == mergedDotsNum) {
+                    mission.setMissionCleared(true);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public int getNotClearedMissionNum() {
+            int ret = 0;
+            for (DotsOfMission mission : dotsOfMissions) {
+                if (!mission.isMissionCleared()) {
+                    ret++;
+                }
+            }
+            return ret;
+        }
+
+        public boolean isMissionAllCleared() {
+            return getNotClearedMissionNum() == 0;
+        }
+
         public class DotsOfMission extends SpriteGameObject {
             private boolean missionCleared = false;
             private int dotNum;
@@ -459,8 +542,8 @@ public class GameScreen implements Screen {
             }
 
             public void setMissionCleared(boolean missionCleared) {
-                if(this.missionCleared!=missionCleared){
-                    actionRotate(0,360,1f);
+                if (this.missionCleared != missionCleared) {
+                    actionRotate(0, 360, 0.34f);
                 }
                 this.missionCleared = missionCleared;
             }
@@ -496,6 +579,7 @@ public class GameScreen implements Screen {
         private Array<Integer> alarmTimeSecArray;
         private float gameTimer200msec = 0f;
         private float gameTimer1sec = 0f;
+        private boolean timerStart = false;
 
         SpriteNumber gameLevelNumber, movesNumber, timeHourNumber, timeMinNumber, timeSecNumber;
         GameObject levelText, movesText, timeText, timeText_h, timeText_m, timeText_s;
@@ -768,7 +852,9 @@ public class GameScreen implements Screen {
 
         @Override
         public void render(float delta) {
-            checkGameTimer(delta);
+            if (isTimerStart()) {
+                checkGameTimer(delta);
+            }
 
             for (Renderable rend : renderableArray) {
                 rend.render(delta);
@@ -777,6 +863,14 @@ public class GameScreen implements Screen {
             for (Sprite sprite : spritesTimeProgress) {
                 sprite.draw(batch);
             }
+        }
+
+        public boolean isTimerStart() {
+            return timerStart;
+        }
+
+        public void setTimerStart(boolean timerStart) {
+            this.timerStart = timerStart;
         }
     }
 }
