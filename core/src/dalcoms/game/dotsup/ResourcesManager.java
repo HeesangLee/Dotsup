@@ -67,6 +67,22 @@ public class ResourcesManager {
 
     private Texture texture_game_cell_134x134;
 
+    private Texture texture_btn_home_105x105;
+    private Texture texture_btn_replay_105x105;
+    private Texture texture_btn_text_next;
+    private Texture texture_btn_text_replay;
+    private Texture texture_dialog_870x718;
+    private Texture texture_dialog_hat_770x288;
+    private Texture texture_dialog_text_clear_all;
+    private Texture texture_dialog_text_failed;
+    private Texture texture_dialog_text_success;
+
+    private Texture texture_t35_challenage_next_level;
+    private Texture texture_t35_try_again;
+    private Texture texture_t35_you_are_the_best;
+
+
+
 
     public static ResourcesManager getInstance() {
         return instance;
@@ -187,6 +203,22 @@ public class ResourcesManager {
         texture_rect_90x90 = new Texture(Gdx.files.internal("rect_90x90.png"));
 
         texture_game_cell_134x134 = new Texture(Gdx.files.internal("game_cell_134x134.png"));
+
+        texture_btn_home_105x105 = new Texture(Gdx.files.internal("btn_home_105x105.png"));
+        texture_btn_replay_105x105 = new Texture(Gdx.files.internal("btn_replay_105x105.png"));
+        texture_btn_text_next = new Texture(Gdx.files.internal("btn_text_next.png"));
+        texture_btn_text_replay = new Texture(Gdx.files.internal("btn_text_replay.png"));
+        texture_dialog_870x718 = new Texture(Gdx.files.internal("dialog_870x718.png"));
+        texture_dialog_hat_770x288 = new Texture(Gdx.files.internal("dialog_hat_770x288.png"));
+        texture_dialog_text_clear_all = new Texture(Gdx.files.internal("dialog_text_clear_all.png"));
+        texture_dialog_text_failed = new Texture(Gdx.files.internal("dialog_text_failed.png"));
+        texture_dialog_text_success = new Texture(Gdx.files.internal("dialog_text_success.png"));
+
+        texture_t35_challenage_next_level = new Texture(Gdx.files.internal("t35_challenage_next_level.png"));
+        texture_t35_try_again = new Texture(Gdx.files.internal("t35_try_again.png"));
+        texture_t35_you_are_the_best = new Texture(Gdx.files.internal("t35_you_are_the_best.png"));
+
+
     }
 
     public Array<Texture> getTexture_dotsArray() {
@@ -367,6 +399,54 @@ public class ResourcesManager {
 
     public Texture getTexture_game_cell_134x134() {
         return texture_game_cell_134x134;
+    }
+
+    public Texture getTexture_btn_home_105x105() {
+        return texture_btn_home_105x105;
+    }
+
+    public Texture getTexture_btn_replay_105x105() {
+        return texture_btn_replay_105x105;
+    }
+
+    public Texture getTexture_btn_text_next() {
+        return texture_btn_text_next;
+    }
+
+    public Texture getTexture_btn_text_replay() {
+        return texture_btn_text_replay;
+    }
+
+    public Texture getTexture_dialog_870x718() {
+        return texture_dialog_870x718;
+    }
+
+    public Texture getTexture_dialog_hat_770x288() {
+        return texture_dialog_hat_770x288;
+    }
+
+    public Texture getTexture_dialog_text_clear_all() {
+        return texture_dialog_text_clear_all;
+    }
+
+    public Texture getTexture_dialog_text_failed() {
+        return texture_dialog_text_failed;
+    }
+
+    public Texture getTexture_dialog_text_success() {
+        return texture_dialog_text_success;
+    }
+
+    public Texture getTexture_t35_challenage_next_level() {
+        return texture_t35_challenage_next_level;
+    }
+
+    public Texture getTexture_t35_try_again() {
+        return texture_t35_try_again;
+    }
+
+    public Texture getTexture_t35_you_are_the_best() {
+        return texture_t35_you_are_the_best;
     }
 
     public void disposeSplashScreenResources() {

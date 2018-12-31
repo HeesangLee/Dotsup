@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
 
 public class GameScreen implements Screen {
@@ -30,6 +31,10 @@ public class GameScreen implements Screen {
     protected int gameLevel;
     private MissionPanel missionPanel;
     private GameBoard gameBoard;
+
+    private final int DIALOG_TOMEMU = 0;
+    private final int DIALOG_SUCCESS = 1;
+    private final int DIALOG_FAIL = 2;
 
     public GameScreen(final Dotsup game, int gameLevel) {
         this.game = game;
@@ -53,11 +58,31 @@ public class GameScreen implements Screen {
     }
 
     private void checkMissionClear(int mergedDotsNum) {
-        if(missionPanel.checkMissionClear(mergedDotsNum)){
-            if(missionPanel.isMissionAllCleared()){
+        if (missionPanel.checkMissionClear(mergedDotsNum)) {
+            if (missionPanel.isMissionAllCleared()) {
                 //Mission clear --> pop up dialog to ask whether go to next or replay
+                saveGame();
+                if (getGameLevel() < GameLevel.getMaxLevel()) {
+                    popUpSuccessDialog();
+                } else {
+                    popUpAllClearDialog();
+                }
             }
         }
+    }
+
+    private void saveGame() {
+        final int thisLevel = getGameLevel();
+
+        if(thisLevel>game.getGameConfiguration().getLastClearedLevel()){
+            game.getGameConfiguration().putLastClearedLevel(thisLevel);
+        }
+
+        game.getGameConfiguration().putLevelClearedDate(thisLevel, TimeUtils.millis());
+        game.getGameConfiguration().putLevelMoves(thisLevel, topDisplayPanel.getGameMovesNumber());
+        game.getGameConfiguration().putLevelTimes(thisLevel, topDisplayPanel.gameTimeSec);
+
+        game.getGameConfiguration().flushingPreferences();
     }
 
     private void createGameBoard(float centerX, float centerY) {
@@ -79,7 +104,7 @@ public class GameScreen implements Screen {
             @Override
             public void dotsMerged(int mergedDotsNum, String id) {
                 super.dotsMerged(mergedDotsNum, id);
-                Gdx.app.log("merged", id + "is merged to" + String.valueOf(mergedDotsNum));
+                Gdx.app.log("GameScreen", id + "is merged to" + String.valueOf(mergedDotsNum));
 
                 checkMissionClear(mergedDotsNum);
             }
@@ -87,11 +112,18 @@ public class GameScreen implements Screen {
             @Override
             public void dotsMoved(int direction) {
                 super.dotsMoved(direction);
+                topDisplayPanel.increaseGameMovesNumber(1);
             }
 
             @Override
-            public void boardFull() {
-                super.boardFull();
+            public void boardFull(boolean isPossibleToMoveDots) {
+                super.boardFull(isPossibleToMoveDots);
+
+                if (isPossibleToMoveDots) {
+                    Gdx.app.log("GameScreen", "boardFull but you can move more~~~~");
+                } else {
+                    popUpFailedDialog();
+                }
             }
         });
 
@@ -142,10 +174,289 @@ public class GameScreen implements Screen {
 
     }
 
+    private void replayThiLevel() {
+        game.setScreen(new LoadingScreen(game, gameLevel));
+    }
+
+    private void goNextLevel() {
+        game.setScreen(new LoadingScreen(game, gameLevel < GameLevel.getMaxLevel() ? gameLevel + 1 : gameLevel));
+    }
+
+    private void popUpSuccessDialog() {
+        if (isDialogShow() & (getDialog() != null)) {
+            if (getDialog().getId() == DIALOG_TOMEMU) {
+                killDialog();
+                return;
+            }
+        }
+
+        setDialogShow(true);
+        ReallySimpleDialog dialog = new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_870x718()
+                , 0, 0, true, batch);
+        dialog.setCenterLocation(game.getGameConfiguration().getViewportWidth() / 2f
+                , game.getGameConfiguration().getViewportHeight() / 2f);
+        dialog.setId(DIALOG_SUCCESS);
+
+        SpriteGameObject dialogHat = new SpriteGameObject(game.getResourcesManager().getTexture_dialog_hat_770x288(),
+                50f, 380f).setSpriteBatch(batch);
+        dialogHat.getSprite().setColor(GameColor.BUTTON_BLUE_NORMAL);
+        dialogHat.enableDrawSprite(true);
+        dialog.addSpriteGameObject(dialogHat);
+
+        dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_dialog_text_success()
+                , 321f, 455f, true)
+                .setSpriteBatch(batch));
+
+        dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_t35_challenage_next_level()
+                , 183f, 270f, true)
+                .setSpriteBatch(batch));
+
+        final SpriteButton nextButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
+                , 465f, 121f, batch) {
+            @Override
+            public void actionTap() {
+                super.actionTap();
+                goNextLevel();
+
+            }
+        };
+        nextButton.setTopTexture(game.getResourcesManager().getTexture_btn_text_next());
+        nextButton.enableDrawSprite(true);
+        nextButton.setColorEffect(true,
+                GameColor.BUTTON_BLUE_NORMAL, GameColor.BUTTON_BLUE_TOUCHDOWN,
+                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+
+        final SpriteButton replayButton = new SpriteButton(game.getResourcesManager().getTexture_btn_replay_105x105()
+                , 4273f, 121f, batch) {
+            @Override
+            public void actionTap() {
+                super.actionTap();
+                replayThiLevel();
+
+            }
+        };
+        replayButton.enableDrawSprite(true);
+        replayButton.setColorEffect(true,
+                GameColor.BUTTON_BROWN_NORMAL, GameColor.BUTTON_BROWN_TOUCHDOWN,
+                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+
+        final SpriteButton goHomeButton = new SpriteButton(game.getResourcesManager().getTexture_btn_home_105x105()
+                , 103f, 121f, batch) {
+            @Override
+            public void actionTap() {
+                super.actionTap();
+                gotoMenuScreen();
+
+            }
+        };
+        goHomeButton.enableDrawSprite(true);
+        goHomeButton.setColorEffect(true,
+                GameColor.BUTTON_BROWN_NORMAL, GameColor.BUTTON_BROWN_TOUCHDOWN,
+                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+
+        dialog.addSpriteButton(goHomeButton);
+        dialog.addSpriteButton(replayButton);
+        dialog.addSpriteButton(nextButton);
+
+
+        dialog.moveY(game.getGameConfiguration().getViewportHeight(),
+                dialog.getLocationY(), 0.5f);
+
+        dialog.addActionListener(new ObjectActionListener() {
+            @Override
+            public boolean onMoveCompleted(boolean direction) {
+                goHomeButton.updateTouchArea();
+                replayButton.updateTouchArea();
+                nextButton.updateTouchArea();
+                return false;
+            }
+
+            @Override
+            public boolean onMoveStarted(boolean direction) {
+                return false;
+            }
+        });
+
+        setDialog(dialog);
+
+
+    }
+
+    private void popUpAllClearDialog() {
+        if (isDialogShow() & (getDialog() != null)) {
+            if (getDialog().getId() == DIALOG_TOMEMU) {
+                killDialog();
+                return;
+            }
+        }
+
+        setDialogShow(true);
+        ReallySimpleDialog dialog = new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_870x718()
+                , 0, 0, true, batch);
+        dialog.setCenterLocation(game.getGameConfiguration().getViewportWidth() / 2f
+                , game.getGameConfiguration().getViewportHeight() / 2f);
+        dialog.setId(DIALOG_SUCCESS);
+
+        SpriteGameObject dialogHat = new SpriteGameObject(game.getResourcesManager().getTexture_dialog_hat_770x288(),
+                50f, 380f).setSpriteBatch(batch);
+        dialogHat.getSprite().setColor(GameColor.BUTTON_GREEN_NORMAL);
+        dialogHat.enableDrawSprite(true);
+        dialog.addSpriteGameObject(dialogHat);
+
+        dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_dialog_text_clear_all()
+                , 158f, 455f, true)
+                .setSpriteBatch(batch));
+
+        dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_t35_you_are_the_best()
+                , 232f, 270f, true)
+                .setSpriteBatch(batch));
+
+        final SpriteButton replayButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
+                , 465f, 121f, batch) {
+            @Override
+            public void actionTap() {
+                super.actionTap();
+                replayThiLevel();
+
+            }
+        };
+        replayButton.setTopTexture(game.getResourcesManager().getTexture_btn_text_replay());
+        replayButton.enableDrawSprite(true);
+        replayButton.setColorEffect(true,
+                GameColor.BUTTON_GREEN_NORMAL, GameColor.BUTTON_GREEN_TOUCHDOWN,
+                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+
+        final SpriteButton goHomeButton = new SpriteButton(game.getResourcesManager().getTexture_btn_home_105x105()
+                , 103f, 121f, batch) {
+            @Override
+            public void actionTap() {
+                super.actionTap();
+                gotoMenuScreen();
+
+            }
+        };
+        goHomeButton.enableDrawSprite(true);
+        goHomeButton.setColorEffect(true,
+                GameColor.BUTTON_BROWN_NORMAL, GameColor.BUTTON_BROWN_TOUCHDOWN,
+                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+
+        dialog.addSpriteButton(goHomeButton);
+        dialog.addSpriteButton(replayButton);
+
+
+        dialog.moveY(game.getGameConfiguration().getViewportHeight(),
+                dialog.getLocationY(), 0.5f);
+
+        dialog.addActionListener(new ObjectActionListener() {
+            @Override
+            public boolean onMoveCompleted(boolean direction) {
+                goHomeButton.updateTouchArea();
+                replayButton.updateTouchArea();
+                return false;
+            }
+
+            @Override
+            public boolean onMoveStarted(boolean direction) {
+                return false;
+            }
+        });
+
+        setDialog(dialog);
+
+
+    }
+
+    private void popUpFailedDialog() {
+        if (isDialogShow() & (getDialog() != null)) {
+            if (getDialog().getId() == DIALOG_TOMEMU) {
+                killDialog();
+                return;
+            }
+        }
+
+        setDialogShow(true);
+        ReallySimpleDialog dialog = new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_870x718()
+                , 0, 0, true, batch);
+        dialog.setCenterLocation(game.getGameConfiguration().getViewportWidth() / 2f
+                , game.getGameConfiguration().getViewportHeight() / 2f);
+        dialog.setId(DIALOG_FAIL);
+
+        SpriteGameObject dialogHat = new SpriteGameObject(game.getResourcesManager().getTexture_dialog_hat_770x288(),
+                50f, 380f).setSpriteBatch(batch);
+        dialogHat.getSprite().setColor(GameColor.BUTTON_PINK_NORMAL);
+        dialogHat.enableDrawSprite(true);
+        dialog.addSpriteGameObject(dialogHat);
+
+        dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_dialog_text_failed()
+                , 338f, 455f, true)
+                .setSpriteBatch(batch));
+
+        dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_t35_try_again()
+                , 309f, 270f, true)
+                .setSpriteBatch(batch));
+
+        final SpriteButton replayButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
+                , 465f, 121f, batch) {
+            @Override
+            public void actionTap() {
+                super.actionTap();
+                replayThiLevel();
+
+            }
+        };
+        replayButton.setTopTexture(game.getResourcesManager().getTexture_btn_text_replay());
+        replayButton.enableDrawSprite(true);
+        replayButton.setColorEffect(true,
+                GameColor.BUTTON_PINK_NORMAL, GameColor.BUTTON_PINK_TOUCHDOWN,
+                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+
+        final SpriteButton goHomeButton = new SpriteButton(game.getResourcesManager().getTexture_btn_home_105x105()
+                , 103f, 121f, batch) {
+            @Override
+            public void actionTap() {
+                super.actionTap();
+                gotoMenuScreen();
+
+            }
+        };
+        goHomeButton.enableDrawSprite(true);
+        goHomeButton.setColorEffect(true,
+                GameColor.BUTTON_BROWN_NORMAL, GameColor.BUTTON_BROWN_TOUCHDOWN,
+                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+
+        dialog.addSpriteButton(goHomeButton);
+        dialog.addSpriteButton(replayButton);
+
+
+        dialog.moveY(game.getGameConfiguration().getViewportHeight(),
+                dialog.getLocationY(), 0.5f);
+
+        dialog.addActionListener(new ObjectActionListener() {
+            @Override
+            public boolean onMoveCompleted(boolean direction) {
+                goHomeButton.updateTouchArea();
+                replayButton.updateTouchArea();
+                return false;
+            }
+
+            @Override
+            public boolean onMoveStarted(boolean direction) {
+                return false;
+            }
+        });
+
+        setDialog(dialog);
+
+
+    }
+
     private void popUpBackKeyDialog() {
 
         if (isDialogShow() & (getDialog() != null)) {
-            killDialog();
+            if (getDialog().getId() == DIALOG_TOMEMU) {
+                killDialog();
+                return;
+            }
         } else {
             setDialogShow(true);
             ReallySimpleDialog dialog = new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_847x406()
@@ -155,6 +466,7 @@ public class GameScreen implements Screen {
             dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_text_ask_exit()
                     , 94f, 271f, true)
                     .setSpriteBatch(batch));
+            dialog.setId(DIALOG_TOMEMU);
 
             final SpriteButton goHomeButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
                     , 94f, 105f, batch) {
@@ -162,7 +474,6 @@ public class GameScreen implements Screen {
                 public void actionTap() {
                     super.actionTap();
                     gotoMenuScreen();
-
                 }
             };
             goHomeButton.setTopTexture(game.getResourcesManager().getTexture_btn_text_home());
@@ -208,9 +519,7 @@ public class GameScreen implements Screen {
             });
 
             setDialog(dialog);
-
         }
-
     }
 
     private void setInputProcessor() {
@@ -261,7 +570,7 @@ public class GameScreen implements Screen {
                 for (GestureDetectableButton btn : gestureDetectableButtonArray) {
                     btn.fling(velocityX, velocityY, button);
                 }
-                if (gameBoard != null) {
+                if ((gameBoard != null) & !isDialogShow()) {
                     gameBoard.fling(velocityX, velocityY, button);
                 }
                 return super.fling(velocityX, velocityY, button);
@@ -624,8 +933,13 @@ public class GameScreen implements Screen {
 
         }
 
+        public void increaseGameMovesNumber(int incNum) {
+            setGameMovesNumber(getGameMovesNumber() + incNum);
+        }
+
         private void initMovesNumSprite() {
-            movesNumber = new SpriteNumber(game.getResourcesManager().getTexture_t35NumArray(), 0, batch, true);
+            movesNumber = new SpriteNumber(game.getResourcesManager().getTexture_t35NumArray(),
+                    0, batch, true);
             setGameMovesNumber(0);
             renderableArray.add(movesNumber);
         }
@@ -872,5 +1186,6 @@ public class GameScreen implements Screen {
         public void setTimerStart(boolean timerStart) {
             this.timerStart = timerStart;
         }
+
     }
 }

@@ -31,7 +31,7 @@ public class GameConfiguration {
 
 
     public int getLastClearedLevel() {
-        return preferences.getInteger(prefKey_LastClearedLevel, 7);
+        return preferences.getInteger(prefKey_LastClearedLevel, 0);
     }
 
     public void putLastClearedLevel(int level) {
@@ -56,8 +56,16 @@ public class GameConfiguration {
         preferences.putInteger(prefKey_Moves + String.valueOf(level), moves);
     }
 
-    public long getLevelTimes(int level) {
-        return preferences.getLong(prefKey_Times + String.valueOf(level), 0);
+    public int getLevelTimes(int level) {
+        return preferences.getInteger(prefKey_Times + String.valueOf(level), 0);
+    }
+
+    public void putLevelTimes(int level, int time) {
+        preferences.putInteger(prefKey_Times + String.valueOf(level), time);
+    }
+
+    public void flushingPreferences() {
+        preferences.flush();
     }
 
 }

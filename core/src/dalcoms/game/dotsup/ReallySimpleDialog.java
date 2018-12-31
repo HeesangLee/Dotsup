@@ -7,10 +7,10 @@ import com.badlogic.gdx.utils.Array;
 public class ReallySimpleDialog extends GameObject
         implements GestureDetectableButton {
 
-    Array<GameObject> gameObjects;
+    Array<Renderable> renderables;
     Array<SpriteButton> spriteButtons;
-    DialogInfoText dialogInfoText;
-
+    private int id = -1;
+    private String tag = "";
 
     public ReallySimpleDialog(Texture texture, float locationX, float locationY, SpriteBatch batch) {
         super(texture, locationX, locationY);
@@ -25,7 +25,7 @@ public class ReallySimpleDialog extends GameObject
     }
 
     private void initThis() {
-        gameObjects = new Array<GameObject>();
+        renderables = new Array<Renderable>();
         spriteButtons = new Array<SpriteButton>();
 
     }
@@ -34,14 +34,11 @@ public class ReallySimpleDialog extends GameObject
     @Override
     public void render(float delta) {
         super.render(delta);
-        for (GameObject gameObject : gameObjects) {
-            gameObject.render(delta);
+        for (Renderable renderable : renderables) {
+            renderable.render(delta);
         }
         for (SpriteButton spriteButton : spriteButtons) {
             spriteButton.render(delta);
-        }
-        if (dialogInfoText != null) {
-            dialogInfoText.render(delta);
         }
     }
 
@@ -75,13 +72,22 @@ public class ReallySimpleDialog extends GameObject
     }
 
     public void addGameObject(GameObject gameObject) {
-        gameObject.setPositionLeadingObject(this,true);
-        gameObjects.add(gameObject);
+        gameObject.setPositionLeadingObject(this, true);
+        renderables.add(gameObject);
     }
 
+    public void addSpriteGameObject(SpriteGameObject spriteGameObject) {
+        spriteGameObject.setPositionLeadingObject(this, true);
+        renderables.add(spriteGameObject);
+    }
 
-    public Array<GameObject> getGameObjects() {
-        return gameObjects;
+    public void addSpriteNumber(SpriteNumber spriteNumber) {
+        spriteNumber.setPositionLeadingObject(this, true);
+        renderables.add(spriteNumber);
+    }
+
+    public Array<Renderable> getRenderables() {
+        return renderables;
     }
 
     public Array<SpriteButton> getSpriteButtons() {
@@ -90,17 +96,23 @@ public class ReallySimpleDialog extends GameObject
 
 
     public void addSpriteButton(SpriteButton spriteButton) {
-        spriteButton.setPositionLeadingObject(this,true);
-//        spriteButton.updateTouchArea();
+        spriteButton.setPositionLeadingObject(this, true);
         this.spriteButtons.add(spriteButton);
     }
 
-
-    public DialogInfoText getDialogInfoText() {
-        return dialogInfoText;
+    public int getId() {
+        return id;
     }
 
-    public void setDialogInfoText(DialogInfoText dialogInfoText) {
-        this.dialogInfoText = dialogInfoText;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 }

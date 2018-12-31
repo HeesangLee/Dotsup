@@ -13,7 +13,7 @@ public class GameBoardListener
     }
 
     @Override
-    public void boardFull() {
+    public void boardFull(boolean isPossibleToMoveDots) {
 
     }
 }

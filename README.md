@@ -32,6 +32,9 @@ Todo
     * Board 에 빈 셀이 없어야 하고(and)
     * 각 셀의 dots를 scan 하여 4방향 인접 cell 의 dots num이 같지 않아야 함.
         * 살아날 구멍이 있는 경우에 해당 부분을 알려주고 Hint를 줘야 하나?
+
+*Class 간 참조 및 호출을 순환하지 말것       
+BoardFull, Gameover 를 Board 에서 Flag 으로 check flag --> Render 에서 확인하고 Interface method call 할 것. 
         
 
 ### Input processor for each entities

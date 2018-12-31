@@ -14,6 +14,10 @@ public class GameColor {
     public static final Color BUTTON_BLUE_TOUCHDOWN = new Color(0x006179ff);
     public static final Color BUTTON_PINK_NORMAL = new Color(0xff397fff);
     public static final Color BUTTON_PINK_TOUCHDOWN = new Color(0x940034ff);
+    public static final Color BUTTON_BROWN_NORMAL = new Color(0x94846dff);
+    public static final Color BUTTON_BROWN_TOUCHDOWN = new Color(0x3d362dff);
+    public static final Color BUTTON_GREEN_NORMAL = new Color(0x338000ff);
+    public static final Color BUTTON_GREEN_TOUCHDOWN = new Color(0x225500ff);
 
     public static final Color LOADING_CIRCLE_EFFECT = new Color(0xff397f80);
 

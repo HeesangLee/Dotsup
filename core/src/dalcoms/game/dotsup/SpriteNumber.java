@@ -17,6 +17,9 @@ public class SpriteNumber implements Renderable {
     private Position2D origin = new Position2D(0, 0);
     private boolean show = false;
 
+    private GameObject positionLeadingObject;
+    private boolean followPositionLeadingObject;
+
 
     public SpriteNumber(Array<Texture> textureArrayOfNumbers, int number, SpriteBatch batch) {
         spriteNumber = new Array<Sprite>();
@@ -91,12 +94,23 @@ public class SpriteNumber implements Renderable {
     }
 
     private void draw(float delta) {
-        if (getSpriteBatch() != null) {
-            for (Sprite sprite : spriteNumber) {
-                sprite.draw(getSpriteBatch());
+        try {
+            if (isFollowPositionLeadingObject() && getPositionLeadingObject() != null) {
+                float width = 0;
+                for (Sprite sprite : spriteNumber) {
+                    sprite.setPosition(getOrigin().getX() + width
+                                    + getPositionLeadingObject().getLocationX(),
+                            getOrigin().getY() + getPositionLeadingObject().getLocationY());
+                    sprite.draw(getSpriteBatch());
+                    width += sprite.getWidth() + getGap();
+                }
+            } else {
+                for (Sprite sprite : spriteNumber) {
+                    sprite.draw(getSpriteBatch());
+                }
             }
-        } else {
-            Gdx.app.log("SpriteNumber", "SpriteBatch is not initialized");
+        } catch (Exception e) {
+            Gdx.app.log("SpriteNumber.java", e.getMessage());
         }
     }
 
@@ -149,5 +163,26 @@ public class SpriteNumber implements Renderable {
 
     public void setShow(boolean show) {
         this.show = show;
+    }
+
+    public GameObject getPositionLeadingObject() {
+        return positionLeadingObject;
+    }
+
+    public void setPositionLeadingObject(GameObject positionLeadingObject) {
+        this.positionLeadingObject = positionLeadingObject;
+    }
+
+    public void setPositionLeadingObject(GameObject positionLeadingObject, boolean enable) {
+        this.positionLeadingObject = positionLeadingObject;
+        setFollowPositionLeadingObject(enable);
+    }
+
+    public boolean isFollowPositionLeadingObject() {
+        return followPositionLeadingObject;
+    }
+
+    public void setFollowPositionLeadingObject(boolean followPositionLeadingObject) {
+        this.followPositionLeadingObject = followPositionLeadingObject;
     }
 }

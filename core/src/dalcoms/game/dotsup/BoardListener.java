@@ -7,5 +7,5 @@ public interface BoardListener {
     int DOWN = 3;
 
     void dotsMoved(int direction);
-    void boardFull();
+    void boardFull(boolean isPossibleToMoveDots);
 }

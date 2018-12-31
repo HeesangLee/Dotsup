@@ -22,6 +22,7 @@ public class GameBoard extends SimpleBoard {
     private float flingVelocityX, flingVelocityY;
 
     private GameBoardListener gameBoardListener;
+    private boolean onBoardFull;
 
 
     public GameBoard(Texture textureCell, Array<Texture> textureDots,
@@ -93,18 +94,23 @@ public class GameBoard extends SimpleBoard {
     private boolean setNewDotsInCell(Array<BoardPosition2D> blankCells) {//return true if no blank cell
         boolean ret = false;
 
-        if (blankCells.size != 0) {
-            blankCells.shuffle();
-            BoardPosition2D posionCell = blankCells.peek();
-            BoardCell cell = getCell(posionCell.getX(), posionCell.getY());
 
-            Dots dots = popDotsFromBank();
-            dots.setDotsNum(1);
-            dots.setLocation(cell.getLocationX(), cell.getLocationY());
-            dots.applyEffectNew();
+        if (blankCells.size == 0) {
+            return true;
+        }
 
-            cell.setDots(dots);
-        } else {
+        blankCells.shuffle();
+        BoardPosition2D posionCell = blankCells.peek();
+        BoardCell cell = getCell(posionCell.getX(), posionCell.getY());
+
+        Dots dots = popDotsFromBank();
+        dots.setDotsNum(1);
+        dots.setLocation(cell.getLocationX(), cell.getLocationY());
+        dots.applyEffectNew();
+
+        cell.setDots(dots);
+
+        if (blankCells.size <= 1) {
             ret = true;
         }
 
@@ -125,9 +131,62 @@ public class GameBoard extends SimpleBoard {
         return blankCells;
     }
 
+    private boolean sameBothDotsNum(BoardPosition2D posDot1, BoardPosition2D posDot2) {
+        if ((posDot1.getX() > CELL_X - 1) | (posDot1.getX() < 0) | (posDot1.getY() > CELL_Y - 1) | (posDot1.getY() < 0) |
+                (posDot2.getX() > CELL_X - 1) | (posDot2.getX() < 0) | (posDot2.getY() > CELL_Y - 1) | (posDot2.getY() < 0)) {
+            return false;
+        } else if (getCell(posDot1.getX(), posDot1.getY()).isDotsInEnabledCell() &
+                (getCell(posDot2.getX(), posDot2.getY()).isDotsInEnabledCell())) {//both cells are available to compare.
+
+            if (getCell(posDot1.getX(), posDot1.getY()).getDots().getDotsNum() ==
+                    getCell(posDot2.getX(), posDot2.getY()).getDots().getDotsNum()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+    }
+
+    public boolean possibleToMoveDots() {
+        boolean ret = false;
+        for (int x = 0; x < CELL_X; x++) {
+            for (int y = 0; y < CELL_Y; y++) {
+                if (getCell(x, y).isEnabledCell()) {
+                    if (sameBothDotsNum(new BoardPosition2D(x, y), new BoardPosition2D(x - 1, y))) {//Left
+                        return true;
+                    }
+                    if (sameBothDotsNum(new BoardPosition2D(x, y), new BoardPosition2D(x + 1, y))) {//Right
+                        return true;
+                    }
+                    if (sameBothDotsNum(new BoardPosition2D(x, y), new BoardPosition2D(x, y + 1))) {//Up
+                        return true;
+                    }
+                    if (sameBothDotsNum(new BoardPosition2D(x, y), new BoardPosition2D(x, y - 1))) {//Down
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return ret;
+    }
+
     @Override
     public void render(float delta) {
         super.render(delta);
+        if (isOnBoardFull()) {
+            setOnBoardFull(false);
+            boardFull();
+        }
+    }
+
+    private void boardFull() {
+        if (gameBoardListener != null) {
+            gameBoardListener.boardFull(possibleToMoveDots());
+        }
     }
 
     public void addGameBoardListener(GameBoardListener gameBoardListener) {
@@ -158,29 +217,38 @@ public class GameBoard extends SimpleBoard {
 
     private void moveDots(int direction) {
         boolean isMoved = false;
+        int movingDirection = 0;
+
         switch (direction) {
             case LEFT:
                 isMoved = moveDotsToLeft();
+                movingDirection = BoardListener.LEFT;
                 break;
             case RIGHT:
                 isMoved = moveDotsToRight();
+                movingDirection = BoardListener.RIGHT;
                 break;
             case UP:
                 isMoved = moveDotsToUp();
+                movingDirection = BoardListener.UP;
                 break;
             case DOWN:
                 isMoved = moveDotsToDown();
+                movingDirection = BoardListener.DOWN;
                 break;
             default:
                 Gdx.app.log("GameBoard.moveDots", "Not defined direction int");
                 break;
         }
         if (isMoved) {
+            if (gameBoardListener != null) {
+                gameBoardListener.dotsMoved(movingDirection);
+            }
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
-                    setNewDotsInCell(getBlankCells());
                     setOnMoving(false);
+                    setOnBoardFull(setNewDotsInCell(getBlankCells()));
                 }
             }, getMovingTimeByVelocity() * (CELL_X - 1));
 
@@ -514,15 +582,16 @@ public class GameBoard extends SimpleBoard {
     public void fling(float velocityX, float velocityY, int button) {
         int flingDirection;
 
+        if (!isGameStarted()) {
+            return;
+        }
         if (isOnMoving()) {
+            Gdx.app.log("fling", "isOnMoving");
             return;
         }
 
         setLastFlingVelocity(velocityX, velocityY);
 
-        if (!isGameStarted()) {
-            return;
-        }
         if (Math.abs(velocityX) > Math.abs(velocityY)) {//horizontal
             if (velocityX > 0) {
                 flingDirection = RIGHT;
@@ -584,6 +653,14 @@ public class GameBoard extends SimpleBoard {
         } else {
             return 0.025f;
         }
+    }
+
+    public boolean isOnBoardFull() {
+        return onBoardFull;
+    }
+
+    public void setOnBoardFull(boolean onBoardFull) {
+        this.onBoardFull = onBoardFull;
     }
 
     public class BoardPosition2D {
