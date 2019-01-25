@@ -15,7 +15,6 @@ public class BoardCell extends GameObject {
 
     private boolean reserved = false;
     private GameCellListener gameCellListener;
-    private String id;
 
     public BoardCell(Texture texture, float locationX, float locationY) {
         super(texture, locationX, locationY);
@@ -123,7 +122,7 @@ public class BoardCell extends GameObject {
 
     public void dotsMerged(int mergedDotsNum) {
         if (gameCellListener != null) {
-            gameCellListener.dotsMerged(mergedDotsNum, getId());
+            gameCellListener.dotsMerged(mergedDotsNum, getTag());
         }
 
     }
@@ -132,13 +131,6 @@ public class BoardCell extends GameObject {
         this.gameCellListener = gameCellListener;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     @Override
     public void render(float delta) {

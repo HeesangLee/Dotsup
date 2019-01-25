@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -29,6 +30,8 @@ public class MenuScreen implements Screen {
     private MenuLevelInfo menuLevelInfo;
     private boolean dialogShow = false;
     private ReallySimpleDialog dialog;
+    Music musicBgm;
+    private boolean musicOnOff;
 
 
     public MenuScreen(final Dotsup game) {
@@ -50,6 +53,15 @@ public class MenuScreen implements Screen {
 
         initGameObjects();
         setInputProcessor();
+
+
+        game.getLauncherHandler().showAdmobBanner(true);
+    }
+
+    private boolean initSoundMusic() {
+        musicBgm = Gdx.audio.newMusic(Gdx.files.internal("Sound/Path_to_Follow.mp3"));
+        musicBgm.setLooping(true);
+        return game.getGameConfiguration().getMusicOnOff();
     }
 
 
@@ -93,11 +105,14 @@ public class MenuScreen implements Screen {
 
         startButton = new SpriteButton(game.getResourcesManager().getTexture_roundRect_468x148(),
                 306, 1015, game.getSpriteBatch()) {
+            @Override
+            public void actionTouchDown() {
+                game.getResourcesManager().getSound_tap().play();
+            }
 
             @Override
             public void actionTap() {
                 if ((levelSelectButtonGroup != null) & (startButton.getButtonState() == SpriteButton.STATE_EN)) {
-
                     startGame();
                 }
             }
@@ -126,7 +141,9 @@ public class MenuScreen implements Screen {
                 game.getResourcesManager().getTexture_level_sel_arrow_left(),
                 game.getResourcesManager().getTexture_level_sel_arrow_right(),
                 game.getResourcesManager().getTexture_level_selected_circle(),
-                game.getGameConfiguration().getLastClearedLevel() + 1,
+                game.getGameConfiguration().getLastClearedLevel() < GameLevel.getMaxLevel()
+                        ? game.getGameConfiguration().getLastClearedLevel() + 1
+                        : GameLevel.getMaxLevel(),
                 false) {
             @Override
             public void isFocusingChanged() {
@@ -194,9 +211,75 @@ public class MenuScreen implements Screen {
         renderableObjectArray.add(levelSelectButtonGroup);
         renderableObjectArray.add(menuMissionView);
         renderableObjectArray.add(menuLevelInfo);
+
+        initMusicOnOffButton();
+    }
+
+    private void initMusicOnOffButton() {
+
+        setMusicOnOff(initSoundMusic());
+
+        SpriteButton musicOnOffButton =
+                new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
+                        0, 1720, game.getSpriteBatch()) {
+                    private void setTopTextureByState() {
+                        if (getButtonState() == STATE_EN) {
+                            setButtonState(STATE_DIS);
+                            setMusicOnOff(false);
+                            setTopTexture(game.getResourcesManager().getTexture_music_off());
+                        } else {
+                            setButtonState(STATE_EN);
+                            setMusicOnOff(true);
+                            setTopTexture(game.getResourcesManager().getTexture_music_on());
+                        }
+                    }
+
+                    @Override
+                    public void actionTouchDown() {
+                        game.getResourcesManager().getSound_tap().play();
+                    }
+
+                    @Override
+                    public void actionTap() {
+                        setTopTextureByState();
+                    }
+
+                };
+
+        musicOnOffButton.setTopTexture(isMusicOnOff() ?
+                game.getResourcesManager().getTexture_music_on() :
+                game.getResourcesManager().getTexture_music_off());
+        musicOnOffButton.setColorEffect(true,
+                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
+                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
+
+        musicOnOffButton.setButtonState(isMusicOnOff() ? SpriteButton.STATE_EN : SpriteButton.STATE_DIS);
+
+        renderableObjectArray.add(musicOnOffButton);
+        gestureDetectableButtonArray.add(musicOnOffButton);
+    }
+
+    public boolean isMusicOnOff() {
+        return musicOnOff;
+    }
+
+    public void setMusicOnOff(boolean musicOnOff) {
+        this.musicOnOff = musicOnOff;
+        if (musicOnOff) {
+            musicBgm.play();
+        } else {
+            musicBgm.pause();
+        }
     }
 
     private void startGame() {
+        if (musicBgm != null) {
+            musicBgm.stop();
+            musicBgm.dispose();
+        }
+        game.getGameConfiguration().putMusicOnOff(isMusicOnOff());
+        game.getGameConfiguration().flushingPreferences();
+
         game.setScreen(new LoadingScreen(game, levelSelectButtonGroup.getFocusingButton()));
     }
 
@@ -214,7 +297,7 @@ public class MenuScreen implements Screen {
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
         game.getSpriteBatch().begin();
 
-        this.batch.draw(game.getResourcesManager().getTexture_menu_background_circles(), 51f, 1206f);
+        this.batch.draw(game.getResourcesManager().getTexture_menu_background_circles(), 72f, 1190f);
         this.batch.draw(game.getResourcesManager().getTexture_title_menu(), 203f, 1373f);
 
         for (Renderable renderableObj : renderableObjectArray) {
@@ -249,6 +332,11 @@ public class MenuScreen implements Screen {
 
     @Override
     public void dispose() {
+        if (musicBgm != null) {
+            musicBgm.stop();
+            musicBgm.dispose();
+        }
+
         game.getResourcesManager().disposeMenuScreenResources();
     }
 
@@ -384,6 +472,9 @@ public class MenuScreen implements Screen {
     }
 
     public void setDialogShow(boolean dialogShow) {
+        if(dialogShow){
+            game.getResourcesManager().getSound_popup().play();
+        }
         this.dialogShow = dialogShow;
     }
 
@@ -417,8 +508,17 @@ public class MenuScreen implements Screen {
             final SpriteButton exitButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
                     , 94f, 105f, batch) {
                 @Override
+                public void actionTouchDown() {
+                    super.actionTouchDown();
+                    game.getResourcesManager().getSound_tap().play();
+                }
+
+                @Override
                 public void actionTap() {
                     super.actionTap();
+                    game.getGameConfiguration().putMusicOnOff(isMusicOnOff());
+                    game.getGameConfiguration().flushingPreferences();
+
                     Gdx.app.exit();
                 }
             };
@@ -430,6 +530,12 @@ public class MenuScreen implements Screen {
 
             final SpriteButton stayButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
                     , 452f, 105f, batch) {
+                @Override
+                public void actionTouchDown() {
+                    super.actionTouchDown();
+                    game.getResourcesManager().getSound_tap().play();
+                }
+
                 @Override
                 public void actionTap() {
                     super.actionTap();

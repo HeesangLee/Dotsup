@@ -46,6 +46,10 @@ public class SpriteGameObject extends GameObject {
         return this;
     }
 
+    public SpriteGameObject getSpriteGameObject() {
+        return this;
+    }
+
     public boolean isDrawSpriteEnabled() {
         return this.flag_drawSprite;
     }

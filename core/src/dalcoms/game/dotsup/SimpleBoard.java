@@ -95,7 +95,7 @@ public class SimpleBoard implements Renderable {
                         , positionCellsRef[x][y].getY() + centerPosition.getY() - centerPositonRef.getY()
                         , board[x][y])
                         .setSpriteBatch(batch);
-                cells[x][y].setId(String.valueOf(x) + "," + String.valueOf(y));
+                cells[x][y].setTag(String.valueOf(x) + "," + String.valueOf(y));
             }
         }
     }

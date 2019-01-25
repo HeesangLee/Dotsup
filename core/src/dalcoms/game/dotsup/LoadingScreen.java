@@ -72,10 +72,18 @@ public class LoadingScreen implements Screen {
         final float WIDTH = dotsWidth * charNum.length + GAP * (charNum.length - 1);
         final float startX = (game.getGameConfiguration().getViewportWidth() - WIDTH) / 2f;
 
+        int dotsNum;
+
         for (int i = 0; i < charNum.length; i++) {
+            Gdx.app.log("loadingscreen", String.valueOf(charNum[i]));
+            dotsNum = Character.getNumericValue(charNum[i]);
+            if (dotsNum == 0) {
+                dotsNum = Dots.DOTS_ZERO;
+            }
+
             Dots dot = new Dots(game.getResourcesManager().getTexture_dotsArray()
                     , startX + (dotsWidth + GAP) * i, 1500f
-                    , Character.getNumericValue(charNum[i]))
+                    , dotsNum)
                     .setSpriteBatch(batch);
             dot.actionScale(0.1f, 1f, 0.5f);
             dot.actionAlpha(0.1f, 1f, 0.5f);

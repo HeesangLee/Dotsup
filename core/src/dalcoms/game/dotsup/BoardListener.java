@@ -8,4 +8,5 @@ public interface BoardListener {
 
     void dotsMoved(int direction);
     void boardFull(boolean isPossibleToMoveDots);
+    void dotsNew();
 }

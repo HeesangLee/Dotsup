@@ -1,6 +1,7 @@
 package dalcoms.game.dotsup;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 
@@ -81,7 +82,32 @@ public class ResourcesManager {
     private Texture texture_t35_try_again;
     private Texture texture_t35_you_are_the_best;
 
+    private Texture texture_music_off;
+    private Texture texture_music_on;
 
+    private Texture texture_t35_NO;
+    private Texture texture_t35_YES;
+    private Texture texture_item_bomb;
+    private Texture texture_item_magic;
+    private Texture texture_item_missile;
+
+    private Texture texture_item_effect_1;
+    private Texture texture_item_effect_2;
+
+    private Texture texture_dice_dynamite;
+    private Texture texture_dice_lock;
+    private Texture texture_dice_rainbow;
+    private Texture texture_item_rainbow;
+    private Texture texture_dice_zero;
+
+
+
+    private Sound sound_tap;
+    private Sound sound_missionClear;
+    private Sound sound_merge;
+    private Sound sound_dotsNew;
+    private Sound sound_popup;
+    private Sound sound_item;
 
 
     public static ResourcesManager getInstance() {
@@ -90,6 +116,16 @@ public class ResourcesManager {
 
     public void loadResources() {
         loadTextureResources();
+        loadSoundResources();
+    }
+
+    private void loadSoundResources() {
+        sound_tap = Gdx.audio.newSound(Gdx.files.internal("Sound/sound_tap.wav"));
+        sound_missionClear = Gdx.audio.newSound(Gdx.files.internal("Sound/mission_clear.mp3"));
+        sound_merge = Gdx.audio.newSound(Gdx.files.internal("Sound/sound_merge.mp3"));
+        sound_dotsNew = Gdx.audio.newSound(Gdx.files.internal("Sound/sound_dotsNew.mp3"));
+        sound_popup = Gdx.audio.newSound(Gdx.files.internal("Sound/sound_popup.mp3"));
+        sound_item = Gdx.audio.newSound(Gdx.files.internal("Sound/sound_item.mp3"));
     }
 
     private void loadTextureResources() {
@@ -105,6 +141,12 @@ public class ResourcesManager {
                 add(new Texture(Gdx.files.internal("dice_7.png")));
                 add(new Texture(Gdx.files.internal("dice_8.png")));
                 add(new Texture(Gdx.files.internal("dice_9.png")));
+
+                add(new Texture(Gdx.files.internal("dice_lock.png")));
+                add(new Texture(Gdx.files.internal("dice_rainbow.png")));
+                add(new Texture(Gdx.files.internal("dice_dynamite.png")));
+                add(new Texture(Gdx.files.internal("dice_zero.png")));
+
             }
         };
         text_dalcoms = new Texture(Gdx.files.internal("text_dalcoms.png"));
@@ -190,6 +232,7 @@ public class ResourcesManager {
                 add(new Texture(Gdx.files.internal("t152_6.png")));
                 add(new Texture(Gdx.files.internal("t152_7.png")));
                 add(new Texture(Gdx.files.internal("t152_8.png")));
+                add(new Texture(Gdx.files.internal("t152_9.png")));
             }
         };
 
@@ -218,6 +261,22 @@ public class ResourcesManager {
         texture_t35_try_again = new Texture(Gdx.files.internal("t35_try_again.png"));
         texture_t35_you_are_the_best = new Texture(Gdx.files.internal("t35_you_are_the_best.png"));
 
+        texture_music_off = new Texture(Gdx.files.internal("music_off.png"));
+        texture_music_on = new Texture(Gdx.files.internal("music_on.png"));
+
+        texture_item_bomb = new Texture(Gdx.files.internal("item_bomb.png"));
+        texture_item_magic = new Texture(Gdx.files.internal("item_magic.png"));
+        texture_item_missile = new Texture(Gdx.files.internal("item_missile.png"));
+
+        texture_t35_NO = new Texture(Gdx.files.internal("t35_NO.png"));
+        texture_t35_YES = new Texture(Gdx.files.internal("t35_YES.png"));
+        texture_item_effect_1 = new Texture(Gdx.files.internal("item_effect_1.png"));
+        texture_item_effect_2 = new Texture(Gdx.files.internal("item_effect_2.png"));
+
+        texture_dice_dynamite = new Texture(Gdx.files.internal("dice_dynamite.png"));
+        texture_dice_lock = new Texture(Gdx.files.internal("dice_lock.png"));
+        texture_dice_rainbow = new Texture(Gdx.files.internal("dice_rainbow.png"));
+        texture_item_rainbow = new Texture(Gdx.files.internal("item_rainbow.png"));
 
     }
 
@@ -449,6 +508,83 @@ public class ResourcesManager {
         return texture_t35_you_are_the_best;
     }
 
+    public Texture getTexture_music_off() {
+        return texture_music_off;
+    }
+
+    public Texture getTexture_music_on() {
+        return texture_music_on;
+    }
+
+
+    public Texture getTexture_t35_NO() {
+        return texture_t35_NO;
+    }
+
+    public Texture getTexture_t35_YES() {
+        return texture_t35_YES;
+    }
+
+    public Texture getTexture_item_bomb() {
+        return texture_item_bomb;
+    }
+
+    public Texture getTexture_item_magic() {
+        return texture_item_magic;
+    }
+
+    public Texture getTexture_item_missile() {
+        return texture_item_missile;
+    }
+
+    public Texture getTexture_item_effect_1() {
+        return texture_item_effect_1;
+    }
+
+    public Texture getTexture_item_effect_2() {
+        return texture_item_effect_2;
+    }
+
+    public Texture getTexture_dice_dynamite() {
+        return texture_dice_dynamite;
+    }
+
+    public Texture getTexture_dice_lock() {
+        return texture_dice_lock;
+    }
+
+    public Texture getTexture_dice_rainbow() {
+        return texture_dice_rainbow;
+    }
+
+    public Texture getTexture_item_rainbow() {
+        return texture_item_rainbow;
+    }
+
+    public Sound getSound_tap() {
+        return sound_tap;
+    }
+
+    public Sound getSound_missionClear() {
+        return sound_missionClear;
+    }
+
+    public Sound getSound_merge() {
+        return sound_merge;
+    }
+
+    public Sound getSound_dotsNew() {
+        return sound_dotsNew;
+    }
+
+    public Sound getSound_popup() {
+        return sound_popup;
+    }
+
+    public Sound getSound_item() {
+        return sound_item;
+    }
+
     public void disposeSplashScreenResources() {
         texture_title_splash.dispose();
         text_dalcoms.dispose();
@@ -471,5 +607,14 @@ public class ResourcesManager {
 
     public void disposeGameScreenResources() {
 
+    }
+
+    public void disposeSoundResources() {
+        sound_tap.dispose();
+        sound_missionClear.dispose();
+        sound_merge.dispose();
+        sound_dotsNew.dispose();
+        sound_popup.dispose();
+        sound_item.dispose();
     }
 }

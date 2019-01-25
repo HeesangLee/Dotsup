@@ -5,6 +5,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 
 public class Dots extends SpriteGameObject {
+    public static final int DOTS_LOCK = 10;
+    public static final int DOTS_RAINBOW = 11;
+    public static final int DOTS_DYNAMITE = 12;
+    public static final int DOTS_ZERO = 13;
 
     Array<Texture> texture_dotsArray;
     private int dotsNum = 0;

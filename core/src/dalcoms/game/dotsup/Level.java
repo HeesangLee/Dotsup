@@ -2,15 +2,12 @@ package dalcoms.game.dotsup;
 
 import com.badlogic.gdx.utils.Array;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Level {
     private int level = 0;
     private boolean[][] board = new boolean[6][6];
     //    private Map<Integer, Integer> mission = new HashMap<Integer, Integer>();
     private Array<MissionDots> mission = new Array<MissionDots>();
-    private Map<String, Integer> items = new HashMap<String, Integer>();
+    private Array<GameItem> items = new Array<GameItem>();
     private boolean timeLimited = false;
     private float timeOfTimeLimited;//sec
 
@@ -38,11 +35,11 @@ public class Level {
         this.mission = mission;
     }
 
-    public Map<String, Integer> getItems() {
+    public Array<GameItem> getItems() {
         return items;
     }
 
-    public void setItems(Map<String, Integer> items) {
+    public void setItems(Array<GameItem> items) {
         this.items = items;
     }
 

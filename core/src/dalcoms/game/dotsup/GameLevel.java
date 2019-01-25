@@ -276,7 +276,7 @@ public class GameLevel {
 
         mission.add(new MissionDots(5,3));mission.add(new MissionDots(6,3));mission.add(new MissionDots(7,2));mission.add(new MissionDots(8,1));
 
-        items.add(new GameItem("missile",6));items.add(new GameItem("lock",20));
+        items.add(new GameItem("missile",8));items.add(new GameItem("lock",20));items.add(new GameItem("bomb_a",4));
 
         timeLimited=false;timeOfTimeLimited=0f;
 

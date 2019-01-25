@@ -215,7 +215,7 @@ public class MenuLevelSelectButtonGroup
 
     private void setDisplayArrow() {
         this.displayArrowLeft = getLevelMin() == 1 ? false : true;
-        this.displayArrowRight = getLevelMax() == GameLevel.getMaxLevel() ? false : true;
+        this.displayArrowRight = getLevelMax() >= GameLevel.getMaxLevel() ? false : true;
     }
 
     private void setLevelNumberArray() {
@@ -367,7 +367,7 @@ public class MenuLevelSelectButtonGroup
                 break;
             default:
                 setFocusingButton(touchFlag + getLevelMin() - 1, true);
-
+                game.getResourcesManager().getSound_tap().play();
                 break;
         }
     }
@@ -387,12 +387,14 @@ public class MenuLevelSelectButtonGroup
     private void rightButtonClick() {
         if (isDisplayArrowRight()) {
             setFocusingButton(getLevelMax() + 1, true);
+            game.getResourcesManager().getSound_tap().play();
         }
     }
 
     private void leftButtonClick() {
         if (isDisplayArrowLeft()) {
             setFocusingButton(getLevelMin() - 1, true);
+            game.getResourcesManager().getSound_tap().play();
         }
     }
 
@@ -413,6 +415,7 @@ public class MenuLevelSelectButtonGroup
 
         if (isTouched()) {
             ret = (touchX - (int) getLocationX()) / (int) getLevelButtonWidth();
+
         }
 
         return ret;

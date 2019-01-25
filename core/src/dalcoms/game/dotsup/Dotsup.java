@@ -8,6 +8,12 @@ public class Dotsup extends Game {
     private GameConfiguration gameConfiguration;
     private ResourcesManager resourcesManager;
 
+    private IActivityRequestHandler launcherHandler;
+
+    public Dotsup(IActivityRequestHandler handler) {
+        this.launcherHandler = handler;
+    }
+
     @Override
     public void create() {
         gameConfiguration = GameConfiguration.getInstance();
@@ -28,6 +34,7 @@ public class Dotsup extends Game {
     @Override
     public void dispose() {
         batch.dispose();
+        getResourcesManager().disposeSoundResources();
     }
 
     public SpriteBatch getSpriteBatch() {
@@ -41,5 +48,9 @@ public class Dotsup extends Game {
 
     public ResourcesManager getResourcesManager() {
         return resourcesManager;
+    }
+
+    public IActivityRequestHandler getLauncherHandler() {
+        return launcherHandler;
     }
 }

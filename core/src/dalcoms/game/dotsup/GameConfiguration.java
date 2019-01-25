@@ -11,11 +11,14 @@ public class GameConfiguration {
     private final String prefKey_Date = "Date_";
     private final String prefKey_Moves = "Moves_";
     private final String prefKey_Times = "Times_";
+    private final String prefKey_MusicOnOff = "MusicOnOff";
 
     private static GameConfiguration instance = new GameConfiguration();
 
     private float viewportWidth = 1080f;
     private float viewportHeight = 1920f;
+
+    private int gamePlayCount = 0;
 
     public static GameConfiguration getInstance() {
         return instance;
@@ -33,6 +36,10 @@ public class GameConfiguration {
     public int getLastClearedLevel() {
         return preferences.getInteger(prefKey_LastClearedLevel, 0);
     }
+//    public int getLastClearedLevel() {
+//        return GameLevel.getMaxLevel();
+//    }
+
 
     public void putLastClearedLevel(int level) {
         preferences.putInteger(prefKey_LastClearedLevel, level);
@@ -64,8 +71,28 @@ public class GameConfiguration {
         preferences.putInteger(prefKey_Times + String.valueOf(level), time);
     }
 
+    public boolean getMusicOnOff() {
+        return preferences.getBoolean(prefKey_MusicOnOff, true);
+    }
+
+    public void putMusicOnOff(boolean onoff) {
+        preferences.putBoolean(prefKey_MusicOnOff, onoff);
+    }
+
     public void flushingPreferences() {
         preferences.flush();
     }
 
+    public int getGamePlayCount() {
+        return gamePlayCount;
+    }
+
+    public void setGamePlayCount(int gamePlayCount) {
+        this.gamePlayCount = gamePlayCount;
+    }
+
+    public int increaseGamePlayCount() {
+        setGamePlayCount(getGamePlayCount() + 1);
+        return getGamePlayCount();
+    }
 }

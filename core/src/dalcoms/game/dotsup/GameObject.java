@@ -17,6 +17,12 @@ public class GameObject implements Renderable {
     private ObjectActionListener actionListener;
     private GameObject positionLeadingObject;
     private boolean followPositionLeadingObject;
+    private int id = -1;
+    private String tag = "";
+
+    private boolean stateBoolean = false;
+    private int stateInt = -1;
+    private float stateFloat = -1f;
 
 
     public GameObject(Texture texture, float locationX, float locationY) {
@@ -218,7 +224,7 @@ public class GameObject implements Renderable {
             }
         }
         setLocationY(toLocation);
-        
+
         if (!ret & actionListener != null) {
             actionListener.onMoveCompleted(ObjectActionListener.DIR_Y);
         }
@@ -311,5 +317,45 @@ public class GameObject implements Renderable {
 
     public void setFollowPositionLeadingObject(boolean followPositionLeadingObject) {
         this.followPositionLeadingObject = followPositionLeadingObject;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public boolean isStateBoolean() {
+        return stateBoolean;
+    }
+
+    public void setStateBoolean(boolean stateBoolean) {
+        this.stateBoolean = stateBoolean;
+    }
+
+    public int getStateInt() {
+        return stateInt;
+    }
+
+    public void setStateInt(int stateInt) {
+        this.stateInt = stateInt;
+    }
+
+    public float getStateFloat() {
+        return stateFloat;
+    }
+
+    public void setStateFloat(float stateFloat) {
+        this.stateFloat = stateFloat;
     }
 }

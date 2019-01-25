@@ -35,6 +35,7 @@ public class GameBoard extends SimpleBoard {
         initThis(board);
     }
 
+
     private void initThis(boolean[][] board) {
         initDots(calcEnabledBoardCellCount(board));
     }
@@ -92,6 +93,10 @@ public class GameBoard extends SimpleBoard {
     }
 
     private boolean setNewDotsInCell(Array<BoardPosition2D> blankCells) {//return true if no blank cell
+        return setNewDotsInCell(blankCells, 1);
+    }
+
+    private boolean setNewDotsInCell(Array<BoardPosition2D> blankCells, int dotsNum) {//return true if no blank cell
         boolean ret = false;
 
 
@@ -104,7 +109,7 @@ public class GameBoard extends SimpleBoard {
         BoardCell cell = getCell(posionCell.getX(), posionCell.getY());
 
         Dots dots = popDotsFromBank();
-        dots.setDotsNum(1);
+        dots.setDotsNum(dotsNum);
         dots.setLocation(cell.getLocationX(), cell.getLocationY());
         dots.applyEffectNew();
 
@@ -113,9 +118,13 @@ public class GameBoard extends SimpleBoard {
         if (blankCells.size <= 1) {
             ret = true;
         }
+        if (gameBoardListener != null) {
+            gameBoardListener.dotsNew();
+        }
 
         return ret;
     }
+
 
     private Array<BoardPosition2D> getBlankCells() {
         Array<BoardPosition2D> blankCells = new Array<BoardPosition2D>();
@@ -129,6 +138,40 @@ public class GameBoard extends SimpleBoard {
         }
 
         return blankCells;
+    }
+
+    private Array<BoardPosition2D> getDotsInCells() {
+        Array<BoardPosition2D> dotsInCells = new Array<BoardPosition2D>();
+
+        for (int x = 0; x < CELL_X; x++) {
+            for (int y = 0; y < CELL_Y; y++) {
+                if (getCell(x, y).isDotsInEnabledCell()) {
+                    dotsInCells.add(new BoardPosition2D(x, y));
+                }
+            }
+        }
+
+        return dotsInCells;
+    }
+
+    private Array<BoardPosition2D> getDotsInShuffledCells() {
+        Array<BoardPosition2D> dotsInCells = getDotsInCells();
+        dotsInCells.shuffle();
+        return dotsInCells;
+    }
+
+    public Array<Integer> getDotsNumsOnBoard() {
+        Array<Integer> dotsNums = new Array<Integer>();
+
+        for (int x = 0; x < CELL_X; x++) {
+            for (int y = 0; y < CELL_Y; y++) {
+                if (getCell(x, y).isDotsInEnabledCell()) {
+                    dotsNums.add(getCell(x, y).getDots().getDotsNum());
+                }
+            }
+        }
+        dotsNums.sort();
+        return dotsNums;
     }
 
     private boolean sameBothDotsNum(BoardPosition2D posDot1, BoardPosition2D posDot2) {
@@ -173,6 +216,82 @@ public class GameBoard extends SimpleBoard {
 
         return ret;
     }
+
+    public Array<BoardPosition2D> actionItemBomb(int condition) {
+        int i = 0;
+        Array<BoardPosition2D> itemAppliedPositions = new Array<BoardPosition2D>();
+        Array<BoardPosition2D> dotsPositions = getDotsInShuffledCells();
+        for (BoardPosition2D pos : dotsPositions) {
+            if (i++ < condition) {
+                getCell(pos.getX(), pos.getY()).setDots(null);
+                itemAppliedPositions.add(pos);
+            } else {
+                break;
+            }
+        }
+        if (dotsPositions.size <= condition) {
+            setNewDotsInCell(getBlankCells());
+        }
+        return itemAppliedPositions;
+    }
+
+    public Array<BoardPosition2D> actionItemMissile(int condition) {
+        int i = 0;
+        Array<BoardPosition2D> itemAppliedPositions = new Array<BoardPosition2D>();
+        Array<BoardPosition2D> dotsPositions = getDotsInCells();
+        for (BoardPosition2D pos : dotsPositions) {
+            if (i++ < condition) {
+                getCell(pos.getX(), pos.getY()).setDots(null);
+                itemAppliedPositions.add(pos);
+            } else {
+                break;
+            }
+        }
+        if (dotsPositions.size <= condition) {
+            setNewDotsInCell(getBlankCells());
+        }
+        return itemAppliedPositions;
+    }
+
+    public void actionItemLock() {
+        setNewDotsInCell(getBlankCells(), Dots.DOTS_LOCK);
+    }
+
+    public Array<BoardPosition2D> actionItemRainbow() {
+        Array<BoardPosition2D> itemAppliedPositions = new Array<BoardPosition2D>();
+
+        for (int y = 0; y < CELL_Y; y++) {
+            for (int x = 0; x < CELL_X; x++) {
+                if (getCell(x, y).isDotsInEnabledCell()) {
+                    itemAppliedPositions.add(new BoardPosition2D(x, y));
+                    getCell(x, y).getDots().setDotsNum(y % 3 + 1);
+                }
+            }
+        }
+        return itemAppliedPositions;
+    }
+
+    public Array<BoardPosition2D> actionItemMagic(int condition) {
+        int i = 0;
+        Array<BoardPosition2D> itemAppliedPositions = new Array<BoardPosition2D>();
+        Array<BoardPosition2D> dotsPositions = getDotsInShuffledCells();
+        for (BoardPosition2D pos : dotsPositions) {
+            if (i < condition) {
+                Dots dots = getCell(pos.getX(), pos.getY()).getDots();
+                if (dots.getDotsNum() != 1) {
+                    dots.setDotsNum(1);
+                    dots.actionScale(0.1f, 1f, 0.3f);
+                    dots.actionAlpha(0.1f, 1f, 0.6f);
+                    itemAppliedPositions.add(pos);
+                    i++;
+                }
+            } else {
+                break;
+            }
+        }
+        return itemAppliedPositions;
+    }
+
 
     @Override
     public void render(float delta) {
@@ -289,10 +408,11 @@ public class GameBoard extends SimpleBoard {
                     break;
                 case BoardCell.ENABLED_DOTS:
                     if ((getCell(x - 1, y).getDots().getDotsNum()
-                            == myDotsNum) & myDotsNum < 9) {//merge
+                            == myDotsNum) & (myDotsNum < 9)) {//merge
                         gotoForMerge = true;
                         gotoX = x - 1;
                         isGoto = true;
+
                     } else {//stop
                         if (x != cellPosition.getX()) {//it should be moved
                             gotoX = x;
@@ -352,7 +472,7 @@ public class GameBoard extends SimpleBoard {
                     break;
                 case BoardCell.ENABLED_DOTS:
                     if ((getCell(x + 1, y).getDots().getDotsNum()
-                            == myDotsNum) & myDotsNum < 9) {//merge
+                            == myDotsNum) & (myDotsNum < 9)) {//merge
                         gotoForMerge = true;
                         gotoX = x + 1;
                         isGoto = true;
@@ -413,7 +533,7 @@ public class GameBoard extends SimpleBoard {
                     break;
                 case BoardCell.ENABLED_DOTS:
                     if ((getCell(x, y + 1).getDots().getDotsNum()
-                            == myDotsNum) & myDotsNum < 9) {//merge
+                            == myDotsNum) & (myDotsNum < 9)) {//merge
                         gotoForMerge = true;
                         gotoY = y + 1;
                         isGoto = true;
@@ -474,10 +594,12 @@ public class GameBoard extends SimpleBoard {
                     break;
                 case BoardCell.ENABLED_DOTS:
                     if ((getCell(x, y - 1).getDots().getDotsNum()
-                            == myDotsNum) & myDotsNum < 9) {//merge
+                            == myDotsNum) & (myDotsNum < 9)) {//merge
+
                         gotoForMerge = true;
                         gotoY = y - 1;
                         isGoto = true;
+
                     } else {//stop
                         if (y != cellPosition.getY()) {//it should be moved
                             gotoY = y;
@@ -663,20 +785,4 @@ public class GameBoard extends SimpleBoard {
         this.onBoardFull = onBoardFull;
     }
 
-    public class BoardPosition2D {
-        private int mapX, mapY;
-
-        public BoardPosition2D(int x, int y) {
-            mapX = x;
-            mapY = y;
-        }
-
-        public int getX() {
-            return mapX;
-        }
-
-        public int getY() {
-            return mapY;
-        }
-    }
 }

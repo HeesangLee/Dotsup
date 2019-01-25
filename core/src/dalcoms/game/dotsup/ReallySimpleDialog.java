@@ -9,8 +9,8 @@ public class ReallySimpleDialog extends GameObject
 
     Array<Renderable> renderables;
     Array<SpriteButton> spriteButtons;
-    private int id = -1;
-    private String tag = "";
+//    private int id = -1;
+//    private String tag = "";
 
     public ReallySimpleDialog(Texture texture, float locationX, float locationY, SpriteBatch batch) {
         super(texture, locationX, locationY);
@@ -100,19 +100,19 @@ public class ReallySimpleDialog extends GameObject
         this.spriteButtons.add(spriteButton);
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+//
+//    public String getTag() {
+//        return tag;
+//    }
+//
+//    public void setTag(String tag) {
+//        this.tag = tag;
+//    }
 }

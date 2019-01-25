@@ -31,9 +31,9 @@ public class AndroidLauncher extends AndroidApplication
 
     //    private final String APP_ID = "ca-app-pub-3940256099942544~3347511713";
     private final String APP_ID = "";
-    private final String UNIT_ID_BANNER = "ca-app-pub-3940256099942544/6300978111";
-    private final String UNIT_ID_INTERSTITIAL = "ca-app-pub-3940256099942544/1033173712";
-    private final String UNIT_ID_REWARD = "ca-app-pub-3940256099942544/5224354917";
+    private final String UNIT_ID_BANNER = "ca-app-pub-0894410772194388/4792545924";
+    private final String UNIT_ID_INTERSTITIAL = "ca-app-pub-0894410772194388/2505170222";
+    private final String UNIT_ID_REWARD = "ca-app-pub-3940256099942544/5224354917"; //Not created yet
 
     protected AdView adView;
     private InterstitialAd mInterstitialAd;
@@ -150,7 +150,7 @@ public class AndroidLauncher extends AndroidApplication
     }
 
     private AdSize getAdmobBannerSize() {
-        return Calendar.getInstance().get(Calendar.HOUR_OF_DAY) % 8 == 0 ? AdSize.BANNER : AdSize.SMART_BANNER;
+        return Calendar.getInstance().get(Calendar.HOUR_OF_DAY) % 8 == 0 ? AdSize.SMART_BANNER : AdSize.BANNER;
     }
 
     private View createGameView() {
