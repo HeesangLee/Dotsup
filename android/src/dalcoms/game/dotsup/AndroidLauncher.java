@@ -1,6 +1,8 @@
 package dalcoms.game.dotsup;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -48,6 +50,9 @@ public class AndroidLauncher extends AndroidApplication
     private final int LOAD_AD_REWARD = 5;
     private final int SHOW_AD_REWARD = 6;
     private final int TOAST_MSG = 7;
+    private final int MORE_MYAPP = 8;
+    private final int SHARE_MYAPP = 9;
+    private final int REVIEW_MYAPP = 10;
 
     private String stringToast = "";
 
@@ -83,6 +88,16 @@ public class AndroidLauncher extends AndroidApplication
                 case TOAST_MSG:
                     doToastMsg();
                     break;
+                case MORE_MYAPP:
+                    doMoreMyApp();
+                    break;
+                case SHARE_MYAPP:
+                    doShareMayApp();
+                    break;
+                case REVIEW_MYAPP:
+                    doReviewMyApp();
+                    break;
+
             }
         }
     };
@@ -150,7 +165,18 @@ public class AndroidLauncher extends AndroidApplication
     }
 
     private AdSize getAdmobBannerSize() {
-        return Calendar.getInstance().get(Calendar.HOUR_OF_DAY) % 8 == 0 ? AdSize.SMART_BANNER : AdSize.BANNER;
+        AdSize ret = AdSize.BANNER;
+        switch (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+            case 2:
+            case 8:
+            case 13:
+            case 17:
+            case 22:
+            case 24:
+                ret = AdSize.SMART_BANNER;
+                break;
+        }
+        return ret;
     }
 
     private View createGameView() {
@@ -335,6 +361,51 @@ public class AndroidLauncher extends AndroidApplication
     public void toastMessage(String message) {
         handler.sendEmptyMessage(TOAST_MSG);
         this.stringToast = message;
+    }
+
+    @Override
+    public void actionMoreMyApp() {
+        handler.sendEmptyMessage(MORE_MYAPP);
+    }
+
+    @Override
+    public void actionShareMyApp() {
+        handler.sendEmptyMessage(SHARE_MYAPP);
+    }
+
+    @Override
+    public void actionReviewMyApp() {
+        handler.sendEmptyMessage(REVIEW_MYAPP);
+    }
+
+    private void doMoreMyApp() {
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(
+                "https://play.google.com/store/apps/developer?id=Dalcoms"));
+        intent.setPackage("com.android.vending");
+        startActivity(intent);
+    }
+
+    private void doShareMayApp() {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT,
+                "Let's dotsup\n\rhttps://play.google.com/store/apps/details?id=dalcoms.game.dotsup");
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, "dotsup");
+        sendIntent.putExtra(Intent.EXTRA_EMAIL, "");
+        sendIntent.putExtra(Intent.EXTRA_CC, "");
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, "Share dotsup"));
+    }
+
+    private void doReviewMyApp() {
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(
+                "https://play.google.com/store/apps/details?id=dalcoms.game.dotsup"));
+        intent.setPackage("com.android.vending");
+        startActivity(intent);
     }
 
     private void doToastMsg() {

@@ -13,6 +13,8 @@ public class GameConfiguration {
     private final String prefKey_Times = "Times_";
     private final String prefKey_MusicOnOff = "MusicOnOff";
 
+    private final boolean TEST_ = false;
+
     private static GameConfiguration instance = new GameConfiguration();
 
     private float viewportWidth = 1080f;
@@ -34,12 +36,13 @@ public class GameConfiguration {
 
 
     public int getLastClearedLevel() {
-        return preferences.getInteger(prefKey_LastClearedLevel, 0);
-    }
-//    public int getLastClearedLevel() {
-//        return GameLevel.getMaxLevel();
-//    }
 
+        if(TEST_){
+            return GameLevel.getMaxLevel();
+        }else{
+            return preferences.getInteger(prefKey_LastClearedLevel, 0);
+        }
+    }
 
     public void putLastClearedLevel(int level) {
         preferences.putInteger(prefKey_LastClearedLevel, level);

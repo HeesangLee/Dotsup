@@ -16,6 +16,9 @@ public class BoardCell extends GameObject {
     private boolean reserved = false;
     private GameCellListener gameCellListener;
 
+    private Point2DInt cellPosition;
+
+
     public BoardCell(Texture texture, float locationX, float locationY) {
         super(texture, locationX, locationY);
     }
@@ -111,7 +114,13 @@ public class BoardCell extends GameObject {
     }
 
     private void mergeDots() {
-        final int dotsNum = dots.getDotsNum() > 9 ? 9 : dots.getDotsNum() + 1;
+//        final int dotsNum = dots.getDotsNum() > 9 ? 9 : dots.getDotsNum() + 1;
+        int dotsNum = dots.getDotsNum();
+        if (dotsNum < 9) {
+            dotsNum++;
+        } else if (dotsNum == Dots.DOTS_MISSILE) {
+//            dotsNum = 1;
+        }
         reservedDots = null;
         reserve(false);
 
@@ -122,7 +131,7 @@ public class BoardCell extends GameObject {
 
     public void dotsMerged(int mergedDotsNum) {
         if (gameCellListener != null) {
-            gameCellListener.dotsMerged(mergedDotsNum, getTag());
+            gameCellListener.dotsMerged(mergedDotsNum, getTag(), getCellPosition());
         }
 
     }
@@ -131,6 +140,13 @@ public class BoardCell extends GameObject {
         this.gameCellListener = gameCellListener;
     }
 
+    public Point2DInt getCellPosition() {
+        return cellPosition;
+    }
+
+    public void setCellPosition(Point2DInt cellPosition) {
+        this.cellPosition = cellPosition;
+    }
 
     @Override
     public void render(float delta) {

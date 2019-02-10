@@ -13,11 +13,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.HashMap;
 
 public class MenuScreen implements Screen {
     final Dotsup game;
+    Viewport viewport;
     OrthographicCamera camera;
     private SpriteBatch batch;
     private Array<Renderable> renderableObjectArray;
@@ -38,11 +41,15 @@ public class MenuScreen implements Screen {
 
         this.game = game;
         this.camera = new OrthographicCamera();
+
         this.batch = game.getSpriteBatch();
 
         camera.setToOrtho(false, game.getGameConfiguration().getViewportWidth(),
                 game.getGameConfiguration().getViewportHeight());
 
+        this.viewport = new FitViewport(game.getGameConfiguration().getViewportWidth(),
+                game.getGameConfiguration().getViewportHeight(),
+                camera);
         Gdx.input.setCatchBackKey(true);
     }
 
@@ -104,7 +111,7 @@ public class MenuScreen implements Screen {
                 .setSpriteBatch(batch);
 
         startButton = new SpriteButton(game.getResourcesManager().getTexture_roundRect_468x148(),
-                306, 1015, game.getSpriteBatch()) {
+                306, 1015, game.getSpriteBatch(), viewport) {
             @Override
             public void actionTouchDown() {
                 game.getResourcesManager().getSound_tap().play();
@@ -213,6 +220,73 @@ public class MenuScreen implements Screen {
         renderableObjectArray.add(menuLevelInfo);
 
         initMusicOnOffButton();
+        initMarketShareStarButtons();
+    }
+
+    private void initMarketShareStarButtons() {
+        initMarketButton();
+        initShareButton();
+        initReviewButton();
+    }
+
+    private void initMarketButton() {
+        SpriteButton marketButton =
+                new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
+                        480, 1720, game.getSpriteBatch(), viewport) {
+
+                    @Override
+                    public void actionTap() {
+                        game.getLauncherHandler().actionMoreMyApp();
+                    }
+
+                };
+
+        marketButton.setTopTexture(game.getResourcesManager().getTexture_button_more());
+        marketButton.setColorEffect(true,
+                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
+                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
+        renderableObjectArray.add(marketButton);
+        gestureDetectableButtonArray.add(marketButton);
+    }
+
+    private void initShareButton() {
+        SpriteButton shareButton =
+                new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
+                        680, 1720, game.getSpriteBatch(), viewport) {
+
+                    @Override
+                    public void actionTap() {
+                        game.getLauncherHandler().actionShareMyApp();
+                    }
+
+                };
+
+        shareButton.setTopTexture(game.getResourcesManager().getTexture_button_share());
+        shareButton.setColorEffect(true,
+                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
+                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
+        renderableObjectArray.add(shareButton);
+        gestureDetectableButtonArray.add(shareButton);
+    }
+
+    private void initReviewButton() {
+        SpriteButton reviewButton =
+                new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
+                        880, 1720, game.getSpriteBatch(), viewport) {
+
+                    @Override
+                    public void actionTap() {
+                        game.getLauncherHandler().actionReviewMyApp();
+                    }
+
+                };
+
+        reviewButton.setTopTexture(game.getResourcesManager().getTexture_button_review());
+        reviewButton.setColorEffect(true,
+                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
+                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
+        renderableObjectArray.add(reviewButton);
+        gestureDetectableButtonArray.add(reviewButton);
     }
 
     private void initMusicOnOffButton() {
@@ -221,7 +295,7 @@ public class MenuScreen implements Screen {
 
         SpriteButton musicOnOffButton =
                 new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
-                        0, 1720, game.getSpriteBatch()) {
+                        0, 1720, game.getSpriteBatch(), viewport) {
                     private void setTopTextureByState() {
                         if (getButtonState() == STATE_EN) {
                             setButtonState(STATE_DIS);
@@ -312,7 +386,7 @@ public class MenuScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        viewport.update(width, height);
     }
 
     @Override
@@ -340,6 +414,18 @@ public class MenuScreen implements Screen {
         game.getResourcesManager().disposeMenuScreenResources();
     }
 
+    Position2D getNewTouchPoint(float x, float y) {
+        Gdx.app.log("touchdebug", "1.x : " + String.valueOf(x) + ",y : " + String.valueOf(y));
+        Vector2 newPoints = new Vector2(x, y);
+        newPoints = viewport.unproject(newPoints);
+        x = newPoints.x;
+        y = newPoints.y;
+//        y = viewport.getScreenHeight() - newPoints.y;//
+
+        Gdx.app.log("touchdebug", "2.x : " + String.valueOf(x) + ",y : " + String.valueOf(y));
+        return new Position2D(x, y);
+    }
+
     private void setInputProcessor() {
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -347,6 +433,10 @@ public class MenuScreen implements Screen {
         inputMultiplexer.addProcessor(new GestureDetector(new GameGestureListener() {
             @Override
             public boolean touchDown(float x, float y, int pointer, int button) {
+                Position2D newTouchPosition = getNewTouchPoint(x, y);
+                x = newTouchPosition.getX();
+                y = newTouchPosition.getY();
+
                 if (isDialogShow() & (getDialog() != null)) {
                     getDialog().touchDown(x, y, pointer, button);
                 } else {
@@ -360,6 +450,10 @@ public class MenuScreen implements Screen {
 
             @Override
             public boolean tap(float x, float y, int count, int button) {
+                Position2D newTouchPosition = getNewTouchPoint(x, y);
+                x = newTouchPosition.getX();
+                y = newTouchPosition.getY();
+
                 if (isDialogShow() & (getDialog() != null)) {
                     getDialog().tap(x, y, count, button);
                 } else {
@@ -372,6 +466,9 @@ public class MenuScreen implements Screen {
 
             @Override
             public boolean longPress(float x, float y) {
+                Position2D newTouchPosition = getNewTouchPoint(x, y);
+                x = newTouchPosition.getX();
+                y = newTouchPosition.getY();
 
                 if (isDialogShow() & (getDialog() != null)) {
                     getDialog().longPress(x, y);
@@ -393,16 +490,23 @@ public class MenuScreen implements Screen {
 
             @Override
             public boolean pan(float x, float y, float deltaX, float deltaY) {
+                Position2D newTouchPosition = getNewTouchPoint(x, y);
+                x = newTouchPosition.getX();
+                y = newTouchPosition.getY();
                 return super.pan(x, y, deltaX, deltaY);
             }
 
             @Override
             public boolean panStop(float x, float y, int pointer, int button) {
+                Position2D newTouchPosition = getNewTouchPoint(x, y);
+                x = newTouchPosition.getX();
+                y = newTouchPosition.getY();
                 return super.panStop(x, y, pointer, button);
             }
 
             @Override
             public boolean zoom(float initialDistance, float distance) {
+
                 return super.zoom(initialDistance, distance);
             }
 
@@ -472,7 +576,7 @@ public class MenuScreen implements Screen {
     }
 
     public void setDialogShow(boolean dialogShow) {
-        if(dialogShow){
+        if (dialogShow) {
             game.getResourcesManager().getSound_popup().play();
         }
         this.dialogShow = dialogShow;
@@ -506,7 +610,7 @@ public class MenuScreen implements Screen {
                     .setSpriteBatch(batch));
 
             final SpriteButton exitButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                    , 94f, 105f, batch) {
+                    , 94f, 105f, batch, viewport) {
                 @Override
                 public void actionTouchDown() {
                     super.actionTouchDown();
@@ -529,7 +633,7 @@ public class MenuScreen implements Screen {
                     GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
             final SpriteButton stayButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                    , 452f, 105f, batch) {
+                    , 452f, 105f, batch, viewport) {
                 @Override
                 public void actionTouchDown() {
                     super.actionTouchDown();

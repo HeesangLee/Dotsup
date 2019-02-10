@@ -20,6 +20,7 @@ public class GameBoard extends SimpleBoard {
     private boolean onMoving = false;
 
     private float flingVelocityX, flingVelocityY;
+    private int movingCellCount;
 
     private GameBoardListener gameBoardListener;
     private boolean onBoardFull;
@@ -140,6 +141,18 @@ public class GameBoard extends SimpleBoard {
         return blankCells;
     }
 
+    public int getBlankCellCount() {
+        int blankCount = 0;
+        for (int x = 0; x < CELL_X; x++) {
+            for (int y = 0; y < CELL_Y; y++) {
+                if (getCell(x, y).isEnabledCell() & !getCell(x, y).isDotsIn()) {
+                    blankCount++;
+                }
+            }
+        }
+        return blankCount;
+    }
+
     private Array<BoardPosition2D> getDotsInCells() {
         Array<BoardPosition2D> dotsInCells = new Array<BoardPosition2D>();
 
@@ -183,14 +196,14 @@ public class GameBoard extends SimpleBoard {
 
             if (getCell(posDot1.getX(), posDot1.getY()).getDots().getDotsNum() ==
                     getCell(posDot2.getX(), posDot2.getY()).getDots().getDotsNum()) {
-                return true;
+                return isMergeableDots(getCell(posDot1.getX(), posDot1.getY()).getDots().getDotsNum());
+
             } else {
                 return false;
             }
         } else {
             return false;
         }
-
     }
 
     public boolean possibleToMoveDots() {
@@ -253,8 +266,31 @@ public class GameBoard extends SimpleBoard {
         return itemAppliedPositions;
     }
 
-    public void actionItemLock() {
+    public void addItemLock() {
         setNewDotsInCell(getBlankCells(), Dots.DOTS_LOCK);
+    }
+
+    public void addItemDiceMissile() {
+        setNewDotsInCell(getBlankCells(), Dots.DOTS_MISSILE);
+        setNewDotsInCell(getBlankCells(), Dots.DOTS_MISSILE);
+    }
+
+    public Array<BoardPosition2D> actionItemDiceMissile(Point2DInt cellPosition) {
+        Array<BoardPosition2D> itemAppliedPositions = new Array<BoardPosition2D>();
+        final int xMin = cellPosition.getX() > 0 ? cellPosition.getX() - 1 : 0;
+        final int xMax = cellPosition.getX() < CELL_X - 1 ? cellPosition.getX() + 2 : cellPosition.getX() + 1;
+        final int yMin = cellPosition.getY() > 0 ? cellPosition.getY() - 1 : 0;
+        final int yMax = cellPosition.getY() < CELL_Y - 1 ? cellPosition.getY() + 2 : cellPosition.getY() + 1;
+
+        for (int x = xMin; x < xMax; x++) {
+            for (int y = yMin; y < yMax; y++) {
+                if (getCell(x, y).isDotsInEnabledCell()) {
+                    getCell(x, y).setDots(null);
+                    itemAppliedPositions.add(new BoardPosition2D(x, y));
+                }
+            }
+        }
+        return itemAppliedPositions;
     }
 
     public Array<BoardPosition2D> actionItemRainbow() {
@@ -323,16 +359,17 @@ public class GameBoard extends SimpleBoard {
             for (int y = 0; y < CELL_Y; y++) {
                 getCell(x, y).addGameCellListener(new GameCellListener() {
                     @Override
-                    public void dotsMerged(int mergedDotsNum, String id) {
-                        super.dotsMerged(mergedDotsNum, id);
+                    public void dotsMerged(int mergedDotsNum, String id, Point2DInt cellPosition) {
+                        super.dotsMerged(mergedDotsNum, id, cellPosition);
                         if (gameBoardListener != null) {
-                            gameBoardListener.dotsMerged(mergedDotsNum, id);
+                            gameBoardListener.dotsMerged(mergedDotsNum, id, cellPosition);
                         }
                     }
                 });
             }
         }
     }
+
 
     private void moveDots(int direction) {
         boolean isMoved = false;
@@ -367,9 +404,11 @@ public class GameBoard extends SimpleBoard {
                 @Override
                 public void run() {
                     setOnMoving(false);
+                    clearMovingCellCount();
                     setOnBoardFull(setNewDotsInCell(getBlankCells()));
                 }
-            }, getMovingTimeByVelocity() * (CELL_X - 1));
+            }, getMovingTimeByVelocity() * getMovingCellCount() + 0.01f);
+            //getMovingTimeByVelocity() * (CELL_X - 1) + 0.01f);
 
         } else {
             setOnMoving(false);
@@ -377,6 +416,15 @@ public class GameBoard extends SimpleBoard {
 
     }
 
+    private boolean isMergeableDots(int dotsNum) {
+        boolean ret = false;
+        if ((dotsNum > 0) & (dotsNum < 9)) {
+            ret = true;
+        } else if (dotsNum == Dots.DOTS_MISSILE) {
+            ret = true;
+        }
+        return ret;
+    }
 
     private boolean checkMovingLeft(BoardPosition2D cellPosition) {
         final Dots myDots = getCell(cellPosition.getX(), cellPosition.getY()).getDots();
@@ -408,7 +456,7 @@ public class GameBoard extends SimpleBoard {
                     break;
                 case BoardCell.ENABLED_DOTS:
                     if ((getCell(x - 1, y).getDots().getDotsNum()
-                            == myDotsNum) & (myDotsNum < 9)) {//merge
+                            == myDotsNum) & isMergeableDots(myDotsNum)) {//merge
                         gotoForMerge = true;
                         gotoX = x - 1;
                         isGoto = true;
@@ -435,6 +483,8 @@ public class GameBoard extends SimpleBoard {
             myDots.moveX(getCell(cellPosition.getX(), y).getLocationX(),
                     getCell(gotoX, y).getLocationX(),
                     MOVING_TIME * (cellPosition.getX() - gotoX));
+            setMovingCellCount(cellPosition.getX() - gotoX);
+
             getCell(cellPosition.getX(), y).setDots(null);
         }
 
@@ -472,7 +522,7 @@ public class GameBoard extends SimpleBoard {
                     break;
                 case BoardCell.ENABLED_DOTS:
                     if ((getCell(x + 1, y).getDots().getDotsNum()
-                            == myDotsNum) & (myDotsNum < 9)) {//merge
+                            == myDotsNum) & isMergeableDots(myDotsNum)) {//merge
                         gotoForMerge = true;
                         gotoX = x + 1;
                         isGoto = true;
@@ -498,6 +548,8 @@ public class GameBoard extends SimpleBoard {
             myDots.moveX(getCell(cellPosition.getX(), y).getLocationX(),
                     getCell(gotoX, y).getLocationX(),
                     MOVING_TIME * (gotoX - cellPosition.getX()));
+            setMovingCellCount(gotoX - cellPosition.getX());
+
             getCell(cellPosition.getX(), y).setDots(null);
         }
         return isGoto;
@@ -533,7 +585,7 @@ public class GameBoard extends SimpleBoard {
                     break;
                 case BoardCell.ENABLED_DOTS:
                     if ((getCell(x, y + 1).getDots().getDotsNum()
-                            == myDotsNum) & (myDotsNum < 9)) {//merge
+                            == myDotsNum) & isMergeableDots(myDotsNum)) {//merge
                         gotoForMerge = true;
                         gotoY = y + 1;
                         isGoto = true;
@@ -559,6 +611,8 @@ public class GameBoard extends SimpleBoard {
             myDots.moveY(getCell(x, cellPosition.getY()).getLocationY(),
                     getCell(x, gotoY).getLocationY(),
                     MOVING_TIME * (gotoY - cellPosition.getY()));
+            setMovingCellCount(gotoY - cellPosition.getY());
+
             getCell(x, cellPosition.getY()).setDots(null);
         }
         return isGoto;
@@ -594,7 +648,7 @@ public class GameBoard extends SimpleBoard {
                     break;
                 case BoardCell.ENABLED_DOTS:
                     if ((getCell(x, y - 1).getDots().getDotsNum()
-                            == myDotsNum) & (myDotsNum < 9)) {//merge
+                            == myDotsNum) & isMergeableDots(myDotsNum)) {//merge
 
                         gotoForMerge = true;
                         gotoY = y - 1;
@@ -623,6 +677,7 @@ public class GameBoard extends SimpleBoard {
             myDots.moveY(getCell(x, cellPosition.getY()).getLocationY(),
                     getCell(x, gotoY).getLocationY(),
                     MOVING_TIME * (cellPosition.getY() - gotoY));
+            setMovingCellCount(cellPosition.getY() - gotoY);
             getCell(x, cellPosition.getY()).setDots(null);
         }
         return isGoto;
@@ -766,16 +821,36 @@ public class GameBoard extends SimpleBoard {
 
     public float getMovingTimeByVelocity() {
         final float lastVel = getLastFlingVeolcity();
-        if (lastVel < 1000f) {
-            return 0.12f;
-        } else if (lastVel < 2000f) {
+        if (lastVel < 800f) {
+            return 0.11f;
+        } else if (lastVel < 1500f) {
+            return 0.09f;
+        } else if (lastVel < 1800f) {
             return 0.075f;
-        } else if (lastVel < 3000f) {
+        } else if (lastVel < 2800f) {
             return 0.05f;
+        } else if (lastVel < 3500f) {
+            return 0.035f;
         } else {
-            return 0.025f;
+            return 0.020f;
+        }
+
+    }
+
+    private int getMovingCellCount() {
+        return movingCellCount;
+    }
+
+    private void setMovingCellCount(int movingCellCount) {
+        if (getMovingCellCount() < movingCellCount) {
+            this.movingCellCount = movingCellCount;
         }
     }
+
+    private void clearMovingCellCount() {
+        this.movingCellCount = 1;
+    }
+
 
     public boolean isOnBoardFull() {
         return onBoardFull;

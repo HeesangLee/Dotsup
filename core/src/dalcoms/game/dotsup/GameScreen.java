@@ -16,10 +16,15 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+
+import java.util.Calendar;
 
 public class GameScreen implements Screen {
 
     final Dotsup game;
+    Viewport viewport;
     OrthographicCamera camera;
     private SpriteBatch batch;
     private Array<Renderable> renderableObjectArray;
@@ -37,8 +42,8 @@ public class GameScreen implements Screen {
     private final int DIALOG_SUCCESS = 1;
     private final int DIALOG_FAIL = 2;
 
-    private final int INTERSTITAL_AD_COUNT = 10;
-    private final int ITEM_ADD_COUNT = 4;
+    private final int INTERSTITAL_AD_COUNT = 9;
+    private final int ITEM_ADD_COUNT = 3;
 
     private boolean admobInterstitialAdLoaded = false, admobRewardedLoaded = false;
 
@@ -51,9 +56,11 @@ public class GameScreen implements Screen {
     private final int ITEM_MAGIC_A = 6;
     private final int ITEM_MISSILE_A = 7;
     private final int ITEM_RAINBOW_A = 8;
+    private final int ITEM_DICE_MISSILE = 9;
 
 
     private int itemLockMovesCondition = -1;
+    private int itemDiceMissleMovesCondition = -1;
 
     private Array<SpriteButton> gameItemArray;
 
@@ -65,6 +72,9 @@ public class GameScreen implements Screen {
         this.batch = game.getSpriteBatch();
         camera.setToOrtho(false, game.getGameConfiguration().getViewportWidth(),
                 game.getGameConfiguration().getViewportHeight());
+        this.viewport = new FitViewport(game.getGameConfiguration().getViewportWidth(),
+                game.getGameConfiguration().getViewportHeight(),
+                camera);
         this.gameLevel = gameLevel;
         Gdx.input.setCatchBackKey(true);
     }
@@ -132,7 +142,7 @@ public class GameScreen implements Screen {
         int itemInt;
         boolean isItemAdd = false;
         Array<GameItem> gameItems = GameLevel.getLevel(getGameLevel()).getItems();
-        isItemAdd = game.getGameConfiguration().getGamePlayCount() % ITEM_ADD_COUNT == ITEM_ADD_COUNT-1;
+        isItemAdd = game.getGameConfiguration().getGamePlayCount() % ITEM_ADD_COUNT == ITEM_ADD_COUNT - 1;
 
         Gdx.app.log("isAlwaysItem", "itemAdd" + String.valueOf(isItemAdd));
         for (GameItem gameItem : gameItems) {
@@ -162,6 +172,8 @@ public class GameScreen implements Screen {
             return ITEM_MISSILE_A;
         } else if (itemName.equals("rainbow_a")) {
             return ITEM_RAINBOW_A;
+        } else if (itemName.equals("dice_missile")) {
+            return ITEM_DICE_MISSILE;
         }
         return -1;
     }
@@ -174,6 +186,7 @@ public class GameScreen implements Screen {
             case ITEM_MAGIC_A:
             case ITEM_MISSILE_A:
             case ITEM_RAINBOW_A:
+            case ITEM_DICE_MISSILE:
                 ret = true;
                 break;
         }
@@ -211,12 +224,15 @@ public class GameScreen implements Screen {
             case ITEM_LOCK:
                 setItemLockMovesCondition(condition);
                 return;
+            case ITEM_DICE_MISSILE:
+                setItemDiceMissleMovesCondition(condition);
+                return;
             default:
                 return;
         }
         SpriteButton itemButton =
                 new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
-                        loacationX[gameItemArray.size], locationY, game.getSpriteBatch()) {
+                        loacationX[gameItemArray.size], locationY, game.getSpriteBatch(), viewport) {
                     @Override
                     public void actionTap() {
                         Gdx.app.log("GameScreen", "item tap" + String.valueOf(getId()));
@@ -312,12 +328,30 @@ public class GameScreen implements Screen {
     private void checkAddItemLock() {
         if (getItemLockMovesCondition() == topDisplayPanel.getGameMovesNumber()) {
             setItemLockMovesCondition(-1);
-            getGameBoard().actionItemLock();
+            getGameBoard().addItemLock();
+        }
+    }
+
+    private void checkAddItemDotsMissile() {
+        if (getItemDiceMissleMovesCondition() == topDisplayPanel.getGameMovesNumber()) {
+            if (getGameBoard().getBlankCellCount() > 2) {
+                setItemDiceMissleMovesCondition(-1);
+                getGameBoard().addItemDiceMissile();
+            }
         }
     }
 
     public GameBoard getGameBoard() {
         return gameBoard;
+    }
+
+    private void onItemActionDiceMissle(Point2DInt cellPosition) {
+        Array<BoardPosition2D> effected = getGameBoard().actionItemDiceMissile(cellPosition);
+        showItemEffect(effected, 1);
+        Gdx.app.log("missile", "center : " + cellPosition.toString());
+        for (BoardPosition2D pos : effected) {
+            Gdx.app.log("missile", pos.toString());
+        }
     }
 
     private void createGameBoard(float centerX, float centerY) {
@@ -338,12 +372,34 @@ public class GameScreen implements Screen {
         gameBoard.addGameBoardListener(new GameBoardListener() {
 
             @Override
-            public void dotsMerged(int mergedDotsNum, String tag) {
-                super.dotsMerged(mergedDotsNum, tag);
+            public void dotsMerged(int mergedDotsNum, String tag, Point2DInt cellPosition) {
+                super.dotsMerged(mergedDotsNum, tag, cellPosition);
                 Gdx.app.log("GameScreen", tag + "is merged to" + String.valueOf(mergedDotsNum));
                 game.getResourcesManager().getSound_merge().play();
+                final int mergedDots = mergedDotsNum;
 
-                checkMissionClear(mergedDotsNum);
+                if (mergedDotsNum == Dots.DOTS_MISSILE) {
+                    final Point2DInt centerPosition = cellPosition;
+
+                    Timer.schedule(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            onItemActionDiceMissle(centerPosition);
+                        }
+                    }, 0.067f);
+                }
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Gdx.app.postRunnable(new Runnable() {
+                            @Override
+                            public void run() {
+                                checkMissionClear(mergedDots);
+                            }
+                        });
+                    }
+                }).start();
             }
 
             @Override
@@ -351,6 +407,7 @@ public class GameScreen implements Screen {
                 super.dotsMoved(direction);
                 topDisplayPanel.increaseGameMovesNumber(1);
                 checkAddItemLock();
+                checkAddItemDotsMissile();
             }
 
             @Override
@@ -386,7 +443,7 @@ public class GameScreen implements Screen {
 
     private void createHomeButton(float x, float y) {
         this.homeButton = new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
-                x, y, batch) {
+                x, y, batch, viewport) {
             @Override
             public void actionTouchDown() {
                 game.getResourcesManager().getSound_tap().play();
@@ -426,9 +483,10 @@ public class GameScreen implements Screen {
     }
 
     private void checkInterstitialAd() {
-        if (game.getGameConfiguration().getGamePlayCount() % INTERSTITAL_AD_COUNT
-                == INTERSTITAL_AD_COUNT - 1) {
-//            game.getGameConfiguration().setGamePlayCount(0);
+        int gamePlayCount = game.getGameConfiguration().getGamePlayCount();
+        int adCount = Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 4 ? INTERSTITAL_AD_COUNT : 4;
+
+        if (gamePlayCount % adCount == adCount - 1) {
             game.getLauncherHandler().loadAdmobInterstital(new AdmobAdListener() {
                 @Override
                 public void onAdLoaded() {
@@ -582,7 +640,7 @@ public class GameScreen implements Screen {
                 .setSpriteBatch(batch));
 
         final SpriteButton nextButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                , 465f, 121f, batch) {
+                , 465f, 121f, batch, viewport) {
             @Override
             public void actionTouchDown() {
                 super.actionTouchDown();
@@ -603,7 +661,7 @@ public class GameScreen implements Screen {
                 GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
         final SpriteButton replayButton = new SpriteButton(game.getResourcesManager().getTexture_btn_replay_105x105()
-                , 4273f, 121f, batch) {
+                , 4273f, 121f, batch, viewport) {
             @Override
             public void actionTouchDown() {
                 super.actionTouchDown();
@@ -623,7 +681,7 @@ public class GameScreen implements Screen {
                 GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
         final SpriteButton goHomeButton = new SpriteButton(game.getResourcesManager().getTexture_btn_home_105x105()
-                , 103f, 121f, batch) {
+                , 103f, 121f, batch, viewport) {
             @Override
             public void actionTap() {
                 super.actionTap();
@@ -694,7 +752,7 @@ public class GameScreen implements Screen {
                 .setSpriteBatch(batch));
 
         final SpriteButton replayButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                , 465f, 121f, batch) {
+                , 465f, 121f, batch, viewport) {
             @Override
             public void actionTouchDown() {
                 super.actionTouchDown();
@@ -715,7 +773,7 @@ public class GameScreen implements Screen {
                 GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
         final SpriteButton goHomeButton = new SpriteButton(game.getResourcesManager().getTexture_btn_home_105x105()
-                , 103f, 121f, batch) {
+                , 103f, 121f, batch, viewport) {
             @Override
             public void actionTouchDown() {
                 super.actionTouchDown();
@@ -801,7 +859,7 @@ public class GameScreen implements Screen {
                 .setSpriteBatch(batch));
 
         final SpriteButton replayButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                , 465f, 121f, batch) {
+                , 465f, 121f, batch, viewport) {
             @Override
             public void actionTouchDown() {
                 super.actionTouchDown();
@@ -822,7 +880,7 @@ public class GameScreen implements Screen {
                 GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
         final SpriteButton goHomeButton = new SpriteButton(game.getResourcesManager().getTexture_btn_home_105x105()
-                , 103f, 121f, batch) {
+                , 103f, 121f, batch, viewport) {
             @Override
             public void actionTouchDown() {
                 super.actionTouchDown();
@@ -886,7 +944,7 @@ public class GameScreen implements Screen {
             dialog.setId(DIALOG_TOMEMU);
 
             final SpriteButton goHomeButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                    , 94f, 105f, batch) {
+                    , 94f, 105f, batch, viewport) {
                 @Override
                 public void actionTouchDown() {
                     super.actionTouchDown();
@@ -906,7 +964,7 @@ public class GameScreen implements Screen {
                     GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
             final SpriteButton stayButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                    , 452f, 105f, batch) {
+                    , 452f, 105f, batch, viewport) {
                 @Override
                 public void actionTouchDown() {
                     super.actionTouchDown();
@@ -951,6 +1009,17 @@ public class GameScreen implements Screen {
         }
     }
 
+    Position2D getNewTouchPoint(float x, float y) {
+        Gdx.app.log("touchdebug", "1.x : " + String.valueOf(x) + ",y : " + String.valueOf(y));
+        Vector2 newPoints = new Vector2(x, y);
+        newPoints = viewport.unproject(newPoints);
+        x = newPoints.x;
+        y = newPoints.y;
+//        y = viewport.getScreenHeight() - newPoints.y;
+        Gdx.app.log("touchdebug", "2.x : " + String.valueOf(x) + ",y : " + String.valueOf(y));
+        return new Position2D(x, y);
+    }
+
     private void setInputProcessor() {
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -958,6 +1027,10 @@ public class GameScreen implements Screen {
         inputMultiplexer.addProcessor(new GestureDetector(new GameGestureListener() {
             @Override
             public boolean touchDown(float x, float y, int pointer, int button) {
+                Position2D newTouchPosition = getNewTouchPoint(x, y);
+                x = newTouchPosition.getX();
+                y = newTouchPosition.getY();
+
                 if (isDialogShow() & (getDialog() != null)) {
                     getDialog().touchDown(x, y, pointer, button);
                 } else {
@@ -974,6 +1047,10 @@ public class GameScreen implements Screen {
 
             @Override
             public boolean tap(float x, float y, int count, int button) {
+                Position2D newTouchPosition = getNewTouchPoint(x, y);
+                x = newTouchPosition.getX();
+                y = newTouchPosition.getY();
+
                 if (isDialogShow() & (getDialog() != null)) {
                     getDialog().tap(x, y, count, button);
                 } else {
@@ -989,6 +1066,9 @@ public class GameScreen implements Screen {
 
             @Override
             public boolean longPress(float x, float y) {
+                Position2D newTouchPosition = getNewTouchPoint(x, y);
+                x = newTouchPosition.getX();
+                y = newTouchPosition.getY();
 
                 if (isDialogShow() & (getDialog() != null)) {
                     getDialog().longPress(x, y);
@@ -1016,11 +1096,19 @@ public class GameScreen implements Screen {
 
             @Override
             public boolean pan(float x, float y, float deltaX, float deltaY) {
+                Position2D newTouchPosition = getNewTouchPoint(x, y);
+                x = newTouchPosition.getX();
+                y = newTouchPosition.getY();
+
                 return super.pan(x, y, deltaX, deltaY);
             }
 
             @Override
             public boolean panStop(float x, float y, int pointer, int button) {
+                Position2D newTouchPosition = getNewTouchPoint(x, y);
+                x = newTouchPosition.getX();
+                y = newTouchPosition.getY();
+
                 return super.panStop(x, y, pointer, button);
             }
 
@@ -1158,7 +1246,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        viewport.update(width, height);
     }
 
     @Override
@@ -1194,6 +1282,14 @@ public class GameScreen implements Screen {
 
     public void setItemLockMovesCondition(int itemLockMovesCondition) {
         this.itemLockMovesCondition = itemLockMovesCondition;
+    }
+
+    public int getItemDiceMissleMovesCondition() {
+        return itemDiceMissleMovesCondition;
+    }
+
+    public void setItemDiceMissleMovesCondition(int itemDiceMissleMovesCondition) {
+        this.itemDiceMissleMovesCondition = itemDiceMissleMovesCondition;
     }
 
     public class MissionPanel implements Renderable {

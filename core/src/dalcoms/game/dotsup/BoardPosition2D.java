@@ -15,4 +15,8 @@ public class BoardPosition2D {
     public int getY() {
         return mapY;
     }
+
+    public String toString() {
+        return "(" + String.valueOf(getX()) + ", " + String.valueOf(getY())+")";
+    }
 }

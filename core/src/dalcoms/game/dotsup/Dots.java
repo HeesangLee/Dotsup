@@ -6,9 +6,8 @@ import com.badlogic.gdx.utils.Array;
 
 public class Dots extends SpriteGameObject {
     public static final int DOTS_LOCK = 10;
-    public static final int DOTS_RAINBOW = 11;
-    public static final int DOTS_DYNAMITE = 12;
-    public static final int DOTS_ZERO = 13;
+    public static final int DOTS_MISSILE = 11;
+    public static final int DOTS_ZERO = 12;
 
     Array<Texture> texture_dotsArray;
     private int dotsNum = 0;

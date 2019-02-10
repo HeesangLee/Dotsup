@@ -3,7 +3,7 @@ package dalcoms.game.dotsup;
 public class GameBoardListener
         implements BoardListener, CellLIstener {
     @Override
-    public void dotsMerged(int mergedDotsNum, String tag) {
+    public void dotsMerged(int mergedDotsNum, String id, Point2DInt cellPosition) {
 
     }
 

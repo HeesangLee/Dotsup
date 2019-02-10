@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 /**
  * 기본적으로 단일 Sprite button 으로 작성
@@ -27,18 +29,19 @@ public class SpriteButton extends SpriteGameObject
     private boolean buttonState = STATE_EN;
     private Texture textureTop;
     private float textureTopLocationX = 0f, textureTopLocationY = 0f;
+    private Viewport viewport;
 
+//    public SpriteButton(Texture texture, float locationX, float locationY) {
+//        super(texture, locationX, locationY);
+//        initThis();
+//
+//    }
 
-    public SpriteButton(Texture texture, float locationX, float locationY) {
-        super(texture, locationX, locationY);
-        initThis();
-
-    }
-
-    public SpriteButton(Texture texture, float locationX, float locationY, SpriteBatch batch) {
+    public SpriteButton(Texture texture, float locationX, float locationY, SpriteBatch batch, Viewport viewport) {
         super(texture, locationX, locationY);
         initThis();
         super.setSpriteBatch(batch);
+        this.viewport = viewport;
     }
 
     private void initThis() {
@@ -175,12 +178,28 @@ public class SpriteButton extends SpriteGameObject
     public void render(float delta) {
         super.render(delta);
         if (isTouched()) {
-            setTouched(Gdx.input.isTouched() & isTouchInButtonArea(Gdx.input.getX(), screenHeight - Gdx.input.getY()));
+            Position2D newTouchPosition = getNewTouchPoint(Gdx.input.getX(), Gdx.input.getY());
+            int touchX = (int) newTouchPosition.getX();
+            int touchY = (int) newTouchPosition.getY();
+
+            setTouched(Gdx.input.isTouched()
+                    & isTouchInButtonArea(touchX, touchY));
         }
         if (textureTop != null) {
             drawTopTexture(delta);
         }
     }
+
+    Position2D getNewTouchPoint(float x, float y) {
+        Gdx.app.log("touchdebug", "1.x : " + String.valueOf(x) + ",y : " + String.valueOf(y));
+        Vector2 newPoints = new Vector2(x, y);
+        newPoints = viewport.unproject(newPoints);
+        x = newPoints.x;
+        y = newPoints.y;
+        Gdx.app.log("touchdebug", "2.x : " + String.valueOf(x) + ",y : " + String.valueOf(y));
+        return new Position2D(x, y);
+    }
+
 
     private void drawTopTexture(float delta) {
         batch.draw(textureTop,
@@ -196,9 +215,9 @@ public class SpriteButton extends SpriteGameObject
                         "y = " + String.valueOf(screenY) +
                         "pointer = " + String.valueOf(pointer) +
                         "button = " + String.valueOf(button));
-        setTouched(isTouchInButtonArea((int) screenX, screenHeight - (int) screenY));
+        setTouched(isTouchInButtonArea((int) screenX, (int) screenY));
 
-        if (isTouchInButtonArea((int) screenX, screenHeight - (int) screenY)) {
+        if (isTouchInButtonArea((int) screenX, (int) screenY)) {
             actionTouchDown();
         }
     }
@@ -211,8 +230,7 @@ public class SpriteButton extends SpriteGameObject
                         "count = " + String.valueOf(count) +
                         "button = " + String.valueOf(button));
         setTouched(false);
-
-        if (isTouchInButtonArea((int) screenX, screenHeight - (int) screenY)) {
+        if (isTouchInButtonArea((int) screenX, (int) screenY)) {
             actionTap();
         }
     }
@@ -222,7 +240,7 @@ public class SpriteButton extends SpriteGameObject
         Gdx.app.log(this.getClass().getSimpleName() + " LongPress",
                 "x = " + String.valueOf(x) +
                         "y = " + String.valueOf(y));
-        if (isTouchInButtonArea((int) x, screenHeight - (int) y)) {
+        if (isTouchInButtonArea((int) x,  (int) y)) {
             actionLongPress();
         }
     }

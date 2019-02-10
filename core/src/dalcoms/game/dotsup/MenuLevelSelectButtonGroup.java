@@ -31,7 +31,7 @@ public class MenuLevelSelectButtonGroup
     private final int TOUCH_4 = 4;
     private final int TOUCH_5 = 5;
     private final int TOUCH_RIGHT = 6;
-    private int screenHeight = 1920;
+//    private int screenHeight = 1920;
     private boolean show = false;
 
     public MenuLevelSelectButtonGroup(float locationX, float locationY, float width, float height,
@@ -67,7 +67,7 @@ public class MenuLevelSelectButtonGroup
         };
 
         levelButtonWidth = getWidth() / BUTTON_COUNT;
-        screenHeight = Gdx.graphics.getHeight();
+//        screenHeight = Gdx.graphics.getHeight();
 
         setTouchAreaVertices();
 
@@ -104,8 +104,8 @@ public class MenuLevelSelectButtonGroup
                         "pointer = " + String.valueOf(pointer) +
                         "button = " + String.valueOf(button));
 
-        setTouched(isTouchInButtonArea((int) x, screenHeight - (int) y));
-        actionTouchDown(getTouchAreaFlag((int) x, screenHeight - (int) y));
+        setTouched(isTouchInButtonArea((int) x, (int) y));
+        actionTouchDown(getTouchAreaFlag((int) x, (int) y));
     }
 
     @Override
@@ -123,7 +123,7 @@ public class MenuLevelSelectButtonGroup
         Gdx.app.log(this.getClass().getSimpleName() + " LongPress",
                 "x = " + String.valueOf(x) +
                         "y = " + String.valueOf(y));
-        actionLongPress(getTouchAreaFlag((int) x, screenHeight - (int) y));
+        actionLongPress(getTouchAreaFlag((int) x, (int) y));
     }
 
     @Override

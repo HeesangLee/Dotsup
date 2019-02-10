@@ -13,4 +13,10 @@ public interface IActivityRequestHandler {
     void showAdmobReward();
 
     void toastMessage(String message);
+
+    void actionMoreMyApp();
+
+    void actionShareMyApp();
+
+    void actionReviewMyApp();
 }

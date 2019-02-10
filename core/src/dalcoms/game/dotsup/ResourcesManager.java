@@ -99,6 +99,13 @@ public class ResourcesManager {
     private Texture texture_dice_rainbow;
     private Texture texture_item_rainbow;
     private Texture texture_dice_zero;
+    private Texture texture_dice_missile;
+
+    private Texture texture_button_more;
+    private Texture texture_button_review;
+    private Texture texture_button_share;
+
+
 
 
 
@@ -142,10 +149,9 @@ public class ResourcesManager {
                 add(new Texture(Gdx.files.internal("dice_8.png")));
                 add(new Texture(Gdx.files.internal("dice_9.png")));
 
-                add(new Texture(Gdx.files.internal("dice_lock.png")));
-                add(new Texture(Gdx.files.internal("dice_rainbow.png")));
-                add(new Texture(Gdx.files.internal("dice_dynamite.png")));
-                add(new Texture(Gdx.files.internal("dice_zero.png")));
+                add(new Texture(Gdx.files.internal("dice_lock.png")));//10
+                add(new Texture(Gdx.files.internal("dice_missile.png")));//11
+                add(new Texture(Gdx.files.internal("dice_zero.png")));//12
 
             }
         };
@@ -277,6 +283,10 @@ public class ResourcesManager {
         texture_dice_lock = new Texture(Gdx.files.internal("dice_lock.png"));
         texture_dice_rainbow = new Texture(Gdx.files.internal("dice_rainbow.png"));
         texture_item_rainbow = new Texture(Gdx.files.internal("item_rainbow.png"));
+
+        texture_button_more = new Texture(Gdx.files.internal("button_more.png"));
+        texture_button_review = new Texture(Gdx.files.internal("button_review.png"));
+        texture_button_share = new Texture(Gdx.files.internal("button_share.png"));
 
     }
 
@@ -559,6 +569,18 @@ public class ResourcesManager {
 
     public Texture getTexture_item_rainbow() {
         return texture_item_rainbow;
+    }
+
+    public Texture getTexture_button_more() {
+        return texture_button_more;
+    }
+
+    public Texture getTexture_button_review() {
+        return texture_button_review;
+    }
+
+    public Texture getTexture_button_share() {
+        return texture_button_share;
     }
 
     public Sound getSound_tap() {
