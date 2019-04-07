@@ -29,6 +29,7 @@ public class GameScreen implements Screen {
     private SpriteBatch batch;
     private Array<Renderable> renderableObjectArray;
     private Array<GestureDetectableButton> gestureDetectableButtonArray;
+    private Array<Renderable> topRenderableArray;
 
     private SpriteButton homeButton;
     private boolean dialogShow = false;
@@ -62,6 +63,9 @@ public class GameScreen implements Screen {
     private int itemLockMovesCondition = -1;
     private int itemDiceMissleMovesCondition = -1;
 
+    private int missionClearPopupIndex = 0;
+    private final int POPUP_COUNT = 3;
+
     private Array<SpriteButton> gameItemArray;
 
     Music musicBgm;
@@ -71,25 +75,26 @@ public class GameScreen implements Screen {
         this.camera = new OrthographicCamera();
         this.batch = game.getSpriteBatch();
         camera.setToOrtho(false, game.getGameConfiguration().getViewportWidth(),
-                game.getGameConfiguration().getViewportHeight());
+                          game.getGameConfiguration().getViewportHeight());
         this.viewport = new FitViewport(game.getGameConfiguration().getViewportWidth(),
-                game.getGameConfiguration().getViewportHeight(),
-                camera);
+                                        game.getGameConfiguration().getViewportHeight(),
+                                        camera);
         this.gameLevel = gameLevel;
         Gdx.input.setCatchBackKey(true);
     }
 
 
     private void initGameObjects() {
-        renderableObjectArray.add(new GameObject(game.getResourcesManager().getTexture_game_bottom(),
-                0, 0, true).setSpriteBatch(batch));
+        renderableObjectArray
+                .add(new GameObject(game.getResourcesManager().getTexture_game_bottom(),
+                                    0, 0, true).setSpriteBatch(batch));
 
         playBgm(initSoundMusic());
         createHomeButton(-34f, 1744f);
         createDisplayPanel(183f, 1723f);
         createMissionPanel(1540f);
         createGameBoard(game.getGameConfiguration().getViewportWidth() / 2f,
-                game.getGameConfiguration().getViewportHeight() / 2f);
+                        game.getGameConfiguration().getViewportHeight() / 2f);
 
         checkAddGameItem();
     }
@@ -142,7 +147,8 @@ public class GameScreen implements Screen {
         int itemInt;
         boolean isItemAdd = false;
         Array<GameItem> gameItems = GameLevel.getLevel(getGameLevel()).getItems();
-        isItemAdd = game.getGameConfiguration().getGamePlayCount() % ITEM_ADD_COUNT == ITEM_ADD_COUNT - 1;
+        isItemAdd = game.getGameConfiguration().getGamePlayCount() % ITEM_ADD_COUNT ==
+                    ITEM_ADD_COUNT - 1;
 
         Gdx.app.log("isAlwaysItem", "itemAdd" + String.valueOf(isItemAdd));
         for (GameItem gameItem : gameItems) {
@@ -232,7 +238,8 @@ public class GameScreen implements Screen {
         }
         SpriteButton itemButton =
                 new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
-                        loacationX[gameItemArray.size], locationY, game.getSpriteBatch(), viewport) {
+                                 loacationX[gameItemArray.size], locationY, game.getSpriteBatch(),
+                                 viewport) {
                     @Override
                     public void actionTap() {
                         Gdx.app.log("GameScreen", "item tap" + String.valueOf(getId()));
@@ -244,8 +251,10 @@ public class GameScreen implements Screen {
             itemButton.setTopTexture(itemTexture);
         }
         itemButton.setColorEffect(true,
-                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
-                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
+                                  GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                  GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
+                                  GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                  GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
         itemButton.setId(gameItem);
         itemButton.setStateInt(condition);
 
@@ -356,10 +365,10 @@ public class GameScreen implements Screen {
 
     private void createGameBoard(float centerX, float centerY) {
         gameBoard = new GameBoard(game.getResourcesManager().getTexture_game_cell_134x134(),
-                game.getResourcesManager().getTexture_dotsArray(),
-                centerX, centerY,
-                GameLevel.getLevel(getGameLevel()).getBoard(),
-                batch, true);
+                                  game.getResourcesManager().getTexture_dotsArray(),
+                                  centerX, centerY,
+                                  GameLevel.getLevel(getGameLevel()).getBoard(),
+                                  batch, true);
 
         Timer.schedule(new Timer.Task() {
             @Override
@@ -443,7 +452,7 @@ public class GameScreen implements Screen {
 
     private void createHomeButton(float x, float y) {
         this.homeButton = new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
-                x, y, batch, viewport) {
+                                           x, y, batch, viewport) {
             @Override
             public void actionTouchDown() {
                 game.getResourcesManager().getSound_tap().play();
@@ -463,8 +472,10 @@ public class GameScreen implements Screen {
         };
         homeButton.setTopTexture(game.getResourcesManager().getTexture_game_home_btn());
         homeButton.setColorEffect(true,
-                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
-                GameColor.GAME_HOME_BUTTON_DIS_NORMAL, GameColor.GAME_HOME_BUTTON_DIS_TOUCHDOWN);
+                                  GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                  GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
+                                  GameColor.GAME_HOME_BUTTON_DIS_NORMAL,
+                                  GameColor.GAME_HOME_BUTTON_DIS_TOUCHDOWN);
 
         renderableObjectArray.add(homeButton);
         gestureDetectableButtonArray.addAll(homeButton);
@@ -484,7 +495,8 @@ public class GameScreen implements Screen {
 
     private void checkInterstitialAd() {
         int gamePlayCount = game.getGameConfiguration().getGamePlayCount();
-        int adCount = Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 4 ? INTERSTITAL_AD_COUNT : 4;
+        int adCount =
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 4 ? INTERSTITAL_AD_COUNT : 4;
 
         if (gamePlayCount % adCount == adCount - 1) {
             game.getLauncherHandler().loadAdmobInterstital(new AdmobAdListener() {
@@ -497,7 +509,7 @@ public class GameScreen implements Screen {
                 @Override
                 public void onAdFailedToLoad(int errorCode) {
                     Gdx.app.log("GameScreen", "Admob interstitial loaded failed : "
-                            + String.valueOf(errorCode));
+                                              + String.valueOf(errorCode));
                     setAdmobInterstitialAdLoaded(false);
                 }
 
@@ -607,7 +619,8 @@ public class GameScreen implements Screen {
         disposeMusicBgm();
         game.getGameConfiguration().increaseGamePlayCount();
         showInterstitialAd();
-        game.setScreen(new LoadingScreen(game, gameLevel < GameLevel.getMaxLevel() ? gameLevel + 1 : gameLevel));
+        game.setScreen(new LoadingScreen(game, gameLevel < GameLevel.getMaxLevel() ? gameLevel + 1 :
+                gameLevel));
     }
 
     private void popUpSuccessDialog() {
@@ -619,80 +632,90 @@ public class GameScreen implements Screen {
         }
 
         setDialogShow(true);
-        ReallySimpleDialog dialog = new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_870x718()
-                , 0, 0, true, batch);
+        ReallySimpleDialog dialog =
+                new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_870x718()
+                        , 0, 0, true, batch);
         dialog.setCenterLocation(game.getGameConfiguration().getViewportWidth() / 2f
                 , game.getGameConfiguration().getViewportHeight() / 2f);
         dialog.setId(DIALOG_SUCCESS);
 
-        SpriteGameObject dialogHat = new SpriteGameObject(game.getResourcesManager().getTexture_dialog_hat_770x288(),
-                50f, 380f).setSpriteBatch(batch);
+        SpriteGameObject dialogHat =
+                new SpriteGameObject(game.getResourcesManager().getTexture_dialog_hat_770x288(),
+                                     50f, 380f).setSpriteBatch(batch);
         dialogHat.getSprite().setColor(GameColor.BUTTON_BLUE_NORMAL);
         dialogHat.enableDrawSprite(true);
         dialog.addSpriteGameObject(dialogHat);
 
-        dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_dialog_text_success()
-                , 321f, 455f, true)
-                .setSpriteBatch(batch));
+        dialog.addGameObject(
+                new GameObject(game.getResourcesManager().getTexture_dialog_text_success()
+                        , 321f, 455f, true)
+                        .setSpriteBatch(batch));
 
-        dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_t35_challenage_next_level()
-                , 183f, 270f, true)
-                .setSpriteBatch(batch));
+        dialog.addGameObject(
+                new GameObject(game.getResourcesManager().getTexture_t35_challenage_next_level()
+                        , 183f, 270f, true)
+                        .setSpriteBatch(batch));
 
-        final SpriteButton nextButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                , 465f, 121f, batch, viewport) {
-            @Override
-            public void actionTouchDown() {
-                super.actionTouchDown();
-                game.getResourcesManager().getSound_tap().play();
-            }
+        final SpriteButton nextButton =
+                new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
+                        , 465f, 121f, batch, viewport) {
+                    @Override
+                    public void actionTouchDown() {
+                        super.actionTouchDown();
+                        game.getResourcesManager().getSound_tap().play();
+                    }
 
-            @Override
-            public void actionTap() {
-                super.actionTap();
-                goNextLevel();
+                    @Override
+                    public void actionTap() {
+                        super.actionTap();
+                        goNextLevel();
 
-            }
-        };
+                    }
+                };
         nextButton.setTopTexture(game.getResourcesManager().getTexture_btn_text_next());
         nextButton.enableDrawSprite(true);
         nextButton.setColorEffect(true,
-                GameColor.BUTTON_BLUE_NORMAL, GameColor.BUTTON_BLUE_TOUCHDOWN,
-                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+                                  GameColor.BUTTON_BLUE_NORMAL, GameColor.BUTTON_BLUE_TOUCHDOWN,
+                                  GameColor.MEMU_START_BUTTON_DIS_NORMAL,
+                                  GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
-        final SpriteButton replayButton = new SpriteButton(game.getResourcesManager().getTexture_btn_replay_105x105()
-                , 4273f, 121f, batch, viewport) {
-            @Override
-            public void actionTouchDown() {
-                super.actionTouchDown();
-                game.getResourcesManager().getSound_tap().play();
-            }
+        final SpriteButton replayButton =
+                new SpriteButton(game.getResourcesManager().getTexture_btn_replay_105x105()
+                        , 4273f, 121f, batch, viewport) {
+                    @Override
+                    public void actionTouchDown() {
+                        super.actionTouchDown();
+                        game.getResourcesManager().getSound_tap().play();
+                    }
 
-            @Override
-            public void actionTap() {
-                super.actionTap();
-                replayThiLevel();
+                    @Override
+                    public void actionTap() {
+                        super.actionTap();
+                        replayThiLevel();
 
-            }
-        };
+                    }
+                };
         replayButton.enableDrawSprite(true);
         replayButton.setColorEffect(true,
-                GameColor.BUTTON_BROWN_NORMAL, GameColor.BUTTON_BROWN_TOUCHDOWN,
-                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+                                    GameColor.BUTTON_BROWN_NORMAL, GameColor.BUTTON_BROWN_TOUCHDOWN,
+                                    GameColor.MEMU_START_BUTTON_DIS_NORMAL,
+                                    GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
-        final SpriteButton goHomeButton = new SpriteButton(game.getResourcesManager().getTexture_btn_home_105x105()
-                , 103f, 121f, batch, viewport) {
-            @Override
-            public void actionTap() {
-                super.actionTap();
-                gotoMenuScreen();
+        final SpriteButton goHomeButton =
+                new SpriteButton(game.getResourcesManager().getTexture_btn_home_105x105()
+                        , 103f, 121f, batch, viewport) {
+                    @Override
+                    public void actionTap() {
+                        super.actionTap();
+                        gotoMenuScreen();
 
-            }
-        };
+                    }
+                };
         goHomeButton.enableDrawSprite(true);
         goHomeButton.setColorEffect(true,
-                GameColor.BUTTON_BROWN_NORMAL, GameColor.BUTTON_BROWN_TOUCHDOWN,
-                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+                                    GameColor.BUTTON_BROWN_NORMAL, GameColor.BUTTON_BROWN_TOUCHDOWN,
+                                    GameColor.MEMU_START_BUTTON_DIS_NORMAL,
+                                    GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
         dialog.addSpriteButton(goHomeButton);
         dialog.addSpriteButton(replayButton);
@@ -700,7 +723,7 @@ public class GameScreen implements Screen {
 
 
         dialog.moveY(game.getGameConfiguration().getViewportHeight(),
-                dialog.getLocationY(), 0.5f);
+                     dialog.getLocationY(), 0.5f);
 
         dialog.addActionListener(new ObjectActionListener() {
             @Override
@@ -731,73 +754,81 @@ public class GameScreen implements Screen {
         }
 
         setDialogShow(true);
-        ReallySimpleDialog dialog = new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_870x718()
-                , 0, 0, true, batch);
+        ReallySimpleDialog dialog =
+                new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_870x718()
+                        , 0, 0, true, batch);
         dialog.setCenterLocation(game.getGameConfiguration().getViewportWidth() / 2f
                 , game.getGameConfiguration().getViewportHeight() / 2f);
         dialog.setId(DIALOG_SUCCESS);
 
-        SpriteGameObject dialogHat = new SpriteGameObject(game.getResourcesManager().getTexture_dialog_hat_770x288(),
-                50f, 380f).setSpriteBatch(batch);
+        SpriteGameObject dialogHat =
+                new SpriteGameObject(game.getResourcesManager().getTexture_dialog_hat_770x288(),
+                                     50f, 380f).setSpriteBatch(batch);
         dialogHat.getSprite().setColor(GameColor.BUTTON_GREEN_NORMAL);
         dialogHat.enableDrawSprite(true);
         dialog.addSpriteGameObject(dialogHat);
 
-        dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_dialog_text_clear_all()
-                , 158f, 455f, true)
-                .setSpriteBatch(batch));
+        dialog.addGameObject(
+                new GameObject(game.getResourcesManager().getTexture_dialog_text_clear_all()
+                        , 158f, 455f, true)
+                        .setSpriteBatch(batch));
 
-        dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_t35_you_are_the_best()
-                , 232f, 270f, true)
-                .setSpriteBatch(batch));
+        dialog.addGameObject(
+                new GameObject(game.getResourcesManager().getTexture_t35_you_are_the_best()
+                        , 232f, 270f, true)
+                        .setSpriteBatch(batch));
 
-        final SpriteButton replayButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                , 465f, 121f, batch, viewport) {
-            @Override
-            public void actionTouchDown() {
-                super.actionTouchDown();
-                game.getResourcesManager().getSound_tap().play();
-            }
+        final SpriteButton replayButton =
+                new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
+                        , 465f, 121f, batch, viewport) {
+                    @Override
+                    public void actionTouchDown() {
+                        super.actionTouchDown();
+                        game.getResourcesManager().getSound_tap().play();
+                    }
 
-            @Override
-            public void actionTap() {
-                super.actionTap();
-                replayThiLevel();
+                    @Override
+                    public void actionTap() {
+                        super.actionTap();
+                        replayThiLevel();
 
-            }
-        };
+                    }
+                };
         replayButton.setTopTexture(game.getResourcesManager().getTexture_btn_text_replay());
         replayButton.enableDrawSprite(true);
         replayButton.setColorEffect(true,
-                GameColor.BUTTON_GREEN_NORMAL, GameColor.BUTTON_GREEN_TOUCHDOWN,
-                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+                                    GameColor.BUTTON_GREEN_NORMAL, GameColor.BUTTON_GREEN_TOUCHDOWN,
+                                    GameColor.MEMU_START_BUTTON_DIS_NORMAL,
+                                    GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
-        final SpriteButton goHomeButton = new SpriteButton(game.getResourcesManager().getTexture_btn_home_105x105()
-                , 103f, 121f, batch, viewport) {
-            @Override
-            public void actionTouchDown() {
-                super.actionTouchDown();
-                game.getResourcesManager().getSound_tap().play();
-            }
+        final SpriteButton goHomeButton =
+                new SpriteButton(game.getResourcesManager().getTexture_btn_home_105x105()
+                        , 103f, 121f, batch, viewport) {
+                    @Override
+                    public void actionTouchDown() {
+                        super.actionTouchDown();
+                        game.getResourcesManager().getSound_tap().play();
+                    }
 
-            @Override
-            public void actionTap() {
-                super.actionTap();
-                gotoMenuScreen();
+                    @Override
+                    public void actionTap() {
+                        super.actionTap();
+                        gotoMenuScreen();
 
-            }
-        };
+                    }
+                };
         goHomeButton.enableDrawSprite(true);
         goHomeButton.setColorEffect(true,
-                GameColor.BUTTON_BROWN_NORMAL, GameColor.BUTTON_BROWN_TOUCHDOWN,
-                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+                                    GameColor.BUTTON_BROWN_NORMAL, GameColor.BUTTON_BROWN_TOUCHDOWN,
+                                    GameColor.MEMU_START_BUTTON_DIS_NORMAL,
+                                    GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
         dialog.addSpriteButton(goHomeButton);
         dialog.addSpriteButton(replayButton);
 
 
         dialog.moveY(game.getGameConfiguration().getViewportHeight(),
-                dialog.getLocationY(), 0.5f);
+                     dialog.getLocationY(), 0.5f);
 
         dialog.addActionListener(new ObjectActionListener() {
             @Override
@@ -832,79 +863,87 @@ public class GameScreen implements Screen {
             strDotsNumsOnBoard += " , " + String.valueOf(dotsNumOnBoard);
         }
         Gdx.app.log("dotsonboard", "Level " + String.valueOf(getGameLevel()) +
-                " : moves=" + String.valueOf(topDisplayPanel.getGameMovesNumber())
-                + "times=" + String.valueOf(topDisplayPanel.getGameTimeSec())
-                + "dots on board=" + strDotsNumsOnBoard);
+                                   " : moves=" +
+                                   String.valueOf(topDisplayPanel.getGameMovesNumber())
+                                   + "times=" + String.valueOf(topDisplayPanel.getGameTimeSec())
+                                   + "dots on board=" + strDotsNumsOnBoard);
         //=======================
 
         setDialogShow(true);
-        ReallySimpleDialog dialog = new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_870x718()
-                , 0, 0, true, batch);
+        ReallySimpleDialog dialog =
+                new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_870x718()
+                        , 0, 0, true, batch);
         dialog.setCenterLocation(game.getGameConfiguration().getViewportWidth() / 2f
                 , game.getGameConfiguration().getViewportHeight() / 2f);
         dialog.setId(DIALOG_FAIL);
 
-        SpriteGameObject dialogHat = new SpriteGameObject(game.getResourcesManager().getTexture_dialog_hat_770x288(),
-                50f, 380f).setSpriteBatch(batch);
+        SpriteGameObject dialogHat =
+                new SpriteGameObject(game.getResourcesManager().getTexture_dialog_hat_770x288(),
+                                     50f, 380f).setSpriteBatch(batch);
         dialogHat.getSprite().setColor(GameColor.BUTTON_PINK_NORMAL);
         dialogHat.enableDrawSprite(true);
         dialog.addSpriteGameObject(dialogHat);
 
-        dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_dialog_text_failed()
-                , 338f, 455f, true)
-                .setSpriteBatch(batch));
+        dialog.addGameObject(
+                new GameObject(game.getResourcesManager().getTexture_dialog_text_failed()
+                        , 338f, 455f, true)
+                        .setSpriteBatch(batch));
 
         dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_t35_try_again()
                 , 309f, 270f, true)
-                .setSpriteBatch(batch));
+                                     .setSpriteBatch(batch));
 
-        final SpriteButton replayButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                , 465f, 121f, batch, viewport) {
-            @Override
-            public void actionTouchDown() {
-                super.actionTouchDown();
-                game.getResourcesManager().getSound_tap().play();
-            }
+        final SpriteButton replayButton =
+                new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
+                        , 465f, 121f, batch, viewport) {
+                    @Override
+                    public void actionTouchDown() {
+                        super.actionTouchDown();
+                        game.getResourcesManager().getSound_tap().play();
+                    }
 
-            @Override
-            public void actionTap() {
-                super.actionTap();
-                replayThiLevel();
+                    @Override
+                    public void actionTap() {
+                        super.actionTap();
+                        replayThiLevel();
 
-            }
-        };
+                    }
+                };
         replayButton.setTopTexture(game.getResourcesManager().getTexture_btn_text_replay());
         replayButton.enableDrawSprite(true);
         replayButton.setColorEffect(true,
-                GameColor.BUTTON_PINK_NORMAL, GameColor.BUTTON_PINK_TOUCHDOWN,
-                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+                                    GameColor.BUTTON_PINK_NORMAL, GameColor.BUTTON_PINK_TOUCHDOWN,
+                                    GameColor.MEMU_START_BUTTON_DIS_NORMAL,
+                                    GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
-        final SpriteButton goHomeButton = new SpriteButton(game.getResourcesManager().getTexture_btn_home_105x105()
-                , 103f, 121f, batch, viewport) {
-            @Override
-            public void actionTouchDown() {
-                super.actionTouchDown();
-                game.getResourcesManager().getSound_tap().play();
-            }
+        final SpriteButton goHomeButton =
+                new SpriteButton(game.getResourcesManager().getTexture_btn_home_105x105()
+                        , 103f, 121f, batch, viewport) {
+                    @Override
+                    public void actionTouchDown() {
+                        super.actionTouchDown();
+                        game.getResourcesManager().getSound_tap().play();
+                    }
 
-            @Override
-            public void actionTap() {
-                super.actionTap();
-                gotoMenuScreen();
+                    @Override
+                    public void actionTap() {
+                        super.actionTap();
+                        gotoMenuScreen();
 
-            }
-        };
+                    }
+                };
         goHomeButton.enableDrawSprite(true);
         goHomeButton.setColorEffect(true,
-                GameColor.BUTTON_BROWN_NORMAL, GameColor.BUTTON_BROWN_TOUCHDOWN,
-                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+                                    GameColor.BUTTON_BROWN_NORMAL, GameColor.BUTTON_BROWN_TOUCHDOWN,
+                                    GameColor.MEMU_START_BUTTON_DIS_NORMAL,
+                                    GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
         dialog.addSpriteButton(goHomeButton);
         dialog.addSpriteButton(replayButton);
 
 
         dialog.moveY(game.getGameConfiguration().getViewportHeight(),
-                dialog.getLocationY(), 0.5f);
+                     dialog.getLocationY(), 0.5f);
 
         dialog.addActionListener(new ObjectActionListener() {
             @Override
@@ -934,54 +973,61 @@ public class GameScreen implements Screen {
             }
         } else {
             setDialogShow(true);
-            ReallySimpleDialog dialog = new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_847x406()
-                    , 0, 0, true, batch);
+            ReallySimpleDialog dialog =
+                    new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_847x406()
+                            , 0, 0, true, batch);
             dialog.setCenterLocation(game.getGameConfiguration().getViewportWidth() / 2f
                     , game.getGameConfiguration().getViewportHeight() / 2f);
-            dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_text_ask_exit()
-                    , 94f, 271f, true)
-                    .setSpriteBatch(batch));
+            dialog.addGameObject(
+                    new GameObject(game.getResourcesManager().getTexture_text_ask_exit()
+                            , 94f, 271f, true)
+                            .setSpriteBatch(batch));
             dialog.setId(DIALOG_TOMEMU);
 
-            final SpriteButton goHomeButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                    , 94f, 105f, batch, viewport) {
-                @Override
-                public void actionTouchDown() {
-                    super.actionTouchDown();
-                    game.getResourcesManager().getSound_tap().play();
-                }
+            final SpriteButton goHomeButton =
+                    new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
+                            , 94f, 105f, batch, viewport) {
+                        @Override
+                        public void actionTouchDown() {
+                            super.actionTouchDown();
+                            game.getResourcesManager().getSound_tap().play();
+                        }
 
-                @Override
-                public void actionTap() {
-                    super.actionTap();
-                    gotoMenuScreen();
-                }
-            };
+                        @Override
+                        public void actionTap() {
+                            super.actionTap();
+                            gotoMenuScreen();
+                        }
+                    };
             goHomeButton.setTopTexture(game.getResourcesManager().getTexture_btn_text_home());
             goHomeButton.enableDrawSprite(true);
             goHomeButton.setColorEffect(true,
-                    GameColor.BUTTON_BLUE_NORMAL, GameColor.BUTTON_BLUE_TOUCHDOWN,
-                    GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+                                        GameColor.BUTTON_BLUE_NORMAL,
+                                        GameColor.BUTTON_BLUE_TOUCHDOWN,
+                                        GameColor.MEMU_START_BUTTON_DIS_NORMAL,
+                                        GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
-            final SpriteButton stayButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                    , 452f, 105f, batch, viewport) {
-                @Override
-                public void actionTouchDown() {
-                    super.actionTouchDown();
-                    game.getResourcesManager().getSound_tap().play();
-                }
+            final SpriteButton stayButton =
+                    new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
+                            , 452f, 105f, batch, viewport) {
+                        @Override
+                        public void actionTouchDown() {
+                            super.actionTouchDown();
+                            game.getResourcesManager().getSound_tap().play();
+                        }
 
-                @Override
-                public void actionTap() {
-                    super.actionTap();
-                    killDialog();
-                }
-            };
+                        @Override
+                        public void actionTap() {
+                            super.actionTap();
+                            killDialog();
+                        }
+                    };
             stayButton.setTopTexture(game.getResourcesManager().getTexture_btn_text_stay());
             stayButton.enableDrawSprite(true);
             stayButton.setColorEffect(true,
-                    GameColor.BUTTON_PINK_NORMAL, GameColor.BUTTON_PINK_TOUCHDOWN,
-                    GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+                                      GameColor.BUTTON_PINK_NORMAL, GameColor.BUTTON_PINK_TOUCHDOWN,
+                                      GameColor.MEMU_START_BUTTON_DIS_NORMAL,
+                                      GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
 
             dialog.addSpriteButton(goHomeButton);
@@ -989,7 +1035,7 @@ public class GameScreen implements Screen {
 
 
             dialog.moveY(game.getGameConfiguration().getViewportHeight(),
-                    dialog.getLocationY(), 0.2f);
+                         dialog.getLocationY(), 0.2f);
 
             dialog.addActionListener(new ObjectActionListener() {
                 @Override
@@ -1118,7 +1164,8 @@ public class GameScreen implements Screen {
             }
 
             @Override
-            public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+            public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1,
+                    Vector2 pointer2) {
                 return super.pinch(initialPointer1, initialPointer2, pointer1, pointer2);
             }
 
@@ -1219,6 +1266,10 @@ public class GameScreen implements Screen {
         for (Renderable itemObj : gameItemArray) {
             itemObj.render(delta);
         }
+
+        for (Renderable renderable : topRenderableArray) {
+            renderable.render(delta);
+        }
         if (isDialogShow() & getDialog() != null) {
             getDialog().render(delta);
         }
@@ -1231,6 +1282,7 @@ public class GameScreen implements Screen {
         renderableObjectArray = new Array<Renderable>();
         gestureDetectableButtonArray = new Array<GestureDetectableButton>();
         gameItemArray = new Array<SpriteButton>();
+        topRenderableArray = new Array<Renderable>();
 
         checkInterstitialAd();
         loadAdmobRewardedVideoAd();
@@ -1292,6 +1344,69 @@ public class GameScreen implements Screen {
         this.itemDiceMissleMovesCondition = itemDiceMissleMovesCondition;
     }
 
+    private void popupMissionClear() {
+        final SpriteGameObject popup
+                = new SpriteGameObject(ResourcesManager.getInstance()
+                                               .getTexture_missionClearPopup(
+                                                       incMissionClearPopupIndex()), 0, 0)
+                .setSpriteBatch(batch).enableDrawSprite(true);
+
+        popup.setLocationX(viewport.getWorldWidth() / 2f - popup.getWidth() / 2f);
+        popup.actionAlpha(0.5f, 1f, 0.5f);
+        popup.actionScale(0.8f, 1f, 1.2f);
+        popup.moveY(viewport.getWorldHeight() * 0.5f, viewport.getWorldHeight() * 0.7f, 0.25f);
+        popup.addSpriteActionListener(new SpriteActionListener() {
+            @Override
+            public void onActionScaleStarted() {
+
+            }
+
+            @Override
+            public void onActionScaleCompleted() {
+                topRenderableArray.removeValue(popup, false);
+            }
+
+            @Override
+            public void onActionAlphaStarted() {
+
+            }
+
+            @Override
+            public void onActionAlphaCompleted() {
+                popup.actionRotate(0f, 15f, 0.5f);
+            }
+
+            @Override
+            public void onActionRotateStarted() {
+
+            }
+
+            @Override
+            public void onActionRotateCompleted() {
+
+            }
+        });
+
+        topRenderableArray.add(popup);
+    }
+
+    public int getMissionClearPopupIndex() {
+        return missionClearPopupIndex;
+    }
+
+    public void setMissionClearPopupIndex(int missionClearPopupIndex) {
+        this.missionClearPopupIndex = missionClearPopupIndex;
+    }
+
+    private int incMissionClearPopupIndex() {
+        if (getMissionClearPopupIndex() < this.POPUP_COUNT - 1) {
+            setMissionClearPopupIndex(getMissionClearPopupIndex() + 1);
+        } else {
+            setMissionClearPopupIndex(0);
+        }
+        return getMissionClearPopupIndex();
+    }
+
     public class MissionPanel implements Renderable {
         private float locationY;
         private float locationX = 0f;
@@ -1317,7 +1432,8 @@ public class GameScreen implements Screen {
             for (MissionDots mission : missionDots) {
                 for (int i = 0; i < mission.getMissionCount(); i++) {
                     DotsOfMission dotsMission = new DotsOfMission(
-                            game.getResourcesManager().getTexture_menu_dotsArray().get(mission.getMissionDots() - 1),
+                            game.getResourcesManager().getTexture_menu_dotsArray()
+                                    .get(mission.getMissionDots() - 1),
                             missionDotsPositions[index].getX(), missionDotsPositions[index].getY(),
                             mission.getMissionDots());
                     dotsMission.setSpriteBatch(batch);
@@ -1331,26 +1447,30 @@ public class GameScreen implements Screen {
 
         private void calcLocationX() {
             this.locationX = (game.getGameConfiguration().getViewportWidth()
-                    - game.getResourcesManager().getTexture_game_mission_info_bg().getWidth()) / 2f;
+                              - game.getResourcesManager().getTexture_game_mission_info_bg()
+                                      .getWidth()) / 2f;
         }
 
         private void calcDotsPositions() {
             final int MISSION_COUNT = 9;
             final float OFFSET_X = 25f;
-            final float DOTS_SIZE = (float) game.getResourcesManager().getTexture_rect_90x90().getHeight();
+            final float DOTS_SIZE =
+                    (float) game.getResourcesManager().getTexture_rect_90x90().getHeight();
 
             final float POSITION_Y
-                    = ((float) game.getResourcesManager().getTexture_game_mission_info_bg().getHeight()
-                    - DOTS_SIZE) / 2f;
+                    = ((float) game.getResourcesManager().getTexture_game_mission_info_bg()
+                    .getHeight()
+                       - DOTS_SIZE) / 2f;
             final float DOTS_GAP
                     = (game.getResourcesManager().getTexture_game_mission_info_bg().getWidth()
-                    - DOTS_SIZE * MISSION_COUNT - 2 * OFFSET_X) / 8f;
+                       - DOTS_SIZE * MISSION_COUNT - 2 * OFFSET_X) / 8f;
 
             missionDotsPositions = new Position2D[MISSION_COUNT];
 
             for (int i = 0; i < MISSION_COUNT; i++) {
-                missionDotsPositions[i] = new Position2D(locationX + OFFSET_X + (DOTS_SIZE + DOTS_GAP) * i,
-                        locationY + POSITION_Y);
+                missionDotsPositions[i] =
+                        new Position2D(locationX + OFFSET_X + (DOTS_SIZE + DOTS_GAP) * i,
+                                       locationY + POSITION_Y);
             }
 
             loadMissions();
@@ -1358,7 +1478,8 @@ public class GameScreen implements Screen {
 
         @Override
         public void render(float delta) {
-            batch.draw(game.getResourcesManager().getTexture_game_mission_info_bg(), locationX, locationY);
+            batch.draw(game.getResourcesManager().getTexture_game_mission_info_bg(), locationX,
+                       locationY);
 
             for (DotsOfMission mission : dotsOfMissions) {
                 mission.render(delta);
@@ -1371,7 +1492,9 @@ public class GameScreen implements Screen {
             for (DotsOfMission mission : dotsOfMissions) {
                 if (!mission.isMissionCleared() & mission.getDotNum() == mergedDotsNum) {
                     mission.setMissionCleared(true);
-                    game.getLauncherHandler().toastMessage(mergedDotsNum % 2 == 0 ? "Wow" : "Nice");
+//                    todo : apply mission clear pop up
+//                    game.getLauncherHandler().toastMessage(mergedDotsNum % 2 == 0 ? "Wow" : "Nice");
+                    popupMissionClear();
                     return true;
                 }
             }
@@ -1418,10 +1541,15 @@ public class GameScreen implements Screen {
                 super.render(delta);
                 if (isMissionCleared()) {
                     batch.draw(game.getResourcesManager().getTexture_level_selected_circle(),
-                            getCenterX() - game.getResourcesManager().getTexture_level_selected_circle().getWidth() / 2f,
-                            getCenterY() - game.getResourcesManager().getTexture_level_selected_circle().getHeight() / 2f);
+                               getCenterX() -
+                               game.getResourcesManager().getTexture_level_selected_circle()
+                                       .getWidth() / 2f,
+                               getCenterY() -
+                               game.getResourcesManager().getTexture_level_selected_circle()
+                                       .getHeight() / 2f);
                 }
-                getSprite().setPosition(getLocationFollowingLeaderX(), getLocationFollowingLeaderY());
+                getSprite()
+                        .setPosition(getLocationFollowingLeaderX(), getLocationFollowingLeaderY());
                 getSprite().draw(batch);
             }
 
@@ -1483,8 +1611,9 @@ public class GameScreen implements Screen {
             if (getGameMovesNumber() != gameMovesNumber) {
                 this.gameMovesNumber = gameMovesNumber;
                 movesNumber.setNumber(getGameMovesNumber());
-                movesNumber.setOrigin(new Position2D(locationX + RIGHT_ALIGN_X - movesNumber.getSpriteNumWidth(),
-                        locationY + MOVES_ORIGIN_Y));
+                movesNumber.setOrigin(
+                        new Position2D(locationX + RIGHT_ALIGN_X - movesNumber.getSpriteNumWidth(),
+                                       locationY + MOVES_ORIGIN_Y));
             }
 
         }
@@ -1495,15 +1624,21 @@ public class GameScreen implements Screen {
 
         private void initMovesNumSprite() {
             movesNumber = new SpriteNumber(game.getResourcesManager().getTexture_t35NumArray(),
-                    0, batch, true);
+                                           0, batch, true);
             setGameMovesNumber(0);
             renderableArray.add(movesNumber);
         }
 
         private void initTimeSprites() {
-            timeHourNumber = new SpriteNumber(game.getResourcesManager().getTexture_t35NumArray(), 0, batch, false);
-            timeMinNumber = new SpriteNumber(game.getResourcesManager().getTexture_t35NumArray(), 0, batch, false);
-            timeSecNumber = new SpriteNumber(game.getResourcesManager().getTexture_t35NumArray(), 0, batch, false);
+            timeHourNumber =
+                    new SpriteNumber(game.getResourcesManager().getTexture_t35NumArray(), 0, batch,
+                                     false);
+            timeMinNumber =
+                    new SpriteNumber(game.getResourcesManager().getTexture_t35NumArray(), 0, batch,
+                                     false);
+            timeSecNumber =
+                    new SpriteNumber(game.getResourcesManager().getTexture_t35NumArray(), 0, batch,
+                                     false);
 
             timeText_h = new GameObject(game.getResourcesManager().getTexture_t35_h(), 0, 0, false)
                     .setSpriteBatch(batch);
@@ -1534,48 +1669,56 @@ public class GameScreen implements Screen {
 
             if (hour != 0) {//h:m:s
                 timeHourNumber.setNumber(hour);
-                timeHourNumber.setOrigin(new Position2D(locationX + TIME_ORIGIN_X, locationY + TIME_ORIGIN_Y));
+                timeHourNumber.setOrigin(
+                        new Position2D(locationX + TIME_ORIGIN_X, locationY + TIME_ORIGIN_Y));
                 timeHourNumber.setShow(true);
 
                 timeText_h.setLocation(timeHourNumber.getRightEdgeX() + timeHourNumber.getGap(),
-                        locationY + TIME_ORIGIN_Y);
+                                       locationY + TIME_ORIGIN_Y);
                 timeText_h.setShow(true);
 
                 timeMinNumber.setNumber(min);
                 timeMinNumber.setOrigin(new Position2D(timeText_h.getLocationX()
-                        + timeText_h.getWidth() + timeHourNumber.getGap(), locationY + TIME_ORIGIN_Y));
+                                                       + timeText_h.getWidth() +
+                                                       timeHourNumber.getGap(),
+                                                       locationY + TIME_ORIGIN_Y));
                 timeMinNumber.setShow(true);
 
                 timeText_m.setLocation(timeMinNumber.getRightEdgeX() + timeMinNumber.getGap(),
-                        locationY + TIME_ORIGIN_Y);
+                                       locationY + TIME_ORIGIN_Y);
                 timeText_m.setShow(true);
 
                 timeSecNumber.setNumber(sec);
                 timeSecNumber.setOrigin(new Position2D(timeText_m.getLocationX()
-                        + timeText_m.getWidth() + timeMinNumber.getGap(), locationY + TIME_ORIGIN_Y));
+                                                       + timeText_m.getWidth() +
+                                                       timeMinNumber.getGap(),
+                                                       locationY + TIME_ORIGIN_Y));
                 timeSecNumber.setShow(true);
 
                 timeText_s.setLocation(timeSecNumber.getRightEdgeX() + timeSecNumber.getGap(),
-                        locationY + TIME_ORIGIN_Y);
+                                       locationY + TIME_ORIGIN_Y);
                 timeText_s.setShow(true);
             } else if (min != 0) {//m:s
                 timeHourNumber.setShow(false);
 
                 timeMinNumber.setNumber(min);
-                timeMinNumber.setOrigin(new Position2D(locationX + TIME_ORIGIN_X, locationY + TIME_ORIGIN_Y));
+                timeMinNumber.setOrigin(
+                        new Position2D(locationX + TIME_ORIGIN_X, locationY + TIME_ORIGIN_Y));
                 timeMinNumber.setShow(true);
 
                 timeText_m.setLocation(timeMinNumber.getRightEdgeX() + timeMinNumber.getGap(),
-                        locationY + TIME_ORIGIN_Y);
+                                       locationY + TIME_ORIGIN_Y);
                 timeText_m.setShow(true);
 
                 timeSecNumber.setNumber(sec);
                 timeSecNumber.setOrigin(new Position2D(timeText_m.getLocationX()
-                        + timeText_m.getWidth() + timeMinNumber.getGap(), locationY + TIME_ORIGIN_Y));
+                                                       + timeText_m.getWidth() +
+                                                       timeMinNumber.getGap(),
+                                                       locationY + TIME_ORIGIN_Y));
                 timeSecNumber.setShow(true);
 
                 timeText_s.setLocation(timeSecNumber.getRightEdgeX() + timeSecNumber.getGap(),
-                        locationY + TIME_ORIGIN_Y);
+                                       locationY + TIME_ORIGIN_Y);
                 timeText_s.setShow(true);
 
             } else {//s
@@ -1583,11 +1726,12 @@ public class GameScreen implements Screen {
                 timeMinNumber.setShow(false);
 
                 timeSecNumber.setNumber(sec);
-                timeSecNumber.setOrigin(new Position2D(locationX + TIME_ORIGIN_X, locationY + TIME_ORIGIN_Y));
+                timeSecNumber.setOrigin(
+                        new Position2D(locationX + TIME_ORIGIN_X, locationY + TIME_ORIGIN_Y));
                 timeSecNumber.setShow(true);
 
                 timeText_s.setLocation(timeSecNumber.getRightEdgeX() + timeSecNumber.getGap(),
-                        locationY + TIME_ORIGIN_Y);
+                                       locationY + TIME_ORIGIN_Y);
                 timeText_s.setShow(true);
 
             }
@@ -1603,7 +1747,7 @@ public class GameScreen implements Screen {
                 Sprite sp = new Sprite(game.getResourcesManager().getTexture_rec_10x10());
                 sp.setColor(GameColor.GAME_TIME_PROGRESS_OFF);
                 sp.setPosition(this.locationX + TIME_ORIGIN_X + WITH_GAP * i,
-                        this.locationY + TIME_ORIGIN_Y);
+                               this.locationY + TIME_ORIGIN_Y);
                 spritesTimeProgress.add(sp);
             }
         }
@@ -1632,13 +1776,14 @@ public class GameScreen implements Screen {
             final float GAP_TEXT = 33f;
 
             if (gameLevelNumber == null) {
-                gameLevelNumber = new SpriteNumber(game.getResourcesManager().getTexture_t152NumArray(),
-                        gameLevel, batch);
+                gameLevelNumber =
+                        new SpriteNumber(game.getResourcesManager().getTexture_t152NumArray(),
+                                         gameLevel, batch);
                 gameLevelNumber.setOrigin(new Position2D(locationX, locationY));
 
                 levelText = new GameObject(game.getResourcesManager().getTexture_t19_level(),
-                        gameLevelNumber.getRightEdgeX() + GAP_TEXT,
-                        gameLevelNumber.getOrigin().getY(), true)
+                                           gameLevelNumber.getRightEdgeX() + GAP_TEXT,
+                                           gameLevelNumber.getOrigin().getY(), true)
                         .setSpriteBatch(batch);
 
                 renderableArray.add(gameLevelNumber);
@@ -1698,7 +1843,7 @@ public class GameScreen implements Screen {
                 this.gameTimer200msec = 0f;
                 is200msec = true;
             }
-            if (this.gameTimer1sec >= 1.9990f) {
+            if (this.gameTimer1sec >= 0.9990f) {
                 this.gameTimer1sec = 0f;
                 is1sec = true;
             }

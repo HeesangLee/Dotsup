@@ -20,6 +20,7 @@ public class GameColor {
     public static final Color BUTTON_GREEN_TOUCHDOWN = new Color(0x225500ff);
 
     public static final Color LOADING_CIRCLE_EFFECT = new Color(0xff397f80);
+    public static final Color LOADING_CIRCLE_EFFECT_XDRIVER = new Color(0x37abc880);
 
     public static final Color GAME_HOME_BUTTON_EN_NORMAL = new Color(0xffffff00);
     public static final Color GAME_HOME_BUTTON_EN_TOUCHDOWN = new Color(0xffffff3b);
@@ -31,6 +32,7 @@ public class GameColor {
 
     public static final Color GAME_MISSION_CLEARED_DOTS = new Color(0xff397fff);
     public static final Color GAME_MISSION_DOTS = new Color(0xffffff3c);
+    public static final Color XDRIVE_DISTANCE_NUM = new Color(0xffd42aff);
 
 
     public GameColor() {

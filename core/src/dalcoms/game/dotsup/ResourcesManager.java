@@ -105,8 +105,25 @@ public class ResourcesManager {
     private Texture texture_button_review;
     private Texture texture_button_share;
 
+    private Texture texture_ico_xdriver;
 
+    private Array<Texture> textureCarsArray;
+    private Texture texture_crasheffect;
+    private Texture texture_driving_after_image;
+    private Texture texture_flag;
+    private Texture texture_heart;
+    private Texture texture_hud_bg;
+    private Texture texture_me;
+    private Texture texture_me_light;
+    private Texture texture_roadline;
+    private Texture texture_thumbup;
+    private Texture texture_tire_footprint;
+    private Texture texture_xdriver_title;
+    private Texture texture_text_km;
 
+    private Texture texture_mcpu_1;
+    private Texture texture_mcpu_2;
+    private Texture texture_mcpu_3;
 
 
     private Sound sound_tap;
@@ -164,7 +181,8 @@ public class ResourcesManager {
 
         texture_roundRect_468x148 = new Texture(Gdx.files.internal("roundRect_468x148.png"));
 
-        texture_menu_background_circles = new Texture(Gdx.files.internal("menu_background_circles.png"));
+        texture_menu_background_circles =
+                new Texture(Gdx.files.internal("menu_background_circles.png"));
         texture_text_start = new Texture(Gdx.files.internal("text_start.png"));
 
         texture_t35NumArray = new Array<Texture>() {
@@ -183,9 +201,11 @@ public class ResourcesManager {
         };
 
         texture_level_sel_arrow_left = new Texture(Gdx.files.internal("level_sel_arrow_left.png"));
-        texture_level_sel_arrow_right = new Texture(Gdx.files.internal("level_sel_arrow_right.png"));
+        texture_level_sel_arrow_right =
+                new Texture(Gdx.files.internal("level_sel_arrow_right.png"));
 
-        texture_level_selected_circle = new Texture(Gdx.files.internal("level_selected_circle.png"));
+        texture_level_selected_circle =
+                new Texture(Gdx.files.internal("level_selected_circle.png"));
 
         texture_menu_dotsArray = new Array<Texture>() {
             {
@@ -201,7 +221,8 @@ public class ResourcesManager {
             }
         };
         texture_level_board_rect = new Texture(Gdx.files.internal("level_board_rect.png"));
-        texture_level_board_rect_disabled = new Texture(Gdx.files.internal("level_board_rect_disabled.png"));
+        texture_level_board_rect_disabled =
+                new Texture(Gdx.files.internal("level_board_rect_disabled.png"));
         texture_t35_x = new Texture(Gdx.files.internal("t35_x.png"));
 
         texture_level_lock = new Texture(Gdx.files.internal("level_lock.png"));
@@ -259,11 +280,13 @@ public class ResourcesManager {
         texture_btn_text_replay = new Texture(Gdx.files.internal("btn_text_replay.png"));
         texture_dialog_870x718 = new Texture(Gdx.files.internal("dialog_870x718.png"));
         texture_dialog_hat_770x288 = new Texture(Gdx.files.internal("dialog_hat_770x288.png"));
-        texture_dialog_text_clear_all = new Texture(Gdx.files.internal("dialog_text_clear_all.png"));
+        texture_dialog_text_clear_all =
+                new Texture(Gdx.files.internal("dialog_text_clear_all.png"));
         texture_dialog_text_failed = new Texture(Gdx.files.internal("dialog_text_failed.png"));
         texture_dialog_text_success = new Texture(Gdx.files.internal("dialog_text_success.png"));
 
-        texture_t35_challenage_next_level = new Texture(Gdx.files.internal("t35_challenage_next_level.png"));
+        texture_t35_challenage_next_level =
+                new Texture(Gdx.files.internal("t35_challenage_next_level.png"));
         texture_t35_try_again = new Texture(Gdx.files.internal("t35_try_again.png"));
         texture_t35_you_are_the_best = new Texture(Gdx.files.internal("t35_you_are_the_best.png"));
 
@@ -287,6 +310,46 @@ public class ResourcesManager {
         texture_button_more = new Texture(Gdx.files.internal("button_more.png"));
         texture_button_review = new Texture(Gdx.files.internal("button_review.png"));
         texture_button_share = new Texture(Gdx.files.internal("button_share.png"));
+
+        texture_ico_xdriver = new Texture(Gdx.files.internal("ico_xdriver.png"));
+        texture_tire_footprint = new Texture(Gdx.files.internal("tire_footprint.png"));
+
+        texture_mcpu_1 = new Texture(Gdx.files.internal("mcpu_1.png"));
+        texture_mcpu_2 = new Texture(Gdx.files.internal("mcpu_2.png"));
+        texture_mcpu_3 = new Texture(Gdx.files.internal("mcpu_3.png"));
+
+
+        loadTextureResourcesOfXdriver();
+
+    }
+
+    private void loadTextureResourcesOfXdriver() {
+
+        textureCarsArray = new Array<Texture>() {
+            {
+                add(new Texture(Gdx.files.internal("car_1.png")));
+                add(new Texture(Gdx.files.internal("car_2.png")));
+                add(new Texture(Gdx.files.internal("car_3.png")));
+                add(new Texture(Gdx.files.internal("car_4.png")));
+                add(new Texture(Gdx.files.internal("car_5.png")));
+                add(new Texture(Gdx.files.internal("car_6.png")));
+                add(new Texture(Gdx.files.internal("car_7.png")));
+                add(new Texture(Gdx.files.internal("car_8.png")));
+                add(new Texture(Gdx.files.internal("car_9.png")));
+            }
+        };
+        texture_crasheffect = new Texture(Gdx.files.internal("crasheffect.png"));
+        texture_driving_after_image = new Texture(Gdx.files.internal("driving_after_image.png"));
+        texture_flag = new Texture(Gdx.files.internal("flag.png"));
+        texture_heart = new Texture(Gdx.files.internal("heart.png"));
+        texture_hud_bg = new Texture(Gdx.files.internal("hud_bg.png"));
+        texture_me = new Texture(Gdx.files.internal("me.png"));
+        texture_me_light = new Texture(Gdx.files.internal("me_light.png"));
+        texture_roadline = new Texture(Gdx.files.internal("roadline.png"));
+        texture_thumbup = new Texture(Gdx.files.internal("thumbup.png"));
+        texture_tire_footprint = new Texture(Gdx.files.internal("tire_footprint.png"));
+        texture_xdriver_title = new Texture(Gdx.files.internal("xdriver_title.png"));
+        texture_text_km = new Texture(Gdx.files.internal("text_km.png"));
 
     }
 
@@ -621,6 +684,91 @@ public class ResourcesManager {
 
     public Texture getTexture_game_bottom() {
         return texture_game_bottom;
+    }
+
+    public Texture getTexture_ico_xdriver() {
+        return texture_ico_xdriver;
+    }
+
+    public Texture getTexture_tire_footprint() {
+        return texture_tire_footprint;
+    }
+
+    public Array<Texture> getTextureCarsArray() {
+        return textureCarsArray;
+    }
+
+    public Texture getTextureCar(int index) {
+        return getTextureCarsArray().get(index);
+    }
+
+    public Texture getTexture_crasheffect() {
+        return texture_crasheffect;
+    }
+
+    public Texture getTexture_driving_after_image() {
+        return texture_driving_after_image;
+    }
+
+    public Texture getTexture_flag() {
+        return texture_flag;
+    }
+
+    public Texture getTexture_heart() {
+        return texture_heart;
+    }
+
+    public Texture getTexture_hud_bg() {
+        return texture_hud_bg;
+    }
+
+    public Texture getTexture_me() {
+        return texture_me;
+    }
+
+    public Texture getTexture_me_light() {
+        return texture_me_light;
+    }
+
+    public Texture getTexture_roadline() {
+        return texture_roadline;
+    }
+
+    public Texture getTexture_thumbup() {
+        return texture_thumbup;
+    }
+
+    public Texture getTexture_xdriver_title() {
+        return texture_xdriver_title;
+    }
+
+    public Texture getTexture_text_km() {
+        return texture_text_km;
+    }
+
+    public Texture getTexture_mcpu_1() {
+        return texture_mcpu_1;
+    }
+
+    public Texture getTexture_mcpu_2() {
+        return texture_mcpu_2;
+    }
+
+    public Texture getTexture_mcpu_3() {
+        return texture_mcpu_3;
+    }
+
+    public Texture getTexture_missionClearPopup(int i) {
+        switch (i) {
+            case 0:
+                return getTexture_mcpu_1();
+            case 1:
+                return getTexture_mcpu_2();
+            case 2:
+                return getTexture_mcpu_3();
+            default:
+                return getTexture_mcpu_1();
+        }
     }
 
     public Texture getTexture_level_board_rect_disabled() {

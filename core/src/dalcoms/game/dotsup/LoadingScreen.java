@@ -6,10 +6,13 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class LoadingScreen implements Screen {
 
     final Dotsup game;
+    Viewport viewport;
     OrthographicCamera camera;
     private SpriteBatch batch;
     private Array<Renderable> renderableObjectArray;
@@ -28,6 +31,10 @@ public class LoadingScreen implements Screen {
 
         camera.setToOrtho(false, game.getGameConfiguration().getViewportWidth(),
                 game.getGameConfiguration().getViewportHeight());
+
+        this.viewport = new FitViewport(game.getGameConfiguration().getViewportWidth(),
+                game.getGameConfiguration().getViewportHeight(),
+                camera);
 
         Gdx.input.setCatchBackKey(true);
     }
@@ -157,7 +164,7 @@ public class LoadingScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        viewport.update(width, height);
     }
 
     @Override

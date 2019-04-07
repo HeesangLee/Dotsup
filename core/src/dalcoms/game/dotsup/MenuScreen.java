@@ -18,6 +18,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.HashMap;
 
+import dalcoms.game.dotsup.xdriver.LoadingXdriverScreen;
+
 public class MenuScreen implements Screen {
     final Dotsup game;
     Viewport viewport;
@@ -50,6 +52,9 @@ public class MenuScreen implements Screen {
         this.viewport = new FitViewport(game.getGameConfiguration().getViewportWidth(),
                 game.getGameConfiguration().getViewportHeight(),
                 camera);
+//        this.viewport = new ExtendViewport(game.getGameConfiguration().getViewportWidth(),
+//                game.getGameConfiguration().getViewportHeight(),
+//                camera);
         Gdx.input.setCatchBackKey(true);
     }
 
@@ -221,6 +226,32 @@ public class MenuScreen implements Screen {
 
         initMusicOnOffButton();
         initMarketShareStarButtons();
+        initExtraGameButtons();
+    }
+
+    private void initExtraGameButtons() {
+//        todo : dotsup 업그레이드에 우선 집중 → 나중에 하자.
+//        initXdriverButton();
+    }
+
+    private void initXdriverButton() {
+        SpriteButton xdriverButton =
+                new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
+                        880, 1520, game.getSpriteBatch(), viewport) {
+
+                    @Override
+                    public void actionTap() {
+                        startXdriver();
+                    }
+
+                };
+
+        xdriverButton.setTopTexture(game.getResourcesManager().getTexture_ico_xdriver());
+        xdriverButton.setColorEffect(true,
+                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
+                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
+        renderableObjectArray.add(xdriverButton);
+        gestureDetectableButtonArray.add(xdriverButton);
     }
 
     private void initMarketShareStarButtons() {
@@ -355,6 +386,17 @@ public class MenuScreen implements Screen {
         game.getGameConfiguration().flushingPreferences();
 
         game.setScreen(new LoadingScreen(game, levelSelectButtonGroup.getFocusingButton()));
+    }
+
+    private void startXdriver() {
+        if (musicBgm != null) {
+            musicBgm.stop();
+            musicBgm.dispose();
+        }
+        game.getGameConfiguration().putMusicOnOff(isMusicOnOff());
+        game.getGameConfiguration().flushingPreferences();
+
+        game.setScreen(new LoadingXdriverScreen(game));
     }
 
 

@@ -5,6 +5,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 
 public class SplashScreen implements Screen {
@@ -16,18 +18,29 @@ public class SplashScreen implements Screen {
     private Array<Renderable> renderableObjectArray;
     private Array<Dots> dotsArray;
     private Dots dots;
+    Viewport viewport;
 
     public SplashScreen(final Dotsup game) {
+//        this.game = game;
+//        this.camera = new OrthographicCamera();
+//        camera.setToOrtho(false, game.getGameConfiguration().getViewportWidth(),
+//                game.getGameConfiguration().getViewportHeight());
+//
+//        Gdx.input.setCatchBackKey(true);
+//        /*
+//        Default back key press on Android is killing app processor
+//        Enabling setCatchBackKey enables catching and no input process coding make this screen has no effect for back key press.
+//         */
+
         this.game = game;
         this.camera = new OrthographicCamera();
+//        this.batch = game.getSpriteBatch();
         camera.setToOrtho(false, game.getGameConfiguration().getViewportWidth(),
                 game.getGameConfiguration().getViewportHeight());
-
+        this.viewport = new FitViewport(game.getGameConfiguration().getViewportWidth(),
+                game.getGameConfiguration().getViewportHeight(),
+                camera);
         Gdx.input.setCatchBackKey(true);
-        /*
-        Default back key press on Android is killing app processor
-        Enabling setCatchBackKey enables catching and no input process coding make this screen has no effect for back key press.
-         */
     }
 
     @Override
@@ -62,7 +75,7 @@ public class SplashScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        viewport.update(width, height);
     }
 
     @Override
@@ -103,7 +116,7 @@ public class SplashScreen implements Screen {
                     dots.setDotsNum(dots.getDotsNum() + 1);
                     dots.actionScale(0.1f, 1f, 0.5f);
                     dots.actionRotate(0f, 360, 0.3f);
-                }else{
+                } else {
                     game.setScreen(new MenuScreen(game));
                     dispose();
                 }
