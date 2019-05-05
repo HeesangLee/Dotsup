@@ -20,8 +20,8 @@ android {
         applicationId "dalcoms.game.dotsup"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 5
-        versionName "1.4"
+        versionCode 6
+        versionName "1.5"
         //1.0 : 1'st launching
         //1.1 : 해상도에 따른 터치 오류 변경
         //     - viewport 생성, 적용, unproject 를 통해 일종의 resized touch 처리
@@ -36,6 +36,14 @@ android {
         //5, 1.4 : 레벨 업데이트 ~100
         //     - 레벨 100
         //     - 자잘은 버그 수정 및 메인 화면에 share, market, review icon 추가
+//        6, 1.5
+//        너무 간만의 업데이트
+//        1. 화면 비율 수정
+//        - H가 1920 이상일 경우, 화면을 꽉 채우게 조정
+//        2. Xdriver 는 우선 pending
+//        3. mission clear effect 수정
+//        - 해당위치에 효과 표시
+//        4. 레벨업데이트(105)
     }
     buildTypes {
         release {
