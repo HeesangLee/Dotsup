@@ -17,8 +17,10 @@ public class GameConfiguration {
 
     private static GameConfiguration instance = new GameConfiguration();
 
-    private float viewportWidth = 1080f;
-    private float viewportHeight = 1920f;
+    private final float viewportWidth = 1080f;
+    private final float viewportHeight_1 = 1920f;
+    private final float REF_HperW = 1.64f;
+    private float HperW;
 
     private int gamePlayCount = 0;
 
@@ -31,15 +33,24 @@ public class GameConfiguration {
     }
 
     public float getViewportHeight() {
-        return this.viewportHeight;
+        float height;
+        if (getHperW() < this.REF_HperW) {
+            height = viewportHeight_1;
+        } else {
+            height = Gdx.graphics.getHeight() / (Gdx.graphics.getWidth() / viewportWidth);
+        }
+        return height;
     }
 
+    public boolean isTestMode() {
+        return TEST_;
+    }
 
     public int getLastClearedLevel() {
 
-        if(TEST_){
+        if (isTestMode()) {
             return GameLevel.getMaxLevel();
-        }else{
+        } else {
             return preferences.getInteger(prefKey_LastClearedLevel, 0);
         }
     }
@@ -97,5 +108,13 @@ public class GameConfiguration {
     public int increaseGamePlayCount() {
         setGamePlayCount(getGamePlayCount() + 1);
         return getGamePlayCount();
+    }
+
+    public float getHperW() {
+        return HperW;
+    }
+
+    public void setHperW(float hperW) {
+        HperW = hperW;
     }
 }
