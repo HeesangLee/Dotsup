@@ -30,6 +30,7 @@ public class GameScreen implements Screen {
     private Array<Renderable> renderableObjectArray;
     private Array<GestureDetectableButton> gestureDetectableButtonArray;
     private Array<Renderable> topRenderableArray;
+    private Array<Renderable> guideRenderableArray;
 
     private SpriteButton homeButton;
     private boolean dialogShow = false;
@@ -43,7 +44,7 @@ public class GameScreen implements Screen {
     private final int DIALOG_SUCCESS = 1;
     private final int DIALOG_FAIL = 2;
 
-    private final int INTERSTITAL_AD_COUNT = 9;
+    private final int INTERSTITAL_AD_COUNT = 7;
     private final int ITEM_ADD_COUNT = 3;
 
     private boolean admobInterstitialAdLoaded = false, admobRewardedLoaded = false;
@@ -63,8 +64,18 @@ public class GameScreen implements Screen {
     private int itemLockMovesCondition = -1;
     private int itemDiceMissleMovesCondition = -1;
 
-    private int missionClearPopupIndex = 0;
-    private final int POPUP_COUNT = 3;
+    private float screenTimer245msec = 0f;
+    private float screenTimer1102msec = 0f;
+    private long screenTimer245msceCount = 0;
+    private long screenTimer1102msecCount = 0;
+
+    private int taskOnRenderCount = 0;
+
+    private SpriteGameObject guideMessage1;
+    private SpriteGameObject guideMessage2;
+    private boolean check1stGuideMsgClear = false;
+    private SpriteGameObject guideFinger;
+    private SpriteGameObject guide4way;
 
     private Array<SpriteButton> gameItemArray;
 
@@ -79,10 +90,15 @@ public class GameScreen implements Screen {
         this.viewport = new FitViewport(game.getGameConfiguration().getViewportWidth(),
                                         game.getGameConfiguration().getViewportHeight(),
                                         camera);
+
         this.gameLevel = gameLevel;
         Gdx.input.setCatchBackKey(true);
     }
 
+
+    private boolean isFirstGame() {
+        return game.getGameConfiguration().isFirstGame();
+    }
 
     private void initGameObjects() {
         renderableObjectArray
@@ -90,13 +106,18 @@ public class GameScreen implements Screen {
                                     0, 0, true).setSpriteBatch(batch));
 
         playBgm(initSoundMusic());
-        createHomeButton(-34f, 1744f);
-        createDisplayPanel(183f, 1723f);
-        createMissionPanel(1540f);
+        createHomeButton(-34f, viewport.getWorldHeight() - 176f);
+        createDisplayPanel(183f, viewport.getWorldHeight() - 197f);
+        createMissionPanel(viewport.getWorldHeight() - 380f);
+
         createGameBoard(game.getGameConfiguration().getViewportWidth() / 2f,
                         game.getGameConfiguration().getViewportHeight() / 2f);
 
         checkAddGameItem();
+        checkDebugMode();
+        if (isFirstGame()) {
+            initGuides();
+        }
     }
 
     private boolean initSoundMusic() {
@@ -113,8 +134,8 @@ public class GameScreen implements Screen {
         }
     }
 
-    private void checkMissionClear(int mergedDotsNum) {
-        if (missionPanel.checkMissionClear(mergedDotsNum)) {
+    private void checkMissionClear(int mergedDotsNum, Position2D pos) {
+        if (missionPanel.checkMissionClear(mergedDotsNum, pos)) {
             game.getResourcesManager().getSound_missionClear().play();
 
             if (missionPanel.isMissionAllCleared()) {
@@ -128,6 +149,7 @@ public class GameScreen implements Screen {
             }
         }
     }
+
 
     private void saveGame() {
         final int thisLevel = getGameLevel();
@@ -157,6 +179,29 @@ public class GameScreen implements Screen {
                 addGameItem(itemInt, gameItem.getCondition());
             }
         }
+    }
+
+    private void initDebugIcon() {
+        final float iconHeight = (float) game.getResourcesManager().getTexture_debug().getHeight();
+        final float iconWidth = (float) game.getResourcesManager().getTexture_debug().getWidth();
+
+        renderableObjectArray.add(new GameObject(game.getResourcesManager().getTexture_debug(),
+                                                 (viewport.getWorldWidth() - iconWidth) / 2f,
+                                                 viewport.getWorldHeight() - iconHeight, true)
+                                          .setSpriteBatch(batch));
+    }
+
+    private void checkDebugMode() {
+        if (game.getGameConfiguration().isTestMode()) {
+            initDebugIcon();
+        }
+    }
+
+    private void initGuides() {
+        guideMessage1 =
+                new SpriteGameObject(game.getResourcesManager().getTexture_guide_game_1(), 0, 0)
+                        .setSpriteBatch(this.batch);
+        guideRenderableArray.add(guideMessage1);
     }
 
     private int getItemInt(String itemName) {
@@ -363,6 +408,11 @@ public class GameScreen implements Screen {
         }
     }
 
+    private void startGameBoard() {
+        gameBoard.start();
+        topDisplayPanel.setTimerStart(true);
+    }
+
     private void createGameBoard(float centerX, float centerY) {
         gameBoard = new GameBoard(game.getResourcesManager().getTexture_game_cell_134x134(),
                                   game.getResourcesManager().getTexture_dotsArray(),
@@ -370,18 +420,10 @@ public class GameScreen implements Screen {
                                   GameLevel.getLevel(getGameLevel()).getBoard(),
                                   batch, true);
 
-        Timer.schedule(new Timer.Task() {
-            @Override
-            public void run() {
-                gameBoard.start();
-                topDisplayPanel.setTimerStart(true);
-            }
-        }, 0.1f);
-
         gameBoard.addGameBoardListener(new GameBoardListener() {
 
             @Override
-            public void dotsMerged(int mergedDotsNum, String tag, Point2DInt cellPosition) {
+            public void dotsMerged(int mergedDotsNum, String tag, final Point2DInt cellPosition) {
                 super.dotsMerged(mergedDotsNum, tag, cellPosition);
                 Gdx.app.log("GameScreen", tag + "is merged to" + String.valueOf(mergedDotsNum));
                 game.getResourcesManager().getSound_merge().play();
@@ -404,7 +446,14 @@ public class GameScreen implements Screen {
                         Gdx.app.postRunnable(new Runnable() {
                             @Override
                             public void run() {
-                                checkMissionClear(mergedDots);
+                                checkMissionClear(mergedDots,
+                                                  new Position2D(gameBoard.getCell(
+                                                          cellPosition.getX(), cellPosition.getY())
+                                                                         .getCenterX(),
+                                                                 gameBoard.getCell(
+                                                                         cellPosition.getX(),
+                                                                         cellPosition.getY())
+                                                                         .getCenterY()));
                             }
                         });
                     }
@@ -434,10 +483,46 @@ public class GameScreen implements Screen {
             public void dotsNew() {
                 super.dotsNew();
                 game.getResourcesManager().getSound_dotsNew().play();
+                if (isFirstGame()) {
+                    if (topDisplayPanel.getGameMovesNumber() == 1) {
+                        clear2ndGuideMsg();
+                    } else if (topDisplayPanel.getGameMovesNumber() == 2) {
+                        guideTryAgainMsg();
+                    }
+
+                }
             }
         });
 
         renderableObjectArray.add(gameBoard);
+
+        if (isFirstGame()) {
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    guideMessage1.setLocation(40f, viewport.getWorldHeight() - 590f);
+                    guideMessage1.enableDrawSprite(true);
+                    guideMessage1.actionScale(0.1f, 1f, 0.3f);
+                    setCheck1stGuideMsgClear(true);
+                }
+            }, 0.25f);
+
+        } else {
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    startGameBoard();
+                }
+            }, 0.25f);
+        }
+    }
+
+    public boolean isCheck1stGuideMsgClear() {
+        return check1stGuideMsgClear;
+    }
+
+    public void setCheck1stGuideMsgClear(boolean check1stGuideMsgClear) {
+        this.check1stGuideMsgClear = check1stGuideMsgClear;
     }
 
     private void createMissionPanel(float locationY) {
@@ -496,7 +581,7 @@ public class GameScreen implements Screen {
     private void checkInterstitialAd() {
         int gamePlayCount = game.getGameConfiguration().getGamePlayCount();
         int adCount =
-                Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 4 ? INTERSTITAL_AD_COUNT : 4;
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 4 ? INTERSTITAL_AD_COUNT : 3;
 
         if (gamePlayCount % adCount == adCount - 1) {
             game.getLauncherHandler().loadAdmobInterstital(new AdmobAdListener() {
@@ -742,7 +827,7 @@ public class GameScreen implements Screen {
 
         setDialog(dialog);
 
-
+        lastGuideMsg();
     }
 
     private void popUpAllClearDialog() {
@@ -1270,6 +1355,9 @@ public class GameScreen implements Screen {
         for (Renderable renderable : topRenderableArray) {
             renderable.render(delta);
         }
+        for (Renderable guideRend : guideRenderableArray) {
+            guideRend.render(delta);
+        }
         if (isDialogShow() & getDialog() != null) {
             getDialog().render(delta);
         }
@@ -1283,6 +1371,7 @@ public class GameScreen implements Screen {
         gestureDetectableButtonArray = new Array<GestureDetectableButton>();
         gameItemArray = new Array<SpriteButton>();
         topRenderableArray = new Array<Renderable>();
+        guideRenderableArray = new Array<Renderable>();
 
         checkInterstitialAd();
         loadAdmobRewardedVideoAd();
@@ -1294,6 +1383,8 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
         draw(delta);
+        checkGameScreenTimer(delta);
+        taskOnRender();
     }
 
     @Override
@@ -1324,6 +1415,226 @@ public class GameScreen implements Screen {
         }
     }
 
+    public long getScreenTimer245msceCount() {
+        return screenTimer245msceCount;
+    }
+
+    public void setScreenTimer245msceCount(long screenTimer245msceCount) {
+        this.screenTimer245msceCount = screenTimer245msceCount;
+    }
+
+    public long getScreenTimer1102msecCount() {
+        return screenTimer1102msecCount;
+    }
+
+    public void setScreenTimer1102msecCount(long screenTimer1102msecCount) {
+        this.screenTimer1102msecCount = screenTimer1102msecCount;
+    }
+
+    private void onScreenTimer245msec() {
+        setScreenTimer245msceCount(getScreenTimer245msceCount() + 1);
+    }
+
+    private void onScreenTimer1102msce() {
+        setScreenTimer1102msecCount(getScreenTimer1102msecCount() + 1);
+    }
+
+    private void checkGameScreenTimer(float delta) {
+        boolean isOn245msec = false;
+        boolean isOn1102msec = false;
+
+        screenTimer245msec += delta;
+        screenTimer1102msec += delta;
+
+        if (screenTimer245msec >= 0.245f) {
+            screenTimer245msec = 0f;
+            isOn245msec = true;
+        }
+        if (screenTimer1102msec >= 1.1025) {
+            screenTimer1102msec = 0f;
+            isOn1102msec = true;
+        }
+
+        if (isOn245msec) {
+            onScreenTimer245msec();
+        }
+        if (isOn1102msec) {
+            onScreenTimer1102msce();
+        }
+    }
+
+    private void guideTryAgainMsg() {
+//        코드가 너무 지저분하고 초보적임... ㅠㅠ
+        if (guideMessage1.getTag().equalsIgnoreCase("try")) {
+            guideMessage1.actionScale(0.5f, 1f, 0.3f);
+        } else {
+            guideMessage1.updateSpriteTexture(game.getResourcesManager().getTexture_guide_oops());
+            guideMessage1.actionScale(0.1f, 1f, 0.3f);
+            guideMessage1.setTag("try");
+
+            guideMessage2.enableDrawSprite(false);
+        }
+
+    }
+
+    private void lastGuideMsg() {
+        guideMessage1.updateSpriteTexture(game.getResourcesManager().getTexture_guide_game_next());
+        guideMessage1.setLocation(543f, viewport.getWorldHeight() / 2 - 480f);
+        guideMessage1.actionScale(0.1f, 1f, 0.3f);
+    }
+
+    private void clear2ndGuideMsg() {
+        guideMessage1.actionScale(1f, 0f, 0.3f);
+        guideMessage2.actionScale(1f, 0f, 0.3f);
+        Gdx.app.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                guideRenderableArray.removeValue(guideFinger, true);
+                guideRenderableArray.removeValue(guide4way, true);
+            }
+        });
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                guideMessage1
+                        .updateSpriteTexture(game.getResourcesManager().getTexture_guide_game_4());
+                guideMessage1.actionScale(0.1f, 1f, 0.3f);
+
+                guideMessage2
+                        .updateSpriteTexture(game.getResourcesManager().getTexture_guide_game_5());
+                guideMessage2.actionScale(0.1f, 1f, 0.6f);
+            }
+        }, 0.3f);
+    }
+
+    private void clear1stGuideMsg() {
+        if (getScreenTimer245msceCount() > 7) {
+            guideMessage1.actionScale(1f, 0f, 0.3f);
+            setCheck1stGuideMsgClear(false);
+            guideMessage1.addSpriteActionListener(new SpriteActionListener() {
+                @Override
+                public void onActionScaleStarted() {
+                }
+
+                @Override
+                public void onActionScaleCompleted() {
+                    Gdx.app.log("testGuide", "onCompleteActionScale");
+                    guideMessage1
+                            .updateSpriteTexture(
+                                    game.getResourcesManager().getTexture_guide_game_2());
+                    guideMessage1.setLocation(40f, viewport.getWorldHeight() - 610f);
+                    guideMessage1.actionScale(0.1f, 1f, 0.3f);
+                    guideMessage1.clearSpriteActionListener();
+                    Timer.schedule(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            guideMessage2 = new SpriteGameObject(
+                                    game.getResourcesManager().getTexture_guide_game_3(), 40f,
+                                    viewport.getWorldHeight() - 770f).setSpriteBatch(batch)
+                                    .enableDrawSprite(true);
+                            guideMessage2.actionScale(0.1f, 1f, 0.3f);
+
+                            guideFinger = new SpriteGameObject(
+                                    game.getResourcesManager().getTexture_finger(), 0, 0)
+                                    .setSpriteBatch(batch).enableDrawSprite(true);
+                            guideFinger.setCenterLocation(viewport.getWorldWidth() / 2f, 0);
+                            guideFinger.moveY(150f, 594f, 0.6f);
+                            guideFinger.actionScale(2f, 1f, 0.6f);
+                            guideFinger.addActionListener(new ObjectActionListener() {
+                                @Override
+                                public boolean onMoveCompleted(boolean direction) {
+                                    startGameBoard();
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onMoveStarted(boolean direction) {
+                                    return false;
+                                }
+                            });
+
+                            guide4way = new SpriteGameObject(
+                                    game.getResourcesManager().getTexture_guide_4way(), 0, 0)
+                                    .setSpriteBatch(batch).enableDrawSprite(true);
+                            guide4way.setCenterLocation(viewport.getWorldWidth() / 2f, 825f);
+                            guide4way.actionScale(0.1f, 1f, 0.6f);
+                            guide4way.actionRotate(0, 360, 0.4f);
+
+                            guideRenderableArray.add(guideMessage2);
+                            guideRenderableArray.add(guideFinger);
+                            guideRenderableArray.add(guide4way);
+                        }
+                    }, 1.5f);
+                }
+
+                @Override
+                public void onActionAlphaStarted() {
+
+                }
+
+                @Override
+                public void onActionAlphaCompleted() {
+
+                }
+
+                @Override
+                public void onActionRotateStarted() {
+
+                }
+
+                @Override
+                public void onActionRotateCompleted() {
+
+                }
+            });
+        }
+    }
+
+    private void taskOnRender0() {
+        if (isFirstGame() & isCheck1stGuideMsgClear()) {
+            clear1stGuideMsg();
+        }
+    }
+
+    private void taskOnRender1() {
+
+    }
+
+    private void taskOnRender2() {
+
+    }
+
+    private void taskOnRender3() {
+
+    }
+
+    private void taskOnRender4() {
+
+    }
+
+    private void taskOnRender() {
+        switch (taskOnRenderCount) {
+            case 0:
+                taskOnRender0();
+                break;
+            case 1:
+                taskOnRender1();
+                break;
+            case 2:
+                taskOnRender2();
+                break;
+            case 3:
+                taskOnRender3();
+                break;
+            case 4:
+                taskOnRender4();
+                break;
+            default:
+                break;
+        }
+        taskOnRenderCount = taskOnRenderCount < 4 ? taskOnRenderCount + 1 : 0;
+    }
+
     public int getGameLevel() {
         return gameLevel;
     }
@@ -1344,17 +1655,14 @@ public class GameScreen implements Screen {
         this.itemDiceMissleMovesCondition = itemDiceMissleMovesCondition;
     }
 
-    private void popupMissionClear() {
+    private void popupMissionClear(Position2D pos) {
         final SpriteGameObject popup
                 = new SpriteGameObject(ResourcesManager.getInstance()
-                                               .getTexture_missionClearPopup(
-                                                       incMissionClearPopupIndex()), 0, 0)
+                                               .getTexture_mcpu(), pos.getX(), pos.getY())
                 .setSpriteBatch(batch).enableDrawSprite(true);
 
-        popup.setLocationX(viewport.getWorldWidth() / 2f - popup.getWidth() / 2f);
-        popup.actionAlpha(0.5f, 1f, 0.5f);
-        popup.actionScale(0.8f, 1f, 1.2f);
-        popup.moveY(viewport.getWorldHeight() * 0.5f, viewport.getWorldHeight() * 0.7f, 0.25f);
+        popup.actionAlpha(0.2f, 1f, 0.5f);
+        popup.actionScale(0.5f, 1f, 1f);
         popup.addSpriteActionListener(new SpriteActionListener() {
             @Override
             public void onActionScaleStarted() {
@@ -1373,7 +1681,8 @@ public class GameScreen implements Screen {
 
             @Override
             public void onActionAlphaCompleted() {
-                popup.actionRotate(0f, 15f, 0.5f);
+                popup.moveY(popup.getLocationY(), game.getGameConfiguration().getViewportHeight(),
+                            0.4f);
             }
 
             @Override
@@ -1390,22 +1699,6 @@ public class GameScreen implements Screen {
         topRenderableArray.add(popup);
     }
 
-    public int getMissionClearPopupIndex() {
-        return missionClearPopupIndex;
-    }
-
-    public void setMissionClearPopupIndex(int missionClearPopupIndex) {
-        this.missionClearPopupIndex = missionClearPopupIndex;
-    }
-
-    private int incMissionClearPopupIndex() {
-        if (getMissionClearPopupIndex() < this.POPUP_COUNT - 1) {
-            setMissionClearPopupIndex(getMissionClearPopupIndex() + 1);
-        } else {
-            setMissionClearPopupIndex(0);
-        }
-        return getMissionClearPopupIndex();
-    }
 
     public class MissionPanel implements Renderable {
         private float locationY;
@@ -1488,13 +1781,13 @@ public class GameScreen implements Screen {
         }
 
 
-        public boolean checkMissionClear(int mergedDotsNum) {
+        public boolean checkMissionClear(int mergedDotsNum, Position2D pos) {
             for (DotsOfMission mission : dotsOfMissions) {
                 if (!mission.isMissionCleared() & mission.getDotNum() == mergedDotsNum) {
                     mission.setMissionCleared(true);
 //                    todo : apply mission clear pop up
 //                    game.getLauncherHandler().toastMessage(mergedDotsNum % 2 == 0 ? "Wow" : "Nice");
-                    popupMissionClear();
+                    popupMissionClear(pos);
                     return true;
                 }
             }

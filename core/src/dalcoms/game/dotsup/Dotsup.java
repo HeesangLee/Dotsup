@@ -1,6 +1,7 @@
 package dalcoms.game.dotsup;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Dotsup extends Game {
@@ -19,6 +20,11 @@ public class Dotsup extends Game {
         gameConfiguration = GameConfiguration.getInstance();
         resourcesManager = ResourcesManager.getInstance();
 
+        gameConfiguration
+                .setHperW((float) Gdx.graphics.getHeight() / (float) Gdx.graphics.getWidth());
+
+        Gdx.app.log("screen", String.valueOf(
+                (float) Gdx.graphics.getHeight() / (float) Gdx.graphics.getWidth()));
         resourcesManager.loadResources();
 
         batch = new SpriteBatch();

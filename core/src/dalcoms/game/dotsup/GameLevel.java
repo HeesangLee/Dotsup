@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class GameLevel {
 
-    private final static int MAX_LEVEL = 100;
+    private final static int MAX_LEVEL = 105;
     public final static int RANGE_MIN = 0;
     public final static int RANGE_MAX = 1;
 
@@ -127,6 +127,12 @@ public class GameLevel {
         case 98:retLevel=getLevel_98(level);break;
         case 99:retLevel=getLevel_99(level);break;
         case 100:retLevel=getLevel_100(level);break;
+        case 101:retLevel=getLevel_101(level);break;
+        case 102:retLevel=getLevel_102(level);break;
+        case 103:retLevel=getLevel_103(level);break;
+        case 104:retLevel=getLevel_104(level);break;
+        case 105:retLevel=getLevel_105(level);break;
+
 
 
         default: retLevel = getLevel_default(level); break; } return retLevel;}
@@ -192,7 +198,7 @@ public class GameLevel {
 
         board[0][5]=false;board[1][5]=true;board[2][5]=true;board[3][5]=true;board[4][5]=true;board[5][5]=false;board[0][4]=true;board[1][4]=true;board[2][4]=true;board[3][4]=false;board[4][4]=true;board[5][4]=false;board[0][3]=true;board[1][3]=true;board[2][3]=false;board[3][3]=false;board[4][3]=true;board[5][3]=false;board[0][2]=true;board[1][2]=false;board[2][2]=false;board[3][2]=false;board[4][2]=true;board[5][2]=true;board[0][1]=true;board[1][1]=true;board[2][1]=true;board[3][1]=true;board[4][1]=true;board[5][1]=true;board[0][0]=false;board[1][0]=false;board[2][0]=false;board[3][0]=true;board[4][0]=true;board[5][0]=false;
 
-        mission.add(new MissionDots(3,2));mission.add(new MissionDots(4,2));mission.add(new MissionDots(5,2));mission.add(new MissionDots(6,2));
+        mission.add(new MissionDots(3,4));mission.add(new MissionDots(4,2));mission.add(new MissionDots(5,2));mission.add(new MissionDots(6,1));
 
         items.add(new GameItem("magic",4));items.add(new GameItem("bomb_a",3));
 
@@ -234,7 +240,7 @@ public class GameLevel {
 
         board[0][5]=true;board[1][5]=true;board[2][5]=true;board[3][5]=false;board[4][5]=false;board[5][5]=false;board[0][4]=true;board[1][4]=true;board[2][4]=true;board[3][4]=false;board[4][4]=false;board[5][4]=false;board[0][3]=true;board[1][3]=true;board[2][3]=true;board[3][3]=false;board[4][3]=false;board[5][3]=false;board[0][2]=false;board[1][2]=false;board[2][2]=false;board[3][2]=false;board[4][2]=false;board[5][2]=false;board[0][1]=false;board[1][1]=false;board[2][1]=false;board[3][1]=false;board[4][1]=false;board[5][1]=false;board[0][0]=false;board[1][0]=false;board[2][0]=false;board[3][0]=false;board[4][0]=false;board[5][0]=false;
 
-        mission.add(new MissionDots(3,3));mission.add(new MissionDots(4,2));mission.add(new MissionDots(5,2));mission.add(new MissionDots(6,2));
+        mission.add(new MissionDots(3,3));mission.add(new MissionDots(4,2));mission.add(new MissionDots(5,3));mission.add(new MissionDots(6,1));
 
         items.add(new GameItem("lock",90));items.add(new GameItem("bomb",3));items.add(new GameItem("magic_a",3));
 
@@ -1456,4 +1462,72 @@ public class GameLevel {
 
         retLevel.setBoard(board);retLevel.setMission(mission);retLevel.setItems(items);retLevel.setTimeLimited(timeLimited, timeOfTimeLimited);return retLevel;}
 
+    private static Level getLevel_101(int level) {Level retLevel;boolean[][] board = new boolean[6][6];Array<MissionDots> mission = new Array<MissionDots>();Array<GameItem> items = new Array<GameItem>();boolean timeLimited = false;float timeOfTimeLimited = 0f;
+        retLevel = new Level(level);
+
+        board[0][5]=false;board[1][5]=false;board[2][5]=true;board[3][5]=true;board[4][5]=true;board[5][5]=true;board[0][4]=true;board[1][4]=true;board[2][4]=false;board[3][4]=false;board[4][4]=true;board[5][4]=true;board[0][3]=true;board[1][3]=false;board[2][3]=true;board[3][3]=true;board[4][3]=false;board[5][3]=true;board[0][2]=true;board[1][2]=true;board[2][2]=false;board[3][2]=true;board[4][2]=true;board[5][2]=true;board[0][1]=false;board[1][1]=true;board[2][1]=true;board[3][1]=true;board[4][1]=false;board[5][1]=true;board[0][0]=false;board[1][0]=true;board[2][0]=false;board[3][0]=true;board[4][0]=true;board[5][0]=true;
+
+        mission.add(new MissionDots(4,3));mission.add(new MissionDots(5,3));mission.add(new MissionDots(6,2));mission.add(new MissionDots(7,1));
+
+        items.add(new GameItem("magic_a",4));items.add(new GameItem("bomb",3));items.add(new GameItem("dice_missile",100));items.add(new GameItem("lock",10));
+
+        timeLimited=false;timeOfTimeLimited=0f;
+
+        retLevel.setBoard(board);retLevel.setMission(mission);retLevel.setItems(items);retLevel.setTimeLimited(timeLimited, timeOfTimeLimited);return retLevel;}
+
+
+    private static Level getLevel_102(int level) {Level retLevel;boolean[][] board = new boolean[6][6];Array<MissionDots> mission = new Array<MissionDots>();Array<GameItem> items = new Array<GameItem>();boolean timeLimited = false;float timeOfTimeLimited = 0f;
+        retLevel = new Level(level);
+
+        board[0][5]=true;board[1][5]=false;board[2][5]=true;board[3][5]=true;board[4][5]=true;board[5][5]=true;board[0][4]=true;board[1][4]=false;board[2][4]=true;board[3][4]=false;board[4][4]=false;board[5][4]=true;board[0][3]=true;board[1][3]=true;board[2][3]=true;board[3][3]=true;board[4][3]=false;board[5][3]=false;board[0][2]=false;board[1][2]=true;board[2][2]=true;board[3][2]=true;board[4][2]=false;board[5][2]=false;board[0][1]=true;board[1][1]=true;board[2][1]=false;board[3][1]=true;board[4][1]=false;board[5][1]=false;board[0][0]=false;board[1][0]=false;board[2][0]=false;board[3][0]=true;board[4][0]=false;board[5][0]=false;
+
+        mission.add(new MissionDots(4,2));mission.add(new MissionDots(5,3));mission.add(new MissionDots(6,3));mission.add(new MissionDots(7,1));
+
+        items.add(new GameItem("rainbow",0));items.add(new GameItem("missile_a",6));items.add(new GameItem("dice_missile",20));
+
+        timeLimited=false;timeOfTimeLimited=0f;
+
+        retLevel.setBoard(board);retLevel.setMission(mission);retLevel.setItems(items);retLevel.setTimeLimited(timeLimited, timeOfTimeLimited);return retLevel;}
+
+
+    private static Level getLevel_103(int level) {Level retLevel;boolean[][] board = new boolean[6][6];Array<MissionDots> mission = new Array<MissionDots>();Array<GameItem> items = new Array<GameItem>();boolean timeLimited = false;float timeOfTimeLimited = 0f;
+        retLevel = new Level(level);
+
+        board[0][5]=true;board[1][5]=true;board[2][5]=true;board[3][5]=false;board[4][5]=false;board[5][5]=false;board[0][4]=true;board[1][4]=true;board[2][4]=true;board[3][4]=false;board[4][4]=false;board[5][4]=false;board[0][3]=true;board[1][3]=true;board[2][3]=true;board[3][3]=false;board[4][3]=false;board[5][3]=false;board[0][2]=false;board[1][2]=false;board[2][2]=false;board[3][2]=false;board[4][2]=false;board[5][2]=false;board[0][1]=false;board[1][1]=false;board[2][1]=false;board[3][1]=false;board[4][1]=false;board[5][1]=false;board[0][0]=false;board[1][0]=false;board[2][0]=false;board[3][0]=false;board[4][0]=false;board[5][0]=false;
+
+        mission.add(new MissionDots(4,3));mission.add(new MissionDots(5,3));mission.add(new MissionDots(6,2));mission.add(new MissionDots(7,1));
+
+        items.add(new GameItem("lock",200));items.add(new GameItem("bomb",3));items.add(new GameItem("magic_a",4));
+
+        timeLimited=false;timeOfTimeLimited=0f;
+
+        retLevel.setBoard(board);retLevel.setMission(mission);retLevel.setItems(items);retLevel.setTimeLimited(timeLimited, timeOfTimeLimited);return retLevel;}
+
+
+    private static Level getLevel_104(int level) {Level retLevel;boolean[][] board = new boolean[6][6];Array<MissionDots> mission = new Array<MissionDots>();Array<GameItem> items = new Array<GameItem>();boolean timeLimited = false;float timeOfTimeLimited = 0f;
+        retLevel = new Level(level);
+
+        board[0][5]=true;board[1][5]=false;board[2][5]=true;board[3][5]=false;board[4][5]=true;board[5][5]=false;board[0][4]=true;board[1][4]=false;board[2][4]=true;board[3][4]=false;board[4][4]=true;board[5][4]=false;board[0][3]=true;board[1][3]=true;board[2][3]=true;board[3][3]=true;board[4][3]=true;board[5][3]=true;board[0][2]=true;board[1][2]=true;board[2][2]=true;board[3][2]=true;board[4][2]=true;board[5][2]=true;board[0][1]=false;board[1][1]=true;board[2][1]=false;board[3][1]=true;board[4][1]=false;board[5][1]=true;board[0][0]=false;board[1][0]=true;board[2][0]=false;board[3][0]=true;board[4][0]=false;board[5][0]=true;
+
+        mission.add(new MissionDots(5,3));mission.add(new MissionDots(6,3));mission.add(new MissionDots(7,2));mission.add(new MissionDots(8,1));
+
+        items.add(new GameItem("lock",10));items.add(new GameItem("dice_missile",20));items.add(new GameItem("missile_a",6));items.add(new GameItem("magic",4));
+
+        timeLimited=false;timeOfTimeLimited=0f;
+
+        retLevel.setBoard(board);retLevel.setMission(mission);retLevel.setItems(items);retLevel.setTimeLimited(timeLimited, timeOfTimeLimited);return retLevel;}
+
+
+    private static Level getLevel_105(int level) {Level retLevel;boolean[][] board = new boolean[6][6];Array<MissionDots> mission = new Array<MissionDots>();Array<GameItem> items = new Array<GameItem>();boolean timeLimited = false;float timeOfTimeLimited = 0f;
+        retLevel = new Level(level);
+
+        board[0][5]=true;board[1][5]=true;board[2][5]=false;board[3][5]=false;board[4][5]=true;board[5][5]=true;board[0][4]=false;board[1][4]=true;board[2][4]=true;board[3][4]=true;board[4][4]=true;board[5][4]=false;board[0][3]=false;board[1][3]=true;board[2][3]=false;board[3][3]=false;board[4][3]=true;board[5][3]=false;board[0][2]=false;board[1][2]=true;board[2][2]=true;board[3][2]=true;board[4][2]=true;board[5][2]=false;board[0][1]=true;board[1][1]=true;board[2][1]=true;board[3][1]=true;board[4][1]=true;board[5][1]=true;board[0][0]=false;board[1][0]=true;board[2][0]=true;board[3][0]=true;board[4][0]=true;board[5][0]=false;
+
+        mission.add(new MissionDots(6,3));mission.add(new MissionDots(7,2));mission.add(new MissionDots(8,2));mission.add(new MissionDots(9,1));
+
+        items.add(new GameItem("bomb_a",3));items.add(new GameItem("rainbow",0));items.add(new GameItem("lock",50));
+
+        timeLimited=false;timeOfTimeLimited=0f;
+
+        retLevel.setBoard(board);retLevel.setMission(mission);retLevel.setItems(items);retLevel.setTimeLimited(timeLimited, timeOfTimeLimited);return retLevel;}
 }

@@ -47,14 +47,11 @@ public class MenuScreen implements Screen {
         this.batch = game.getSpriteBatch();
 
         camera.setToOrtho(false, game.getGameConfiguration().getViewportWidth(),
-                game.getGameConfiguration().getViewportHeight());
+                          game.getGameConfiguration().getViewportHeight());
 
         this.viewport = new FitViewport(game.getGameConfiguration().getViewportWidth(),
-                game.getGameConfiguration().getViewportHeight(),
-                camera);
-//        this.viewport = new ExtendViewport(game.getGameConfiguration().getViewportWidth(),
-//                game.getGameConfiguration().getViewportHeight(),
-//                camera);
+                                        game.getGameConfiguration().getViewportHeight(),
+                                        camera);
         Gdx.input.setCatchBackKey(true);
     }
 
@@ -78,7 +75,10 @@ public class MenuScreen implements Screen {
 
 
     private void initGameObjects() {
-        levelBg = new GameObject(game.getResourcesManager().getTexture_menu_level_bg(), 57.138f, -823f)
+        initMenuBgCircles();
+
+        levelBg = new GameObject(game.getResourcesManager().getTexture_menu_level_bg(), 57.138f,
+                                 -823f)
                 .setSpriteBatch(batch)
                 .enableDrawTexture(true);
         levelBg.moveY(levelBg.getLocationY(), 0f, 0.3f);
@@ -92,15 +92,18 @@ public class MenuScreen implements Screen {
                 gestureDetectableButtonArray.add(startButton);
 
                 menuMissionView
-                        .setMission(GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getMission())
+                        .setMission(GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton())
+                                            .getMission())
                         .setShow(true);
 
                 levelSelectButtonGroup.setShow(true);
 
                 menuLevelInfo.setShow(true);
                 menuLevelInfo.setInfo(levelSelectButtonGroup.getLevelStatus()
-                        , game.getGameConfiguration().getLevelMoves(levelSelectButtonGroup.getFocusingButton())
-                        , game.getGameConfiguration().getLevelTimes(levelSelectButtonGroup.getFocusingButton()));
+                        , game.getGameConfiguration().getLevelMoves(
+                                levelSelectButtonGroup.getFocusingButton())
+                        , game.getGameConfiguration().getLevelTimes(
+                                levelSelectButtonGroup.getFocusingButton()));
 
 
                 return false;
@@ -116,7 +119,8 @@ public class MenuScreen implements Screen {
                 .setSpriteBatch(batch);
 
         startButton = new SpriteButton(game.getResourcesManager().getTexture_roundRect_468x148(),
-                306, 1015, game.getSpriteBatch(), viewport) {
+                                       306, viewport.getWorldHeight() * 0.5286f,
+                                       game.getSpriteBatch(), viewport) {
             @Override
             public void actionTouchDown() {
                 game.getResourcesManager().getSound_tap().play();
@@ -124,7 +128,8 @@ public class MenuScreen implements Screen {
 
             @Override
             public void actionTap() {
-                if ((levelSelectButtonGroup != null) & (startButton.getButtonState() == SpriteButton.STATE_EN)) {
+                if ((levelSelectButtonGroup != null) &
+                    (startButton.getButtonState() == SpriteButton.STATE_EN)) {
                     startGame();
                 }
             }
@@ -136,42 +141,59 @@ public class MenuScreen implements Screen {
 
             @Override
             public void actionLongPress() {
-                if ((levelSelectButtonGroup != null) & (startButton.getButtonState() == SpriteButton.STATE_EN)) {
+                if ((levelSelectButtonGroup != null) &
+                    (startButton.getButtonState() == SpriteButton.STATE_EN)) {
                     startGame();
                 }
             }
         };
         startButton.setTopTexture(game.getResourcesManager().getTexture_text_start());
         startButton.setColorEffect(true,
-                GameColor.MEMU_START_BUTTON_EN_NORMAL, GameColor.MEMU_START_BUTTON_EN_TOUCHDOWN,
-                GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+                                   GameColor.MEMU_START_BUTTON_EN_NORMAL,
+                                   GameColor.MEMU_START_BUTTON_EN_TOUCHDOWN,
+                                   GameColor.MEMU_START_BUTTON_DIS_NORMAL,
+                                   GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
 
         levelSelectButtonGroup = new MenuLevelSelectButtonGroup(levelBg.getLocationX(), 548f,
-                (float) levelBg.getWidth(), (float) 220, this.batch, this.game,
-                game.getResourcesManager().getTexture_t35NumArray(),
-                game.getResourcesManager().getTexture_level_sel_arrow_left(),
-                game.getResourcesManager().getTexture_level_sel_arrow_right(),
-                game.getResourcesManager().getTexture_level_selected_circle(),
-                game.getGameConfiguration().getLastClearedLevel() < GameLevel.getMaxLevel()
-                        ? game.getGameConfiguration().getLastClearedLevel() + 1
-                        : GameLevel.getMaxLevel(),
-                false) {
+                                                                (float) levelBg.getWidth(),
+                                                                (float) 220, this.batch, this.game,
+                                                                game.getResourcesManager()
+                                                                        .getTexture_t35NumArray(),
+                                                                game.getResourcesManager()
+                                                                        .getTexture_level_sel_arrow_left(),
+                                                                game.getResourcesManager()
+                                                                        .getTexture_level_sel_arrow_right(),
+                                                                game.getResourcesManager()
+                                                                        .getTexture_level_selected_circle(),
+                                                                game.getGameConfiguration()
+                                                                        .getLastClearedLevel() <
+                                                                GameLevel.getMaxLevel()
+                                                                        ?
+                                                                        game.getGameConfiguration()
+                                                                                .getLastClearedLevel() +
+                                                                        1
+                                                                        : GameLevel.getMaxLevel(),
+                                                                false) {
             @Override
             public void isFocusingChanged() {
                 super.isFocusingChanged();
                 if (levelBoardPreview != null) {
                     levelBoardPreview.calcBoardCenter(
-                            GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getBoard());
+                            GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton())
+                                    .getBoard());
                     levelBoardPreview.updateBoard(
-                            GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getBoard());
+                            GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton())
+                                    .getBoard());
                 }
                 if (levelLocked != null) {
                     levelLocked.setShow(isLockedLevel());
                 }
                 if (menuMissionView != null) {
                     menuMissionView
-                            .setMission(GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getMission());
+                            .setMission(
+                                    GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton())
+                                            .getMission());
                 }
 
                 if (startButton != null) {
@@ -180,22 +202,26 @@ public class MenuScreen implements Screen {
 
                 if (menuLevelInfo != null) {
                     menuLevelInfo.setInfo(levelSelectButtonGroup.getLevelStatus()
-                            , game.getGameConfiguration().getLevelMoves(levelSelectButtonGroup.getFocusingButton())
-                            , game.getGameConfiguration().getLevelTimes(levelSelectButtonGroup.getFocusingButton()));
+                            , game.getGameConfiguration().getLevelMoves(
+                                    levelSelectButtonGroup.getFocusingButton())
+                            , game.getGameConfiguration().getLevelTimes(
+                                    levelSelectButtonGroup.getFocusingButton()));
                 }
 
             }
         };
 
-        levelBoardPreview = new SimpleBoard(game.getResourcesManager().getTexture_level_board_rect(),
-                230f, 395f,
-                GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton()).getBoard(),
-                batch,
-                true
-        );//.setDisabledCellTexture(game.getResourcesManager().getTexture_level_board_rect_disabled(), true);
+        levelBoardPreview =
+                new SimpleBoard(game.getResourcesManager().getTexture_level_board_rect(),
+                                230f, 395f,
+                                GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton())
+                                        .getBoard(),
+                                batch,
+                                true
+                );//.setDisabledCellTexture(game.getResourcesManager().getTexture_level_board_rect_disabled(), true);
 
         levelLocked.setCenterLocation(levelBoardPreview.getCenterPosition().getX(),
-                levelBoardPreview.getCenterPosition().getY());
+                                      levelBoardPreview.getCenterPosition().getY());
 
         menuMissionView = new MenuMissionView(game.getResourcesManager().getTexture_menu_dotsArray()
                 , game.getResourcesManager().getTexture_t35NumArray()
@@ -227,6 +253,273 @@ public class MenuScreen implements Screen {
         initMusicOnOffButton();
         initMarketShareStarButtons();
         initExtraGameButtons();
+
+        if (game.getGameConfiguration().isTestMode()) {
+            initDebugIcon();
+            initClearPreferenceButton();
+        }
+        if (game.getGameConfiguration().isFirstGame()) {
+            initGuides();
+        }
+    }
+
+    private void initGuides() {
+
+        final SpriteGameObject guideForStartButton =
+                new SpriteGameObject(game.getResourcesManager().getTexture_guide_menu_2(),
+                                     startButton.getLocationX() + startButton.getWidth() / 10f,
+                                     startButton.getLocationY() + startButton.getHeight())
+                        .setSpriteBatch(this.batch)
+                        .enableDrawSprite(false);
+
+        final SpriteGameObject guideForSelectMenu =
+                new SpriteGameObject(game.getResourcesManager().getTexture_guide_menu_1(), 130f,
+                                     levelSelectButtonGroup.getLocationY() +
+                                     levelSelectButtonGroup.getHeight())
+                        .setSpriteBatch(this.batch)
+                        .enableDrawSprite(true);
+
+        guideForStartButton
+                .moveX(guideForStartButton.getLocationX(), guideForStartButton.getLocationX() + 80f,
+                       30f);
+        guideForSelectMenu
+                .moveX(guideForSelectMenu.getLocationX(), guideForSelectMenu.getLocationX() - 80f,
+                       25f);
+        guideForSelectMenu.actionRotate(0, 360, 0.3f);
+        guideForSelectMenu.actionScale(0.1f, 1f, 1f);
+
+        guideForSelectMenu.addSpriteActionListener(new SpriteActionListener() {
+            @Override
+            public void onActionScaleStarted() {
+
+            }
+
+            @Override
+            public void onActionScaleCompleted() {
+                guideForStartButton.enableDrawSprite(true);
+                guideForStartButton.actionRotate(0, 360, 0.3f);
+                guideForStartButton.actionScale(0.1f, 1f, 1f);
+            }
+
+            @Override
+            public void onActionAlphaStarted() {
+            }
+
+            @Override
+            public void onActionAlphaCompleted() {
+            }
+
+            @Override
+            public void onActionRotateStarted() {
+
+            }
+
+            @Override
+            public void onActionRotateCompleted() {
+
+            }
+        });
+        guideForStartButton.addActionListener(new ObjectActionListener() {
+            @Override
+            public boolean onMoveCompleted(boolean direction) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        renderableObjectArray.removeValue(guideForStartButton, false);
+                    }
+                }).start();
+                return false;
+            }
+
+            @Override
+            public boolean onMoveStarted(boolean direction) {
+                return false;
+            }
+        });
+        guideForSelectMenu.addActionListener(new ObjectActionListener() {
+            @Override
+            public boolean onMoveCompleted(boolean direction) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        renderableObjectArray.removeValue(guideForSelectMenu, false);
+                    }
+                }).start();
+                return false;
+            }
+
+            @Override
+            public boolean onMoveStarted(boolean direction) {
+                return false;
+            }
+        });
+
+        final GameObject rememberText =
+                new GameObject(game.getResourcesManager().getTexture_guide_menu_remember(),
+                               viewport.getWorldWidth(),
+                               startButton.getLocationY() - startButton.getHeight(), true)
+                        .setSpriteBatch(this.batch).enableDrawTexture(true);
+        rememberText.moveX(rememberText.getLocationX(), -1 * rememberText.getWidth(), 10f);
+        rememberText.addActionListener(new ObjectActionListener() {
+            @Override
+            public boolean onMoveCompleted(boolean direction) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Gdx.app.postRunnable(new Runnable() {
+                            @Override
+                            public void run() {
+                                renderableObjectArray.removeValue(rememberText, false);
+                            }
+                        });
+                    }
+                }).start();
+
+                return false;
+            }
+
+            @Override
+            public boolean onMoveStarted(boolean direction) {
+                return false;
+            }
+        });
+
+
+        renderableObjectArray.add(guideForSelectMenu);
+        renderableObjectArray.add(guideForStartButton);
+        renderableObjectArray.add(rememberText);
+    }
+
+    private void initDebugIcon() {
+        final float iconHeight = (float) game.getResourcesManager().getTexture_debug().getHeight();
+        final float iconWidth = (float) game.getResourcesManager().getTexture_debug().getWidth();
+
+        renderableObjectArray.add(new GameObject(game.getResourcesManager().getTexture_debug(),
+                                                 (viewport.getWorldWidth() - iconWidth) / 2f,
+                                                 viewport.getWorldHeight() - iconHeight, true)
+                                          .setSpriteBatch(batch));
+    }
+
+    private void initClearPreferenceButton() {
+        SpriteButton clrPrefBtn =
+                new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
+                                 0, viewport.getWorldHeight() - 400, game.getSpriteBatch(),
+                                 viewport) {
+
+                    @Override
+                    public void actionTap() {
+                        game.getGameConfiguration().clearAllGamePreferences();
+                        popUpClrPrefBtnClick();
+                    }
+
+                };
+
+        clrPrefBtn.setTopTexture(game.getResourcesManager().getTexture_button_clrpref());
+        clrPrefBtn.setColorEffect(true,
+                                  GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                  GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
+                                  GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                  GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
+        renderableObjectArray.add(clrPrefBtn);
+        gestureDetectableButtonArray.add(clrPrefBtn);
+    }
+
+    private void popUpClrPrefBtnClick() {
+        final SpriteGameObject msg
+                = new SpriteGameObject(
+                game.getResourcesManager().getTexture_msg_clrpref(),
+                0, viewport.getWorldHeight() - 260f).setSpriteBatch(batch)
+                .enableDrawSprite(true);
+        msg.actionRotate(0, 360, 0.3f);
+        msg.actionScale(0.1f, 1f, 0.8f);
+        msg.addSpriteActionListener(new SpriteActionListener() {
+            @Override
+            public void onActionScaleStarted() {
+
+            }
+
+            @Override
+            public void onActionScaleCompleted() {
+            }
+
+            @Override
+            public void onActionAlphaStarted() {
+
+            }
+
+            @Override
+            public void onActionAlphaCompleted() {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Gdx.app.postRunnable(new Runnable() {
+                            @Override
+                            public void run() {
+                                renderableObjectArray.removeValue(msg, false);
+                            }
+                        });
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onActionRotateStarted() {
+
+            }
+
+            @Override
+            public void onActionRotateCompleted() {
+                msg.actionAlpha(1f, 0.7f, 5f);
+            }
+        });
+
+        renderableObjectArray.add(msg);
+    }
+
+    private void initMenuBgCircles() {
+        final SpriteGameObject menuBgCircles
+                = new SpriteGameObject(
+                game.getResourcesManager().getTexture_menu_background_circles(),
+                72f, viewport.getWorldHeight() * 0.61f).setSpriteBatch(batch)
+                .enableDrawSprite(true);
+        menuBgCircles.actionScale(1f, 1.2f, 2f);
+        menuBgCircles.addSpriteActionListener(new SpriteActionListener() {
+            @Override
+            public void onActionScaleStarted() {
+
+            }
+
+            @Override
+            public void onActionScaleCompleted() {
+                if (menuBgCircles.getSprite().getScaleX() > 1f) {
+                    menuBgCircles.actionScale(1.2f, 1f, 7f);
+                } else {
+                    menuBgCircles.actionScale(1f, 1.2f, 7f);
+                }
+            }
+
+            @Override
+            public void onActionAlphaStarted() {
+
+            }
+
+            @Override
+            public void onActionAlphaCompleted() {
+
+            }
+
+            @Override
+            public void onActionRotateStarted() {
+
+            }
+
+            @Override
+            public void onActionRotateCompleted() {
+
+            }
+        });
+        renderableObjectArray.add(menuBgCircles);
+
     }
 
     private void initExtraGameButtons() {
@@ -237,7 +530,8 @@ public class MenuScreen implements Screen {
     private void initXdriverButton() {
         SpriteButton xdriverButton =
                 new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
-                        880, 1520, game.getSpriteBatch(), viewport) {
+                                 880, viewport.getWorldHeight() - 400, game.getSpriteBatch(),
+                                 viewport) {
 
                     @Override
                     public void actionTap() {
@@ -248,8 +542,10 @@ public class MenuScreen implements Screen {
 
         xdriverButton.setTopTexture(game.getResourcesManager().getTexture_ico_xdriver());
         xdriverButton.setColorEffect(true,
-                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
-                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
+                                     GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                     GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
+                                     GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                     GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
         renderableObjectArray.add(xdriverButton);
         gestureDetectableButtonArray.add(xdriverButton);
     }
@@ -263,7 +559,8 @@ public class MenuScreen implements Screen {
     private void initMarketButton() {
         SpriteButton marketButton =
                 new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
-                        480, 1720, game.getSpriteBatch(), viewport) {
+                                 480, viewport.getWorldHeight() - 200, game.getSpriteBatch(),
+                                 viewport) {
 
                     @Override
                     public void actionTap() {
@@ -274,8 +571,10 @@ public class MenuScreen implements Screen {
 
         marketButton.setTopTexture(game.getResourcesManager().getTexture_button_more());
         marketButton.setColorEffect(true,
-                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
-                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
+                                    GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                    GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
+                                    GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                    GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
         renderableObjectArray.add(marketButton);
         gestureDetectableButtonArray.add(marketButton);
     }
@@ -283,7 +582,8 @@ public class MenuScreen implements Screen {
     private void initShareButton() {
         SpriteButton shareButton =
                 new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
-                        680, 1720, game.getSpriteBatch(), viewport) {
+                                 680, viewport.getWorldHeight() - 200, game.getSpriteBatch(),
+                                 viewport) {
 
                     @Override
                     public void actionTap() {
@@ -294,8 +594,10 @@ public class MenuScreen implements Screen {
 
         shareButton.setTopTexture(game.getResourcesManager().getTexture_button_share());
         shareButton.setColorEffect(true,
-                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
-                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
+                                   GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                   GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
+                                   GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                   GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
         renderableObjectArray.add(shareButton);
         gestureDetectableButtonArray.add(shareButton);
     }
@@ -303,7 +605,8 @@ public class MenuScreen implements Screen {
     private void initReviewButton() {
         SpriteButton reviewButton =
                 new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
-                        880, 1720, game.getSpriteBatch(), viewport) {
+                                 880, viewport.getWorldHeight() - 200, game.getSpriteBatch(),
+                                 viewport) {
 
                     @Override
                     public void actionTap() {
@@ -314,8 +617,10 @@ public class MenuScreen implements Screen {
 
         reviewButton.setTopTexture(game.getResourcesManager().getTexture_button_review());
         reviewButton.setColorEffect(true,
-                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
-                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
+                                    GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                    GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
+                                    GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                    GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
         renderableObjectArray.add(reviewButton);
         gestureDetectableButtonArray.add(reviewButton);
     }
@@ -326,7 +631,8 @@ public class MenuScreen implements Screen {
 
         SpriteButton musicOnOffButton =
                 new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
-                        0, 1720, game.getSpriteBatch(), viewport) {
+                                 0, viewport.getWorldHeight() - 200, game.getSpriteBatch(),
+                                 viewport) {
                     private void setTopTextureByState() {
                         if (getButtonState() == STATE_EN) {
                             setButtonState(STATE_DIS);
@@ -352,13 +658,16 @@ public class MenuScreen implements Screen {
                 };
 
         musicOnOffButton.setTopTexture(isMusicOnOff() ?
-                game.getResourcesManager().getTexture_music_on() :
-                game.getResourcesManager().getTexture_music_off());
+                                               game.getResourcesManager().getTexture_music_on() :
+                                               game.getResourcesManager().getTexture_music_off());
         musicOnOffButton.setColorEffect(true,
-                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
-                GameColor.GAME_HOME_BUTTON_EN_NORMAL, GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
+                                        GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                        GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
+                                        GameColor.GAME_HOME_BUTTON_EN_NORMAL,
+                                        GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
 
-        musicOnOffButton.setButtonState(isMusicOnOff() ? SpriteButton.STATE_EN : SpriteButton.STATE_DIS);
+        musicOnOffButton
+                .setButtonState(isMusicOnOff() ? SpriteButton.STATE_EN : SpriteButton.STATE_DIS);
 
         renderableObjectArray.add(musicOnOffButton);
         gestureDetectableButtonArray.add(musicOnOffButton);
@@ -413,12 +722,14 @@ public class MenuScreen implements Screen {
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
         game.getSpriteBatch().begin();
 
-        this.batch.draw(game.getResourcesManager().getTexture_menu_background_circles(), 72f, 1190f);
-        this.batch.draw(game.getResourcesManager().getTexture_title_menu(), 203f, 1373f);
-
         for (Renderable renderableObj : renderableObjectArray) {
             renderableObj.render(delta);
         }
+
+        this.batch.draw(game.getResourcesManager().getTexture_title_menu(), 203f,
+                        viewport.getWorldHeight() * 0.71f);
+
+
         if (isDialogShow() & getDialog() != null) {
             getDialog().render(delta);
         }
@@ -553,7 +864,8 @@ public class MenuScreen implements Screen {
             }
 
             @Override
-            public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+            public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1,
+                    Vector2 pointer2) {
                 return super.pinch(initialPointer1, initialPointer2, pointer1, pointer2);
             }
 
@@ -643,56 +955,62 @@ public class MenuScreen implements Screen {
             killDialog();
         } else {
             setDialogShow(true);
-            ReallySimpleDialog dialog = new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_847x406()
-                    , 0, 0, true, batch);
+            ReallySimpleDialog dialog =
+                    new ReallySimpleDialog(game.getResourcesManager().getTexture_dialog_847x406()
+                            , 0, 0, true, batch);
             dialog.setCenterLocation(game.getGameConfiguration().getViewportWidth() / 2f
                     , game.getGameConfiguration().getViewportHeight() / 2f);
-            dialog.addGameObject(new GameObject(game.getResourcesManager().getTexture_text_ask_exit()
-                    , 94f, 271f, true)
-                    .setSpriteBatch(batch));
+            dialog.addGameObject(
+                    new GameObject(game.getResourcesManager().getTexture_text_ask_exit()
+                            , 94f, 271f, true)
+                            .setSpriteBatch(batch));
 
-            final SpriteButton exitButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                    , 94f, 105f, batch, viewport) {
-                @Override
-                public void actionTouchDown() {
-                    super.actionTouchDown();
-                    game.getResourcesManager().getSound_tap().play();
-                }
+            final SpriteButton exitButton =
+                    new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
+                            , 94f, 105f, batch, viewport) {
+                        @Override
+                        public void actionTouchDown() {
+                            super.actionTouchDown();
+                            game.getResourcesManager().getSound_tap().play();
+                        }
 
-                @Override
-                public void actionTap() {
-                    super.actionTap();
-                    game.getGameConfiguration().putMusicOnOff(isMusicOnOff());
-                    game.getGameConfiguration().flushingPreferences();
+                        @Override
+                        public void actionTap() {
+                            super.actionTap();
+                            game.getGameConfiguration().putMusicOnOff(isMusicOnOff());
+                            game.getGameConfiguration().flushingPreferences();
 
-                    Gdx.app.exit();
-                }
-            };
+                            Gdx.app.exit();
+                        }
+                    };
             exitButton.setTopTexture(game.getResourcesManager().getTexture_btn_text_exit());
             exitButton.enableDrawSprite(true);
             exitButton.setColorEffect(true,
-                    GameColor.BUTTON_BLUE_NORMAL, GameColor.BUTTON_BLUE_TOUCHDOWN,
-                    GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+                                      GameColor.BUTTON_BLUE_NORMAL, GameColor.BUTTON_BLUE_TOUCHDOWN,
+                                      GameColor.MEMU_START_BUTTON_DIS_NORMAL,
+                                      GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
-            final SpriteButton stayButton = new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
-                    , 452f, 105f, batch, viewport) {
-                @Override
-                public void actionTouchDown() {
-                    super.actionTouchDown();
-                    game.getResourcesManager().getSound_tap().play();
-                }
+            final SpriteButton stayButton =
+                    new SpriteButton(game.getResourcesManager().getTexture_button_302x105()
+                            , 452f, 105f, batch, viewport) {
+                        @Override
+                        public void actionTouchDown() {
+                            super.actionTouchDown();
+                            game.getResourcesManager().getSound_tap().play();
+                        }
 
-                @Override
-                public void actionTap() {
-                    super.actionTap();
-                    killDialog();
-                }
-            };
+                        @Override
+                        public void actionTap() {
+                            super.actionTap();
+                            killDialog();
+                        }
+                    };
             stayButton.setTopTexture(game.getResourcesManager().getTexture_btn_text_stay());
             stayButton.enableDrawSprite(true);
             stayButton.setColorEffect(true,
-                    GameColor.BUTTON_PINK_NORMAL, GameColor.BUTTON_PINK_TOUCHDOWN,
-                    GameColor.MEMU_START_BUTTON_DIS_NORMAL, GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
+                                      GameColor.BUTTON_PINK_NORMAL, GameColor.BUTTON_PINK_TOUCHDOWN,
+                                      GameColor.MEMU_START_BUTTON_DIS_NORMAL,
+                                      GameColor.MEMU_START_BUTTON_DIS_TOUCHDOWN);
 
 
             dialog.addSpriteButton(exitButton);
@@ -700,7 +1018,7 @@ public class MenuScreen implements Screen {
 
 
             dialog.moveY(game.getGameConfiguration().getViewportHeight(),
-                    dialog.getLocationY(), 0.2f);
+                         dialog.getLocationY(), 0.2f);
 
             dialog.addActionListener(new ObjectActionListener() {
                 @Override

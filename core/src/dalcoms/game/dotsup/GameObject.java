@@ -52,6 +52,8 @@ public class GameObject implements Renderable {
 
     public void setTexture(Texture texture) {
         this.texture = texture;
+        this.width = texture.getWidth();
+        this.height = texture.getHeight();
     }
 
     public Texture getTexture() {

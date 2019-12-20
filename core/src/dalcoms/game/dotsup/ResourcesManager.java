@@ -121,10 +121,30 @@ public class ResourcesManager {
     private Texture texture_xdriver_title;
     private Texture texture_text_km;
 
-    private Texture texture_mcpu_1;
-    private Texture texture_mcpu_2;
-    private Texture texture_mcpu_3;
+    private Texture texture_mcpu;
+    private Texture texture_bird_1;
+    private Texture texture_bird_2;
+    private Texture texture_bird_poo;
 
+    private Texture texture_debug;
+
+    private Texture texture_button_clrpref;
+    private Texture texture_msg_clrpref;
+
+
+    private Texture texture_guide_menu_1;
+    private Texture texture_guide_menu_2;
+    private Texture texture_guide_menu_remember;
+    private Texture texture_guide_game_1;
+    private Texture texture_guide_game_2;
+    private Texture texture_guide_game_3;
+    private Texture texture_guide_game_4;
+    private Texture texture_guide_game_5;
+
+    private Texture texture_guide_oops;
+    private Texture texture_finger;
+    private Texture texture_guide_4way;
+    private Texture texture_guide_game_next;
 
     private Sound sound_tap;
     private Sound sound_missionClear;
@@ -314,13 +334,38 @@ public class ResourcesManager {
         texture_ico_xdriver = new Texture(Gdx.files.internal("ico_xdriver.png"));
         texture_tire_footprint = new Texture(Gdx.files.internal("tire_footprint.png"));
 
-        texture_mcpu_1 = new Texture(Gdx.files.internal("mcpu_1.png"));
-        texture_mcpu_2 = new Texture(Gdx.files.internal("mcpu_2.png"));
-        texture_mcpu_3 = new Texture(Gdx.files.internal("mcpu_3.png"));
+        texture_mcpu = new Texture(Gdx.files.internal("mcpu.png"));
+
+        texture_bird_1 = new Texture(Gdx.files.internal("bird_1.png"));
+        texture_bird_2 = new Texture(Gdx.files.internal("bird_2.png"));
+        texture_bird_poo = new Texture(Gdx.files.internal("bird_poo.png"));
 
 
-        loadTextureResourcesOfXdriver();
+//        loadTextureResourcesOfXdriver();
+        loadTextureResourcesOfGuide();
+        loadTextureResourcesForDebug();
+    }
 
+    private void loadTextureResourcesForDebug() {
+        texture_debug = new Texture(Gdx.files.internal("debug.png"));
+        texture_button_clrpref = new Texture(Gdx.files.internal("button_clrpref.png"));
+        texture_msg_clrpref = new Texture(Gdx.files.internal("msg_clrpref.png"));
+
+    }
+
+    private void loadTextureResourcesOfGuide() {
+        texture_guide_menu_1 = new Texture(Gdx.files.internal("guide_menu_1.png"));
+        texture_guide_menu_2 = new Texture(Gdx.files.internal("guide_menu_2.png"));
+        texture_guide_menu_remember = new Texture(Gdx.files.internal("guide_menu_remember.png"));
+        texture_guide_game_1 = new Texture(Gdx.files.internal("guide_game_1.png"));
+        texture_guide_game_2 = new Texture(Gdx.files.internal("guide_game_2.png"));
+        texture_guide_game_3 = new Texture(Gdx.files.internal("guide_game_3.png"));
+        texture_finger = new Texture(Gdx.files.internal("finger.png"));
+        texture_guide_4way = new Texture(Gdx.files.internal("guide_4way.png"));
+        texture_guide_oops = new Texture(Gdx.files.internal("guide_oops.png"));
+        texture_guide_game_4 = new Texture(Gdx.files.internal("guide_game_4.png"));
+        texture_guide_game_5 = new Texture(Gdx.files.internal("guide_game_5.png"));
+        texture_guide_game_next = new Texture(Gdx.files.internal("guide_game_next.png"));
     }
 
     private void loadTextureResourcesOfXdriver() {
@@ -646,6 +691,30 @@ public class ResourcesManager {
         return texture_button_share;
     }
 
+    public Texture getTexture_bird_1() {
+        return texture_bird_1;
+    }
+
+    public Texture getTexture_bird_2() {
+        return texture_bird_2;
+    }
+
+    public Texture getTexture_bird(int num) {
+        return num < 1 ? getTexture_bird_1() : getTexture_bird_2();
+    }
+
+    public Texture getTexture_bird_poo() {
+        return texture_bird_poo;
+    }
+
+    public Texture getTexture_debug() {
+        return texture_debug;
+    }
+
+    public Texture getTexture_button_clrpref() {
+        return texture_button_clrpref;
+    }
+
     public Sound getSound_tap() {
         return sound_tap;
     }
@@ -746,29 +815,52 @@ public class ResourcesManager {
         return texture_text_km;
     }
 
-    public Texture getTexture_mcpu_1() {
-        return texture_mcpu_1;
+    public Texture getTexture_mcpu() {
+        return texture_mcpu;
     }
 
-    public Texture getTexture_mcpu_2() {
-        return texture_mcpu_2;
+    public Texture getTexture_msg_clrpref() {
+        return texture_msg_clrpref;
     }
 
-    public Texture getTexture_mcpu_3() {
-        return texture_mcpu_3;
+    public Texture getTexture_guide_menu_remember() {
+        return texture_guide_menu_remember;
     }
 
-    public Texture getTexture_missionClearPopup(int i) {
-        switch (i) {
-            case 0:
-                return getTexture_mcpu_1();
-            case 1:
-                return getTexture_mcpu_2();
-            case 2:
-                return getTexture_mcpu_3();
-            default:
-                return getTexture_mcpu_1();
-        }
+    public Texture getTexture_guide_game_1() {
+        return texture_guide_game_1;
+    }
+
+    public Texture getTexture_guide_game_2() {
+        return texture_guide_game_2;
+    }
+
+    public Texture getTexture_guide_game_3() {
+        return texture_guide_game_3;
+    }
+
+    public Texture getTexture_finger() {
+        return texture_finger;
+    }
+
+    public Texture getTexture_guide_4way() {
+        return texture_guide_4way;
+    }
+
+    public Texture getTexture_guide_game_4() {
+        return texture_guide_game_4;
+    }
+
+    public Texture getTexture_guide_game_5() {
+        return texture_guide_game_5;
+    }
+
+    public Texture getTexture_guide_oops() {
+        return texture_guide_oops;
+    }
+
+    public Texture getTexture_guide_game_next() {
+        return texture_guide_game_next;
     }
 
     public Texture getTexture_level_board_rect_disabled() {
@@ -777,6 +869,14 @@ public class ResourcesManager {
 
     public void disposeGameScreenResources() {
 
+    }
+
+    public Texture getTexture_guide_menu_1() {
+        return texture_guide_menu_1;
+    }
+
+    public Texture getTexture_guide_menu_2() {
+        return texture_guide_menu_2;
     }
 
     public void disposeSoundResources() {

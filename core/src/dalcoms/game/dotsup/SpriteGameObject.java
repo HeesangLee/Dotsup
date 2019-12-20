@@ -1,5 +1,6 @@
 package dalcoms.game.dotsup;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,6 +12,7 @@ public class SpriteGameObject extends GameObject {
     private float velocityActionScale, velocityActionAlpha, velocityActionRotation = 0f;
     private float toActionScale, toActionAlpha, toActionRotation = 0f;
     private boolean flag_drawSprite = false;
+    private float actionAlphaDelta = 0;
 
     /*
      *@param defaultDotsNum range 1~9
@@ -27,6 +29,11 @@ public class SpriteGameObject extends GameObject {
 
     private void createSprite(Texture texture) {
         sprite = new Sprite(texture);
+    }
+
+    public void updateSpriteTexture(Texture texture) {
+        setTexture(texture);
+        createSprite(texture);
     }
 
     @Override
@@ -66,6 +73,10 @@ public class SpriteGameObject extends GameObject {
 
     public void addSpriteActionListener(SpriteActionListener spriteActionListener) {
         this.spriteActionListener = spriteActionListener;
+    }
+
+    public void clearSpriteActionListener() {
+        this.spriteActionListener = null;
     }
 
     private void checkSpriteActions(float delta) {
@@ -177,8 +188,24 @@ public class SpriteGameObject extends GameObject {
         boolean checkAction = true;
         float toAlpha;
         float velocity = getVelocityActionAlpha();
+        float actionFactor;
+        float signOfVel = 1f;
 
-        toAlpha = this.sprite.getColor().a + delta * velocity;
+        actionAlphaDelta += delta;
+        actionFactor = actionAlphaDelta * velocity;
+        if (velocity < 0) {
+            signOfVel = -1f;
+        }
+        if (signOfVel * actionFactor * 255f < 1.1f) {
+            return;
+        } else {
+            actionAlphaDelta = 0f;
+        }
+
+
+        toAlpha = this.sprite.getColor().a + actionFactor;
+        Gdx.app.log("alpha", "a : " + String.valueOf(this.sprite.getColor().a));
+        Gdx.app.log("alpha", "to : " + String.valueOf(toAlpha));
 
         if (velocity > 0) {
             if (toAlpha >= getToActionAlpha()) {

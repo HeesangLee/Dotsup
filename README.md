@@ -52,6 +52,6 @@ Effect
 2. Size, Color 등은 Sprite에 적용되어야 함으로 별도로 만들어야 함.
     * Dots에 만든 뒤에 별도로 분리해서 extends 하도록 할 것.
     
-    
+   
     
 

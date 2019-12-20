@@ -14,6 +14,8 @@ public class GameConfiguration {
     private final String prefKey_MusicOnOff = "MusicOnOff";
 
     private final boolean TEST_ = false;
+    private final boolean TEST_MAX_LEVEL = true;
+    private final int TEST_CLEARED_LEVEL = 90;
 
     private static GameConfiguration instance = new GameConfiguration();
 
@@ -42,17 +44,28 @@ public class GameConfiguration {
         return height;
     }
 
+    public void clearAllGamePreferences() {
+        preferences.clear();
+        flushingPreferences();
+    }
+
     public boolean isTestMode() {
         return TEST_;
     }
 
+
     public int getLastClearedLevel() {
 
         if (isTestMode()) {
-            return GameLevel.getMaxLevel();
+            return TEST_MAX_LEVEL ? GameLevel.getMaxLevel() : TEST_CLEARED_LEVEL;
         } else {
             return preferences.getInteger(prefKey_LastClearedLevel, 0);
         }
+    }
+
+    public boolean isFirstGame() {
+//        return preferences.getInteger(prefKey_LastClearedLevel, 0) == 0 ? true : false;
+        return getLevelMoves(1) == 0 ? true : false;
     }
 
     public void putLastClearedLevel(int level) {
