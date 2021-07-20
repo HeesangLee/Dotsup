@@ -19,7 +19,7 @@ android {
     defaultConfig {
         applicationId "dalcoms.game.dotsup"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 9
         versionName "1.8"
         //1.0 : 1'st launching
