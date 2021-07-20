@@ -37,7 +37,8 @@ public class SpriteButton extends SpriteGameObject
 //
 //    }
 
-    public SpriteButton(Texture texture, float locationX, float locationY, SpriteBatch batch, Viewport viewport) {
+    public SpriteButton(Texture texture, float locationX, float locationY, SpriteBatch batch,
+            Viewport viewport) {
         super(texture, locationX, locationY);
         initThis();
         super.setSpriteBatch(batch);
@@ -80,7 +81,8 @@ public class SpriteButton extends SpriteGameObject
         return textureTopLocationY;
     }
 
-    public void setColorEffect(boolean enable, Color enNormal, Color enTouchDown, Color disNormal, Color disTouchDown) {
+    public void setColorEffect(boolean enable, Color enNormal, Color enTouchDown, Color disNormal,
+            Color disTouchDown) {
         this.colorEffectEnabled = enable;
         this.colorEnNormal = enNormal;
         this.colorEnTouchDown = enTouchDown;
@@ -183,7 +185,7 @@ public class SpriteButton extends SpriteGameObject
             int touchY = (int) newTouchPosition.getY();
 
             setTouched(Gdx.input.isTouched()
-                    & isTouchInButtonArea(touchX, touchY));
+                       & isTouchInButtonArea(touchX, touchY));
         }
         if (textureTop != null) {
             drawTopTexture(delta);
@@ -203,18 +205,18 @@ public class SpriteButton extends SpriteGameObject
 
     private void drawTopTexture(float delta) {
         batch.draw(textureTop,
-                getLocationFollowingLeaderX() + getTextureTopLocationX(),
-                getLocationFollowingLeaderY() + getTextureTopLocationY());
+                   getLocationFollowingLeaderX() + getTextureTopLocationX(),
+                   getLocationFollowingLeaderY() + getTextureTopLocationY());
     }
 
 
     @Override
     public void touchDown(float screenX, float screenY, int pointer, int button) {
         Gdx.app.log(this.getClass().getSimpleName() + " TouchDown",
-                "x = " + String.valueOf(screenX) +
-                        "y = " + String.valueOf(screenY) +
-                        "pointer = " + String.valueOf(pointer) +
-                        "button = " + String.valueOf(button));
+                    "x = " + String.valueOf(screenX) +
+                    "y = " + String.valueOf(screenY) +
+                    "pointer = " + String.valueOf(pointer) +
+                    "button = " + String.valueOf(button));
         setTouched(isTouchInButtonArea((int) screenX, (int) screenY));
 
         if (isTouchInButtonArea((int) screenX, (int) screenY)) {
@@ -225,10 +227,10 @@ public class SpriteButton extends SpriteGameObject
     @Override
     public void tap(float screenX, float screenY, int count, int button) {
         Gdx.app.log(this.getClass().getSimpleName() + " Tap",
-                "x = " + String.valueOf(screenX) +
-                        "y = " + String.valueOf(screenY) +
-                        "count = " + String.valueOf(count) +
-                        "button = " + String.valueOf(button));
+                    "x = " + String.valueOf(screenX) +
+                    "y = " + String.valueOf(screenY) +
+                    "count = " + String.valueOf(count) +
+                    "button = " + String.valueOf(button));
         setTouched(false);
         if (isTouchInButtonArea((int) screenX, (int) screenY)) {
             actionTap();
@@ -238,9 +240,9 @@ public class SpriteButton extends SpriteGameObject
     @Override
     public void longPress(float x, float y) {
         Gdx.app.log(this.getClass().getSimpleName() + " LongPress",
-                "x = " + String.valueOf(x) +
-                        "y = " + String.valueOf(y));
-        if (isTouchInButtonArea((int) x,  (int) y)) {
+                    "x = " + String.valueOf(x) +
+                    "y = " + String.valueOf(y));
+        if (isTouchInButtonArea((int) x, (int) y)) {
             actionLongPress();
         }
     }
@@ -254,7 +256,8 @@ public class SpriteButton extends SpriteGameObject
     private boolean isTouchInButtonArea(int touchX, int touchY) {
         boolean ret = false; // true : touch on, false : touch out
 
-        ret = (touchX >= buttonX1) && (touchX <= buttonX2) && (touchY >= buttonY1) && (touchY <= buttonY2);
+        ret = (touchX >= buttonX1) && (touchX <= buttonX2) && (touchY >= buttonY1) &&
+              (touchY <= buttonY2);
 
         return ret;
     }

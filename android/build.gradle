@@ -20,8 +20,8 @@ android {
         applicationId "dalcoms.game.dotsup"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 8
-        versionName "1.7"
+        versionCode 9
+        versionName "1.8"
         //1.0 : 1'st launching
         //1.1 : 해상도에 따른 터치 오류 변경
         //     - viewport 생성, 적용, unproject 를 통해 일종의 resized touch 처리
@@ -51,6 +51,11 @@ android {
 //        2. 그외 화면 비율 관련 수정했던 것도 같은데 기억이 나지 않음. 벌써 1년이 지났다
 //        8,1.7
 //        1.6 에서 target sdk 만 28로 수정
+        
+//        9,1.8
+//        >> 1) ResourcesManager에서 Textrue 생성 후 Texture Filter 적용 min,max = Linear
+//        >> 2) Menu screen -> More icon 최종 클리어 레벨 5이상이때만 보이게 수정
+//        >> 3) Game screen -> Interstial ad 조건 3 고정으로 변경
     }
     buildTypes {
         release {

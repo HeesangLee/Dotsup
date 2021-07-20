@@ -1,5 +1,6 @@
 package dalcoms.game.dotsup;
 
+
 public class Position2D {
     private float x, y = 0;
 

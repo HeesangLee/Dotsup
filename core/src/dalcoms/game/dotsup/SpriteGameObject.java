@@ -41,11 +41,15 @@ public class SpriteGameObject extends GameObject {
         super.render(delta);
 
         checkSpriteActions(delta);
-
         if (isDrawSpriteEnabled()) {
             draw(delta);
         }
 
+    }
+
+    @Override
+    public int getWidth() {
+        return super.getWidth();
     }
 
     public SpriteGameObject enableDrawSprite(boolean enable) {

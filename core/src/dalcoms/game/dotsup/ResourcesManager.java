@@ -174,6 +174,7 @@ public class ResourcesManager {
 
     private void loadTextureResources() {
         texture_title_splash = new Texture(Gdx.files.internal("title_splash.png"));
+        texture_title_splash.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         texture_dotsArray = new Array<Texture>() {
             {
                 add(new Texture(Gdx.files.internal("dice_1.png")));
@@ -192,18 +193,36 @@ public class ResourcesManager {
 
             }
         };
+
+        for (Texture tex : texture_dotsArray) {
+            tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        }
+
         text_dalcoms = new Texture(Gdx.files.internal("text_dalcoms.png"));
+        text_dalcoms.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
         text_dongle = new Texture(Gdx.files.internal("dongle_text.png"));
+        text_dongle.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 
         texture_menu_level_bg = new Texture(Gdx.files.internal("menu_level_bg.png"));
+        texture_menu_level_bg.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
         texture_title_menu = new Texture(Gdx.files.internal("title_menu.png"));
+        texture_title_menu.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         texture_roundRect_468x148 = new Texture(Gdx.files.internal("roundRect_468x148.png"));
+        texture_roundRect_468x148
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
 
         texture_menu_background_circles =
                 new Texture(Gdx.files.internal("menu_background_circles.png"));
+        texture_menu_background_circles.setFilter(Texture.TextureFilter.Linear,
+                                                  Texture.TextureFilter.Linear);
         texture_text_start = new Texture(Gdx.files.internal("text_start.png"));
+        texture_text_start.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
 
         texture_t35NumArray = new Array<Texture>() {
             {
@@ -219,6 +238,10 @@ public class ResourcesManager {
                 add(new Texture(Gdx.files.internal("t35_num_9.png")));
             }
         };
+        for (Texture tex : texture_t35NumArray) {
+            tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
+        }
 
         texture_level_sel_arrow_left = new Texture(Gdx.files.internal("level_sel_arrow_left.png"));
         texture_level_sel_arrow_right =
@@ -226,6 +249,14 @@ public class ResourcesManager {
 
         texture_level_selected_circle =
                 new Texture(Gdx.files.internal("level_selected_circle.png"));
+
+        texture_level_sel_arrow_left
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_level_sel_arrow_right
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_level_selected_circle
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
 
         texture_menu_dotsArray = new Array<Texture>() {
             {
@@ -240,6 +271,11 @@ public class ResourcesManager {
                 add(new Texture(Gdx.files.internal("level_dots_9.png")));
             }
         };
+        for (Texture tex : texture_menu_dotsArray) {
+            tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
+        }
+
         texture_level_board_rect = new Texture(Gdx.files.internal("level_board_rect.png"));
         texture_level_board_rect_disabled =
                 new Texture(Gdx.files.internal("level_board_rect_disabled.png"));
@@ -268,6 +304,35 @@ public class ResourcesManager {
         texture_circle_100x100 = new Texture(Gdx.files.internal("circle_100x100.png"));
         texture_circle_661x661 = new Texture(Gdx.files.internal("circle_661x661.png"));
 
+
+        texture_level_board_rect
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_level_board_rect_disabled
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t35_x.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_level_lock.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t35_s.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t35_m.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t35_h.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t19_time.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t19_moves.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t52_cleared.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t52_locked.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t52_new.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_dialog_847x406
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_button_302x105
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_text_ask_exit.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_btn_text_exit.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_btn_text_stay.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_btn_text_home.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t35_Loading.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_circle_100x100
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_circle_661x661
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
         texture_t152NumArray = new Array<Texture>() {
             {
                 add(new Texture(Gdx.files.internal("t152_0.png")));
@@ -282,6 +347,10 @@ public class ResourcesManager {
                 add(new Texture(Gdx.files.internal("t152_9.png")));
             }
         };
+        for (Texture tex : texture_t152NumArray) {
+            tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
+        }
 
         texture_circle_200x200 = new Texture(Gdx.files.internal("circle_200x200.png"));
         texture_game_home_btn = new Texture(Gdx.files.internal("game_home_btn.png"));
@@ -340,6 +409,62 @@ public class ResourcesManager {
         texture_bird_2 = new Texture(Gdx.files.internal("bird_2.png"));
         texture_bird_poo = new Texture(Gdx.files.internal("bird_poo.png"));
 
+        texture_circle_200x200
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_game_home_btn.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t19_level.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_rec_10x10.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_game_bottom.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_game_mission_info_bg
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_rect_90x90.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_game_cell_134x134
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_btn_home_105x105
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_btn_replay_105x105
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_btn_text_next.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_btn_text_replay
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_dialog_870x718
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_dialog_hat_770x288
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_dialog_text_clear_all
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_dialog_text_failed
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_dialog_text_success
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t35_challenage_next_level
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t35_try_again.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t35_you_are_the_best
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_music_off.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_music_on.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_item_bomb.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_item_magic.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_item_missile.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t35_NO.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_t35_YES.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_item_effect_1.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_item_effect_2.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_dice_dynamite.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_dice_lock.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_dice_rainbow.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_item_rainbow.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_button_more.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_button_review.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_button_share.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_ico_xdriver.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_tire_footprint
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_mcpu.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_bird_1.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_bird_2.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_bird_poo.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 //        loadTextureResourcesOfXdriver();
         loadTextureResourcesOfGuide();
@@ -366,6 +491,21 @@ public class ResourcesManager {
         texture_guide_game_4 = new Texture(Gdx.files.internal("guide_game_4.png"));
         texture_guide_game_5 = new Texture(Gdx.files.internal("guide_game_5.png"));
         texture_guide_game_next = new Texture(Gdx.files.internal("guide_game_next.png"));
+
+        texture_guide_menu_1.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_guide_menu_2.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_guide_menu_remember
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_guide_game_1.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_guide_game_2.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_guide_game_3.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_finger.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_guide_4way.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_guide_oops.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_guide_game_4.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_guide_game_5.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture_guide_game_next
+                .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     }
 
     private void loadTextureResourcesOfXdriver() {

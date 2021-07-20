@@ -346,7 +346,7 @@ public class AndroidLauncher extends AndroidApplication
 
     @Override
     public void loadAdmobReward(AdmobRewardedVideoAdListener listener) {
-        this.rewardedVideoAdListener = rewardedVideoAdListener;
+        this.rewardedVideoAdListener = listener;
 
         handler.sendEmptyMessage(LOAD_AD_REWARD);
     }

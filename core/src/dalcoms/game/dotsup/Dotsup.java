@@ -11,6 +11,10 @@ public class Dotsup extends Game {
 
     private IActivityRequestHandler launcherHandler;
 
+    public Dotsup(){
+
+    }
+
     public Dotsup(IActivityRequestHandler handler) {
         this.launcherHandler = handler;
     }

@@ -93,7 +93,7 @@ public class MenuScreen implements Screen {
 
                 menuMissionView
                         .setMission(GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton())
-                                            .getMission())
+                                             .getMission())
                         .setShow(true);
 
                 levelSelectButtonGroup.setShow(true);
@@ -159,19 +159,19 @@ public class MenuScreen implements Screen {
                                                                 (float) levelBg.getWidth(),
                                                                 (float) 220, this.batch, this.game,
                                                                 game.getResourcesManager()
-                                                                        .getTexture_t35NumArray(),
+                                                                    .getTexture_t35NumArray(),
                                                                 game.getResourcesManager()
-                                                                        .getTexture_level_sel_arrow_left(),
+                                                                    .getTexture_level_sel_arrow_left(),
                                                                 game.getResourcesManager()
-                                                                        .getTexture_level_sel_arrow_right(),
+                                                                    .getTexture_level_sel_arrow_right(),
                                                                 game.getResourcesManager()
-                                                                        .getTexture_level_selected_circle(),
+                                                                    .getTexture_level_selected_circle(),
                                                                 game.getGameConfiguration()
-                                                                        .getLastClearedLevel() <
+                                                                    .getLastClearedLevel() <
                                                                 GameLevel.getMaxLevel()
                                                                         ?
                                                                         game.getGameConfiguration()
-                                                                                .getLastClearedLevel() +
+                                                                            .getLastClearedLevel() +
                                                                         1
                                                                         : GameLevel.getMaxLevel(),
                                                                 false) {
@@ -181,10 +181,10 @@ public class MenuScreen implements Screen {
                 if (levelBoardPreview != null) {
                     levelBoardPreview.calcBoardCenter(
                             GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton())
-                                    .getBoard());
+                                     .getBoard());
                     levelBoardPreview.updateBoard(
                             GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton())
-                                    .getBoard());
+                                     .getBoard());
                 }
                 if (levelLocked != null) {
                     levelLocked.setShow(isLockedLevel());
@@ -193,7 +193,7 @@ public class MenuScreen implements Screen {
                     menuMissionView
                             .setMission(
                                     GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton())
-                                            .getMission());
+                                             .getMission());
                 }
 
                 if (startButton != null) {
@@ -215,7 +215,7 @@ public class MenuScreen implements Screen {
                 new SimpleBoard(game.getResourcesManager().getTexture_level_board_rect(),
                                 230f, 395f,
                                 GameLevel.getLevel(levelSelectButtonGroup.getFocusingButton())
-                                        .getBoard(),
+                                         .getBoard(),
                                 batch,
                                 true
                 );//.setDisabledCellTexture(game.getResourcesManager().getTexture_level_board_rect_disabled(), true);
@@ -429,7 +429,7 @@ public class MenuScreen implements Screen {
                 = new SpriteGameObject(
                 game.getResourcesManager().getTexture_msg_clrpref(),
                 0, viewport.getWorldHeight() - 260f).setSpriteBatch(batch)
-                .enableDrawSprite(true);
+                                                    .enableDrawSprite(true);
         msg.actionRotate(0, 360, 0.3f);
         msg.actionScale(0.1f, 1f, 0.8f);
         msg.addSpriteActionListener(new SpriteActionListener() {
@@ -481,7 +481,7 @@ public class MenuScreen implements Screen {
                 = new SpriteGameObject(
                 game.getResourcesManager().getTexture_menu_background_circles(),
                 72f, viewport.getWorldHeight() * 0.61f).setSpriteBatch(batch)
-                .enableDrawSprite(true);
+                                                       .enableDrawSprite(true);
         menuBgCircles.actionScale(1f, 1.2f, 2f);
         menuBgCircles.addSpriteActionListener(new SpriteActionListener() {
             @Override
@@ -557,6 +557,9 @@ public class MenuScreen implements Screen {
     }
 
     private void initMarketButton() {
+        if (game.getGameConfiguration().getLastClearedLevel() < 5) {
+            return;
+        }
         SpriteButton marketButton =
                 new SpriteButton(game.getResourcesManager().getTexture_circle_200x200(),
                                  480, viewport.getWorldHeight() - 200, game.getSpriteBatch(),
@@ -575,6 +578,7 @@ public class MenuScreen implements Screen {
                                     GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN,
                                     GameColor.GAME_HOME_BUTTON_EN_NORMAL,
                                     GameColor.GAME_HOME_BUTTON_EN_TOUCHDOWN);
+
         renderableObjectArray.add(marketButton);
         gestureDetectableButtonArray.add(marketButton);
     }

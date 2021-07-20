@@ -580,8 +580,8 @@ public class GameScreen implements Screen {
 
     private void checkInterstitialAd() {
         int gamePlayCount = game.getGameConfiguration().getGamePlayCount();
-        int adCount =
-                Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 4 ? INTERSTITAL_AD_COUNT : 3;
+        int adCount =3;
+//                Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 4 ? INTERSTITAL_AD_COUNT : 3;
 
         if (gamePlayCount % adCount == adCount - 1) {
             game.getLauncherHandler().loadAdmobInterstital(new AdmobAdListener() {
